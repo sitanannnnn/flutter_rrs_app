@@ -108,6 +108,9 @@ class _LoginState extends State<Login> {
     preferences.setString('chooseType', userModel.chooseType.toString());
     preferences.setString('name', userModel.name.toString());
 
+    preferences.setString('email', userModel.email.toString());
+    preferences.setString('phonenumber', userModel.phonenumber.toString());
+
     MaterialPageRoute route = MaterialPageRoute(builder: (context) => myWidget);
     Navigator.pushAndRemoveUntil(context, route, (route) => false);
   }
