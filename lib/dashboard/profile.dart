@@ -14,7 +14,7 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-  String? name, user;
+  String? name, email, phonenumber;
   @override
   //initstate จะทำงานก่อน build
   void initState() {
@@ -28,6 +28,8 @@ class _ProfileState extends State<Profile> {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     setState(() {
       name = preferences.getString('name');
+      email = preferences.getString('email');
+      phonenumber = preferences.getString('phonenumber');
     });
   }
 
@@ -69,10 +71,32 @@ class _ProfileState extends State<Profile> {
               child: Center(
                 child: Column(
                   children: [
-                    Container(
-                      width: 450,
-                      height: 350,
-                      color: ksecondary,
+                    Column(
+                      children: [
+                        Container(
+                          width: 450,
+                          height: 350,
+                          color: ksecondary,
+                          child: Column(
+                            children: [
+                              Text(
+                                name == null ? 'Account' : '$name ',
+                                style: TextStyle(fontSize: 15),
+                              ),
+                              Text(
+                                email == null ? 'email' : '$email ',
+                                style: TextStyle(fontSize: 15),
+                              ),
+                              Text(
+                                phonenumber == null
+                                    ? 'phonenumber'
+                                    : '$phonenumber ',
+                                style: TextStyle(fontSize: 15),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
