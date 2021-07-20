@@ -96,6 +96,19 @@ class _ProfileState extends State<Profile> {
                             ],
                           ),
                         ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              FloatingActionButton(
+                                backgroundColor: kprimary,
+                                onPressed: () {},
+                                child: Icon(Icons.edit),
+                              ),
+                            ],
+                          ),
+                        )
                       ],
                     ),
                   ],

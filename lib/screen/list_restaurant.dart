@@ -21,11 +21,14 @@ class _ListRestaurantState extends State<ListRestaurant> {
 
   Future<Null> readRestaurant() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    String? id = preferences.getString('id');
-    print('id = $id');
+    String? restaurantId = preferences.getString('id');
+    print('id = $restaurantId');
+    String? nameowner = preferences.getString('name');
+    print('name = $nameowner');
+    ;
 
     String url =
-        '${Myconstant().domain}/my_login_rrs/getRestaurantWhereidRestaurant.php?isAdd=true&id=$id';
+        'http://b0b2195d2d06.ngrok.io/my_login_rrs/getRestaurant.php?isAdd=true&restaurantId=$restaurantId';
     Response response = await Dio().get(url);
     print('res ==> $response');
   }

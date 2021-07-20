@@ -107,14 +107,21 @@ class _SignupState extends State<Signup> {
         ),
         onPressed: () {
           if (formkey.currentState!.validate()) {
-            print("Ok");
+            print(chooseType);
+            switch (chooseType) {
+              case 'Shop':
+                checkShop();
+                break;
+              case 'User':
+                checkUser();
+                break;
+            }
           } else if (chooseType == null) {
             normalDialog(context, "Please select a usage type");
           } else {
             print('Error');
           }
           // registerThread();
-          checkUser();
         },
         child: Text("Register"),
       ),
@@ -123,21 +130,49 @@ class _SignupState extends State<Signup> {
 
   Future<Null> checkUser() async {
     String url =
-        'http://f618a97da31b.ngrok.io/my_login_rrs/getUser.php?isAdd=true&user=$user';
+        'http://b0b2195d2d06.ngrok.io/my_login_rrs/getUser.php?isAdd=true&user=$user';
     try {
       Response response = await Dio().get(url);
       print('res = $response');
       if (response.toString() == 'null') {
-        registerThread();
+        registerThreadUser();
       } else {
         normalDialog(context, 'User นี้ $user มีคนใช้ไปแล้ว กรุณาเปลี่ยน User');
       }
     } catch (e) {}
   }
 
-  Future<Null> registerThread() async {
+  Future<Null> checkShop() async {
+    String url =
+        'http://b0b2195d2d06.ngrok.io/my_login_rrs/getRestaurant.php?isAdd=true&user=$user';
+    try {
+      Response response = await Dio().get(url);
+      print('res = $response');
+      if (response.toString() == 'null') {
+        registerThreadShop();
+      } else {
+        normalDialog(context, 'User นี้ $user มีคนใช้ไปแล้ว กรุณาเปลี่ยน User');
+      }
+    } catch (e) {}
+  }
+
+  Future<Null> registerThreadUser() async {
     var url =
-        'http://f618a97da31b.ngrok.io/my_login_rrs/addData.php?isAdd=true&chooseType=$chooseType&name=$name&user=$user&email=$email&phonenumber=$phonenumber&password=$password&confirmpassword=$confirmpassword';
+        'http://b0b2195d2d06.ngrok.io/my_login_rrs/addUser.php?isAdd=true&chooseType=$chooseType&name=$name&user=$user&email=$email&phonenumber=$phonenumber&password=$password&confirmpassword=$confirmpassword';
+    try {
+      Response response = await Dio().get(url);
+      print('res = $response');
+      if (response.toString() == 'true') {
+        Navigator.pop(context);
+      } else {
+        normalDialog(context, 'ไม่สามารถ สมัครได้ กรุณาลองใหม่อีกครั้ง ค่ะ');
+      }
+    } catch (e) {}
+  }
+
+  Future<Null> registerThreadShop() async {
+    var url =
+        'http://b0b2195d2d06.ngrok.io/my_login_rrs/addRestaurant.php?isAdd=true&chooseType=$chooseType&name=$name&user=$user&email=$email&phonenumber=$phonenumber&password=$password&confirmpassword=$confirmpassword';
     try {
       Response response = await Dio().get(url);
       print('res = $response');

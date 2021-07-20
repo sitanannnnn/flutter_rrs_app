@@ -77,7 +77,7 @@ class _LoginState extends State<Login> {
 
   Future<Null> checkAuthen() async {
     var url =
-        'http://f618a97da31b.ngrok.io/my_login_rrs/getUser.php?isAdd=true&user=$user';
+        'http://b0b2195d2d06.ngrok.io/my_login_rrs/getUser.php?isAdd=true&user=$user';
     try {
       Response response = await Dio().get(url);
       print('res = $response');
