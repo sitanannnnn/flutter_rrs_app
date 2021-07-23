@@ -19,7 +19,7 @@ class _MyBookingState extends State<MyBooking> {
           backgroundColor: kprimary,
           toolbarHeight: wid / 5,
           title: Center(
-            child: Text('การจองของฉัน'),
+            child: Text('My booking'),
           ),
         ),
         body: Padding(
@@ -30,13 +30,13 @@ class _MyBookingState extends State<MyBooking> {
                 borderRadius: BorderRadius.circular(50), color: kprimary),
             tabs: [
               Tab(
-                text: 'ยังไม่ยืนยัน',
+                text: 'not comfirm',
               ),
               Tab(
-                text: 'ผ่านการยืนยัน',
+                text: 'verified',
               ),
               Tab(
-                text: 'การจองที่ผ่านมา',
+                text: 'past booking',
               ),
             ],
           ),

@@ -14,7 +14,7 @@ class _RestaurantState extends State<Restaurant> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: kprimary,
-        title: Text('ร้านอาหาร'),
+        title: Text('restaurant'),
       ),
       body: Column(
         children: [

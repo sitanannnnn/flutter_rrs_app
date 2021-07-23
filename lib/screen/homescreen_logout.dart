@@ -107,7 +107,7 @@ class _HomeScreenOutState extends State<HomeScreenOut> {
                       height: 80,
                       width: 80,
                     ),
-                    Text('ร้านอาหาร'),
+                    Text('restaurant'),
                   ],
                 ),
               ),
@@ -139,7 +139,7 @@ class _HomeScreenOutState extends State<HomeScreenOut> {
                       height: 80,
                       width: 80,
                     ),
-                    Text('ร้านอาหาร'),
+                    Text('restaurant'),
                   ],
                 ),
               ),
@@ -171,7 +171,7 @@ class _HomeScreenOutState extends State<HomeScreenOut> {
                       height: 80,
                       width: 80,
                     ),
-                    Text('ร้านอาหาร'),
+                    Text('restaurant'),
                   ],
                 ),
               ),
@@ -212,7 +212,7 @@ class _HomeScreenOutState extends State<HomeScreenOut> {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
           primary: ksecondary),
       child: Text(
-        'ร้านอาหารที่ใกล้เคียง',
+        'restaurant near',
         style: TextStyle(color: Colors.black),
       ),
     );
@@ -229,7 +229,7 @@ class _HomeScreenOutState extends State<HomeScreenOut> {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
           primary: ksecondary),
       child: Text(
-        'สั่งอาหาร',
+        'order food',
         style: TextStyle(color: Colors.black),
       ),
     );
@@ -246,7 +246,7 @@ class _HomeScreenOutState extends State<HomeScreenOut> {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
           primary: ksecondary),
       child: Text(
-        'โปรโมชั่น',
+        'promotion',
         style: TextStyle(color: Colors.black),
       ),
     );

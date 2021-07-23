@@ -32,6 +32,12 @@ class MyStyle {
     );
   }
 
+  Widget showProgrsee() {
+    return Center(
+      child: CircularProgressIndicator(),
+    );
+  }
+
   Container showLogotable() {
     return Container(
       width: 200,

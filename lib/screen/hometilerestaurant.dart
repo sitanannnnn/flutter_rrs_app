@@ -18,10 +18,10 @@ class _HomeTileRestaurantState extends State<HomeTileRestaurant> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Icon(Icons.restaurant),
-                Text('ร้านอาหาร'),
+                Text('restaurant'),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(249, 5, 5, 5),
-                  child: Text('ดูทั้งหมด'),
+                  child: Text('view all'),
                 ),
               ],
             ),

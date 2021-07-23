@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rrs_app/model/user_model.dart';
 import 'package:flutter_rrs_app/page/home_page.dart';
 import 'package:flutter_rrs_app/screen/showOwner.dart';
+import 'package:flutter_rrs_app/utility/my_constant.dart';
 import 'package:flutter_rrs_app/utility/my_style.dart';
 import 'package:flutter_rrs_app/utility/normal_dialog.dart';
 
@@ -77,7 +78,7 @@ class _LoginState extends State<Login> {
 
   Future<Null> checkAuthen() async {
     var url =
-        'http://b0b2195d2d06.ngrok.io/my_login_rrs/getUser.php?isAdd=true&user=$user';
+        '${Myconstant().domain}/my_login_rrs/getUser.php?isAdd=true&user=$user';
     try {
       Response response = await Dio().get(url);
       print('res = $response');

@@ -18,10 +18,10 @@ class _HomeTileCategoryState extends State<HomeTileCategory> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Icon(Icons.restaurant),
-                Text('ประเภทร้านอาหาร'),
+                Text('type fo food'),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(202, 5, 5, 5),
-                  child: Text('ดูทั้งหมด'),
+                  child: Text('view all'),
                 ),
               ],
             ),

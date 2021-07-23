@@ -40,7 +40,7 @@ class _ProfileState extends State<Profile> {
       appBar: AppBar(
         backgroundColor: kprimary,
         toolbarHeight: wid / 5,
-        title: Center(child: Text("บัญชีผู้ใช้งาน")),
+        title: Center(child: Text("Account")),
         actions: [
           IconButton(
               onPressed: () {

@@ -1,4 +1,9 @@
+import 'dart:convert';
+import 'dart:math';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rrs_app/model/read_shop_model.dart';
 import 'package:flutter_rrs_app/utility/my_style.dart';
 import 'package:flutter_rrs_app/screen/hometilecategort.dart';
 import 'package:flutter_rrs_app/screen/hometilepopular.dart';
@@ -107,7 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: 80,
                       width: 80,
                     ),
-                    Text('ร้านอาหาร'),
+                    Text('restaurant'),
                   ],
                 ),
               ),
@@ -139,7 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: 80,
                       width: 80,
                     ),
-                    Text('ร้านอาหาร'),
+                    Text('restaurant'),
                   ],
                 ),
               ),
@@ -171,7 +176,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: 80,
                       width: 80,
                     ),
-                    Text('ร้านอาหาร'),
+                    Text('restaurant'),
                   ],
                 ),
               ),
@@ -212,7 +217,7 @@ class _HomeScreenState extends State<HomeScreen> {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
           primary: ksecondary),
       child: Text(
-        'ร้านอาหารที่ใกล้เคียง',
+        'restaurant near',
         style: TextStyle(color: Colors.black),
       ),
     );
@@ -229,7 +234,7 @@ class _HomeScreenState extends State<HomeScreen> {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
           primary: ksecondary),
       child: Text(
-        'สั่งอาหาร',
+        'order food',
         style: TextStyle(color: Colors.black),
       ),
     );
@@ -246,7 +251,7 @@ class _HomeScreenState extends State<HomeScreen> {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
           primary: ksecondary),
       child: Text(
-        'โปรโมชั่น',
+        'promotion',
         style: TextStyle(color: Colors.black),
       ),
     );

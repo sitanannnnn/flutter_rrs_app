@@ -18,10 +18,10 @@ class _HomeTilePopularState extends State<HomeTilePopular> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Icon(Icons.restaurant),
-                Text('ร้านอาหารเป็นที่นิยม'),
+                Text('the restaurant is popular'),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(190, 5, 5, 5),
-                  child: Text('ดูทั้งหมด'),
+                  padding: const EdgeInsets.fromLTRB(160, 5, 5, 5),
+                  child: Text('view all'),
                 ),
               ],
             ),

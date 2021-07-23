@@ -14,7 +14,7 @@ class _PromotionState extends State<Promotion> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: kprimary,
-        title: Text('โปรโมชั่น'),
+        title: Text('promotion'),
       ),
     );
   }
