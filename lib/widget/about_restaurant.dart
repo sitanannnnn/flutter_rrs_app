@@ -4,8 +4,7 @@ import 'package:flutter_rrs_app/utility/my_constant.dart';
 
 class AboutRestaurant extends StatefulWidget {
   final ReadshopModel readshopModel;
-  AboutRestaurant({required Key key, required this.readshopModel})
-      : super(key: key);
+  AboutRestaurant({Key? key, required this.readshopModel}) : super(key: key);
   @override
   _AboutRestaurantState createState() => _AboutRestaurantState();
 }

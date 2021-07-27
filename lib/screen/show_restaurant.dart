@@ -19,7 +19,9 @@ class _ShowRestaurantState extends State<ShowRestaurant> {
   void initState() {
     super.initState();
     readshopModel = widget.readshopModel;
-    listWidgets!.add(AboutRestaurant());
+    listWidgets!.add(AboutRestaurant(
+      readshopModel: readshopModel!,
+    ));
     listWidgets!.add(ShowMenuFood());
   }
 
