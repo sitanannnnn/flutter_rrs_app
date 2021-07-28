@@ -15,7 +15,7 @@ class _OrderFoodState extends State<OrderFood> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: kprimary,
-        title: Text('ประเภท'),
+        title: Text('Type Of Food'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),

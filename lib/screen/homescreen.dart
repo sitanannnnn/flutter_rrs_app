@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'dart:math';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rrs_app/model/read_shop_model.dart';
+import 'package:flutter_rrs_app/screen/show_restaurant.dart';
+import 'package:flutter_rrs_app/utility/my_constant.dart';
 import 'package:flutter_rrs_app/utility/my_style.dart';
 import 'package:flutter_rrs_app/screen/hometilecategort.dart';
 import 'package:flutter_rrs_app/screen/hometilepopular.dart';
@@ -20,30 +20,40 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  ReadshopModel? readshopModel;
+  List<ReadshopModel> readshopModels = [];
+  List<Widget> restaurantCards = [];
+
   @override
+  void initState() {
+    super.initState();
+    readRestaurant();
+  }
+
+  Future<Null> readRestaurant() async {
+    String url =
+        '${Myconstant().domain}/my_login_rrs/getRestaurantFromchooseType.php?isAdd=true&&chooseType=Shop';
+    await Dio().get(url).then((value) {
+      // print('value=$value');
+      var result = json.decode(value.data);
+      int index = 0;
+      for (var map in result) {
+        ReadshopModel model = ReadshopModel.fromJson(map);
+        String? NameShop = model.restaurantNameshop;
+        if (NameShop!.isNotEmpty) {
+          print('NameShop =${model.restaurantNameshop}');
+          setState(() {
+            readshopModels.add(model);
+            restaurantCards.add(createCard(model, index));
+            index++;
+          });
+        }
+      }
+    });
+  }
+
   Widget build(BuildContext context) {
     double wid = MediaQuery.of(context).size.width;
-    //
-    // Widget imageCarousel = new Container(
-    //   height: 225.0,
-    //   child: Carousel(
-    //     boxFit: BoxFit.cover,
-    //     images: [
-    //       AssetImage('assets/images/c1.jpg'),
-    //       AssetImage('assets/images/c2.jpg'),
-    //       AssetImage('assets/images/c3.jpg'),
-    //       AssetImage('assets/images/c4.jpg'),
-    //     ],
-    //     autoplay: true,
-    //     dotSize: 5.0,
-    //     indicatorBgPadding: 9.0,
-    //     overlayShadow: false,
-    //     borderRadius: true,
-    //     animationCurve: Curves.fastOutSlowIn,
-    //     animationDuration: Duration(microseconds: 1500),
-    //   ),
-    // );
-    //
     return Scaffold(
       appBar: AppBar(
         backgroundColor: kprimary,
@@ -91,65 +101,39 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Container popularReataurant() {
     return Container(
-      height: 120,
-      child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          itemCount: 10,
-          itemBuilder: (_, index) {
-            return Padding(
-              padding: EdgeInsets.all(8),
-              child: Container(
-                height: 80,
-                width: 100,
-                decoration: BoxDecoration(color: Colors.white, boxShadow: [
-                  BoxShadow(
-                      color: Colors.grey, offset: Offset(1, 1), blurRadius: 4)
-                ]),
-                child: Column(
-                  children: [
-                    Image.asset(
-                      'assets/images/1.jpg',
-                      height: 80,
-                      width: 80,
-                    ),
-                    Text('restaurant'),
-                  ],
-                ),
-              ),
-            );
-          }),
+      height: 150,
+      child: restaurantCards.length == 0
+          ? MyStyle().showProgrsee()
+          : ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: readshopModels.length,
+              itemBuilder: (_, index) {
+                return Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Container(
+                    child: Row(children: restaurantCards),
+                  ),
+                );
+              }),
     );
   }
 
   Container resReataurant() {
     return Container(
-      height: 120,
-      child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          itemCount: 10,
-          itemBuilder: (_, index) {
-            return Padding(
-              padding: EdgeInsets.all(8),
-              child: Container(
-                height: 80,
-                width: 100,
-                decoration: BoxDecoration(color: Colors.white, boxShadow: [
-                  BoxShadow(
-                      color: Colors.grey, offset: Offset(1, 1), blurRadius: 4)
-                ]),
-                child: Column(
-                  children: [
-                    Image.asset(
-                      'assets/images/1.jpg',
-                      height: 80,
-                      width: 80,
-                    ),
-                    Text('restaurant'),
-                  ],
-                ),
-              ),
-            );
-          }),
+      height: 150,
+      child: restaurantCards.length == 0
+          ? MyStyle().showProgrsee()
+          : ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: readshopModels.length,
+              itemBuilder: (_, index) {
+                return Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Container(
+                    child: Row(children: restaurantCards),
+                  ),
+                );
+              }),
     );
   }
 
@@ -163,8 +147,8 @@ class _HomeScreenState extends State<HomeScreen> {
             return Padding(
               padding: EdgeInsets.all(8),
               child: Container(
-                height: 80,
-                width: 100,
+                height: 100,
+                width: 90,
                 decoration: BoxDecoration(color: Colors.white, boxShadow: [
                   BoxShadow(
                       color: Colors.grey, offset: Offset(1, 1), blurRadius: 4)
@@ -253,6 +237,39 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Text(
         'promotion',
         style: TextStyle(color: Colors.black),
+      ),
+    );
+  }
+
+  Widget createCard(ReadshopModel readshopModel, int index) {
+    return GestureDetector(
+      onTap: () {
+        print('You click index $index');
+        MaterialPageRoute route = MaterialPageRoute(
+          builder: (context) => ShowRestaurant(
+            readshopModel: readshopModels[index],
+          ),
+        );
+        Navigator.push(context, route);
+      },
+      child: Card(
+        child: Column(
+          children: [
+            Container(
+              width: 180,
+              height: 80,
+              child: Image.network(
+                  '${Myconstant().domain}${readshopModel.restaurantPicture}'),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                'Name restaurant : ${readshopModel.restaurantNameshop}',
+                style: TextStyle(fontSize: 15),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

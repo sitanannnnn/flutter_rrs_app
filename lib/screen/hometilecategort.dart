@@ -17,7 +17,7 @@ class _HomeTileCategoryState extends State<HomeTileCategory> {
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Icon(Icons.restaurant),
+                Icon(Icons.food_bank),
                 Text('type fo food'),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(202, 5, 5, 5),

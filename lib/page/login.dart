@@ -55,8 +55,8 @@ class _LoginState extends State<Login> {
   ElevatedButton loginButtom() {
     return ElevatedButton(
         style: ElevatedButton.styleFrom(
-          primary: Colors., // background
-          onPrimary: Colors.white, // foreground
+          primary: kprimary,
+          onPrimary: Colors.white,
         ),
         onPressed: () {
           if (user == null ||

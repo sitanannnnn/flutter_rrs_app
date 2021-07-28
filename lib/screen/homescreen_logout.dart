@@ -18,27 +18,6 @@ class _HomeScreenOutState extends State<HomeScreenOut> {
   @override
   Widget build(BuildContext context) {
     double wid = MediaQuery.of(context).size.width;
-    //
-    // Widget imageCarousel = new Container(
-    //   height: 225.0,
-    //   child: Carousel(
-    //     boxFit: BoxFit.cover,
-    //     images: [
-    //       AssetImage('assets/images/c1.jpg'),
-    //       AssetImage('assets/images/c2.jpg'),
-    //       AssetImage('assets/images/c3.jpg'),
-    //       AssetImage('assets/images/c4.jpg'),
-    //     ],
-    //     autoplay: true,
-    //     dotSize: 5.0,
-    //     indicatorBgPadding: 9.0,
-    //     overlayShadow: false,
-    //     borderRadius: true,
-    //     animationCurve: Curves.fastOutSlowIn,
-    //     animationDuration: Duration(microseconds: 1500),
-    //   ),
-    // );
-    //
     return Scaffold(
       appBar: AppBar(
         backgroundColor: kprimary,

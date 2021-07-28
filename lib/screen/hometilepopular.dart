@@ -17,7 +17,7 @@ class _HomeTilePopularState extends State<HomeTilePopular> {
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Icon(Icons.restaurant),
+                Icon(Icons.restaurant_menu),
                 Text('the restaurant is popular'),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(160, 5, 5, 5),

@@ -50,7 +50,7 @@ class _NearbtReataurantState extends State<NearbtReataurant> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: kprimary,
-        title: Text('restaurant near'),
+        title: Text('restaurant nearby'),
       ),
       body: shopCards.length == 0
           ? MyStyle().showProgrsee()

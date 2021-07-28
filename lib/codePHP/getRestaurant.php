@@ -15,9 +15,9 @@
     }
     if (isset($_GET)) {
     if($_GET['isAdd']=='true'){
-
-    $chooseType=$_GET['chooseType'];
-    $result= mysqli_query ($link,"SELECT * FROM  restaurant WHERE chooseType ='$chooseType'");
+    $user=$_GET['user'];
+   
+    $result= mysqli_query ($link,"SELECT * FROM  restaurant WHERE user ='$user'");
     
     if($result){
         while($row = mysqli_fetch_assoc($result)){

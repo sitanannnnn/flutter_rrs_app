@@ -22,7 +22,9 @@ class _ShowRestaurantState extends State<ShowRestaurant> {
     listWidgets!.add(AboutRestaurant(
       readshopModel: readshopModel!,
     ));
-    listWidgets!.add(ShowMenuFood());
+    listWidgets!.add(ShowMenuFood(
+      readshopModel: readshopModel,
+    ));
   }
 
   BottomNavigationBarItem aboutRestaurantNav() {

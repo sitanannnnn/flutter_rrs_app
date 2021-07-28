@@ -24,8 +24,9 @@ class MyStyle {
   //     );
   Text showTitleH2(String title) => Text(
         title,
-        style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+        style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold),
       );
+
   Container showLogo() {
     return Container(
       child: Image.asset('assets/images/1.jpg'),
@@ -48,8 +49,8 @@ class MyStyle {
 
   // TextStyle mainTitle =
   //     TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold, color: kprimary);
-  // TextStyle mainH2Title =
-  //     TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold, color: kprimary);
+  TextStyle mainH2Title =
+      TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold, color: kprimary);
 }
 
 const kprimary = Color(0xffF1B739);
