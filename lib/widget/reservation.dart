@@ -5,6 +5,7 @@ import 'package:flutter_rrs_app/utility/my_style.dart';
 
 class Reservation extends StatefulWidget {
   final ReadshopModel readshopModel;
+
   Reservation({Key? key, required this.readshopModel}) : super(key: key);
   @override
   _ReservationtState createState() => _ReservationtState();
@@ -13,8 +14,7 @@ class Reservation extends StatefulWidget {
 class _ReservationtState extends State<Reservation> {
   ReadshopModel? readshopModel;
 
-  get child => null;
-  @override
+  String? _chosenValue;
   @override
   void initState() {
     super.initState();
@@ -46,9 +46,39 @@ class _ReservationtState extends State<Reservation> {
             ),
             Center(
               child: Container(
-                height: 300,
-                width: 290,
-                color: Colors.white,
+                padding: const EdgeInsets.all(0.0),
+                child: DropdownButton<String>(
+                  value: _chosenValue,
+                  //elevation: 5,
+                  style: TextStyle(color: Colors.black),
+
+                  items: <String>[
+                    '1 Person',
+                    '2 Person',
+                    '3 Person',
+                    '4 Person',
+                    '5 Person',
+                    '6 Person',
+                    '7 Person',
+                  ].map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  hint: Text(
+                    "Please choose number of people",
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600),
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      _chosenValue = value;
+                    });
+                  },
+                ),
               ),
             )
           ],

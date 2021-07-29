@@ -31,10 +31,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<Null> readRestaurant() async {
+    if (readshopModels.length != 0) {
+      readshopModels.clear();
+    }
     String url =
         '${Myconstant().domain}/my_login_rrs/getRestaurantFromchooseType.php?isAdd=true&&chooseType=Shop';
     await Dio().get(url).then((value) {
       // print('value=$value');
+
       var result = json.decode(value.data);
       int index = 0;
       for (var map in result) {
@@ -256,15 +260,20 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           children: [
             Container(
-              width: 180,
+              width: 150,
               height: 80,
-              child: Image.network(
-                  '${Myconstant().domain}${readshopModel.restaurantPicture}'),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  image: DecorationImage(
+                      image: NetworkImage(
+                        '${Myconstant().domain}${readshopModel.restaurantPicture}',
+                      ),
+                      fit: BoxFit.cover)),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                'Name restaurant : ${readshopModel.restaurantNameshop}',
+                '${readshopModel.restaurantNameshop}',
                 style: TextStyle(fontSize: 15),
               ),
             ),

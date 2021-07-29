@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rrs_app/model/read_shop_model.dart';
 import 'package:flutter_rrs_app/utility/my_constant.dart';
 import 'package:flutter_rrs_app/utility/my_style.dart';
+import 'package:flutter_rrs_app/widget/reservation.dart';
 
 class AboutRestaurant extends StatefulWidget {
   final ReadshopModel readshopModel;
@@ -12,7 +13,6 @@ class AboutRestaurant extends StatefulWidget {
 
 class _AboutRestaurantState extends State<AboutRestaurant> {
   ReadshopModel? readshopModel;
-
   @override
   void initState() {
     super.initState();

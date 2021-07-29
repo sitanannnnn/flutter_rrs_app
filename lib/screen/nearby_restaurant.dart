@@ -78,11 +78,17 @@ class _NearbtReataurantState extends State<NearbtReataurant> {
         child: Column(
           children: [
             Container(
-              width: 250,
+              width: 350,
               height: 300,
-              child: Image.network(
-                  '${Myconstant().domain}${readshopModel.restaurantPicture}'),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  image: DecorationImage(
+                      image: NetworkImage(
+                        '${Myconstant().domain}${readshopModel.restaurantPicture}',
+                      ),
+                      fit: BoxFit.cover)),
             ),
+            Padding(padding: EdgeInsets.all(8.0)),
             Text('Name restaurant : ${readshopModel.restaurantNameshop}'),
             Text('Name branch :${readshopModel.restaurantBranch}'),
             Text('Type of food :${readshopModel.typeOfFood}'),
