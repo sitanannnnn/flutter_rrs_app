@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class MyStyle {
   Color darkColor = Colors.grey;
@@ -22,10 +23,10 @@ class MyStyle {
   //       title,
   //       style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
   //     );
-  Text showTitleH2(String title) => Text(
-        title,
-        style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold),
-      );
+  Text showTitleH2(String title) => Text(title,
+      style: GoogleFonts.lato(fontSize: 20, fontWeight: FontWeight.bold));
+  Text showheadText(String title) =>
+      Text(title, style: GoogleFonts.lato(fontSize: 20));
 
   Container showLogo() {
     return Container(
@@ -41,9 +42,9 @@ class MyStyle {
 
   Container showLogotable() {
     return Container(
-      width: 200,
-      height: 200,
-      child: Image.asset('assets/images/table.png'),
+      width: 350,
+      height: 350,
+      child: Image.asset('assets/images/tableres.png'),
     );
   }
 

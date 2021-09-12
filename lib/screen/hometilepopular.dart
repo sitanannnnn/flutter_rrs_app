@@ -11,22 +11,21 @@ class _HomeTilePopularState extends State<HomeTilePopular> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Icon(Icons.restaurant_menu),
-                Text('the restaurant is popular'),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(160, 5, 5, 5),
-                  child: Text('view all'),
-                ),
-              ],
-            ),
-          ],
-        ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.store_mall_directory_rounded),
+                  Text('the restaurant is popular'),
+                ],
+              ),
+              Text('view all'),
+            ],
+          ),
+        ],
       ),
     );
   }

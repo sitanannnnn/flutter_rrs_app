@@ -2,27 +2,31 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rrs_app/model/read_shop_model.dart';
+import 'package:flutter_rrs_app/screen/category_food.dart';
+import 'package:flutter_rrs_app/screen/show_cart.dart';
 import 'package:flutter_rrs_app/screen/show_restaurant.dart';
 import 'package:flutter_rrs_app/utility/my_constant.dart';
 import 'package:flutter_rrs_app/utility/my_style.dart';
-import 'package:flutter_rrs_app/screen/hometilecategort.dart';
 import 'package:flutter_rrs_app/screen/hometilepopular.dart';
 import 'package:flutter_rrs_app/screen/hometilerestaurant.dart';
 import 'package:flutter_rrs_app/screen/nearby_restaurant.dart';
-import 'package:flutter_rrs_app/screen/orderfood.dart';
+import 'package:flutter_rrs_app/screen/type_of_food.dart';
 import 'package:flutter_rrs_app/screen/promotion.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
-
+  const HomeScreen({
+    Key? key,
+  }) : super(key: key);
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  ReadshopModel? readshopModel;
   List<ReadshopModel> readshopModels = [];
   List<Widget> restaurantCards = [];
+  List<Widget> categoryCards = [];
+  String? reservatinDate, reservationTime, numberOfGueste, typeOfFood;
 
   @override
   void initState() {
@@ -30,6 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
     readRestaurant();
   }
 
+//อ่านค่าร้านอาหารจากฐานข้อมูลมาเเสดง
   Future<Null> readRestaurant() async {
     if (readshopModels.length != 0) {
       readshopModels.clear();
@@ -56,11 +61,42 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+//อ่านค่าประเภทของอาหารจากฐานข้อมูลมาเเสดง
+  Future<Null> readcategoriesrestaurant() async {
+    String url =
+        '${Myconstant().domain}/my_login_rrs/getRestaurantFromtypeOfFood.php?isAdd=true&chooseType=Shop&typeOfFood=$typeOfFood';
+    await Dio().get(url).then((value) {
+      // print('value=$value');
+      var result = json.decode(value.data);
+      int index = 0;
+      for (var map in result) {
+        ReadshopModel model = ReadshopModel.fromJson(map);
+        String? NameShop = model.restaurantNameshop;
+        if (NameShop!.isNotEmpty) {
+          print('NameShop =${model.restaurantNameshop}');
+          setState(() {
+            readshopModels.add(model);
+            categoryCards.add(createCard(model, index));
+            index++;
+          });
+        }
+      }
+    });
+  }
+
   Widget build(BuildContext context) {
     double wid = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: kprimary,
+        actions: [
+          IconButton(
+              onPressed: () {},
+              icon: Icon(
+                Icons.shopping_cart_rounded,
+                color: Colors.white,
+              ))
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -73,16 +109,33 @@ class _HomeScreenState extends State<HomeScreen> {
               child: searchRestaurant(),
             ),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                distancesshow(),
                 nearfood(),
-                distancesshow(),
                 foodorder(),
-                distancesshow(),
                 promotion(),
-                distancesshow(),
               ],
             ),
+
+            // Widget imageCarousel = new Container(
+            //   height: 225.0,
+            //   child: Carousel(
+            //     boxFit: BoxFit.cover,
+            //     images: [
+            //       AssetImage('assets/images/c1.jpg'),
+            //       AssetImage('assets/images/c2.jpg'),
+            //       AssetImage('assets/images/c3.jpg'),
+            //       AssetImage('assets/images/c4.jpg'),
+            //     ],
+            //     autoplay: true,
+            //     dotSize: 5.0,
+            //     indicatorBgPadding: 9.0,
+            //     overlayShadow: false,
+            //     borderRadius: true,
+            //     animationCurve: Curves.fastOutSlowIn,
+            //     animationDuration: Duration(microseconds: 1500),
+            //   ),
+            // );
             Container(
               width: 350,
               height: 250,
@@ -92,17 +145,13 @@ class _HomeScreenState extends State<HomeScreen> {
             popularReataurant(),
             HomeTileRestaurant(),
             resReataurant(),
-            HomeTileCategory(),
-            categoryReataurant(),
-            MyStyle().mySizebox()
           ],
         ),
       ),
     );
   }
 
-  Padding distancesshow() => Padding(padding: EdgeInsets.all(8.0));
-
+//function เเสดงร้านอาหารเป็นที่นิยม
   Container popularReataurant() {
     return Container(
       height: 150,
@@ -111,9 +160,9 @@ class _HomeScreenState extends State<HomeScreen> {
           : ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: readshopModels.length,
-              itemBuilder: (_, index) {
+              itemBuilder: (context, index) {
                 return Padding(
-                  padding: EdgeInsets.all(8),
+                  padding: EdgeInsets.all(5),
                   child: Container(
                     child: Row(children: restaurantCards),
                   ),
@@ -122,6 +171,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+//function เเสดงร้านอาหาร
   Container resReataurant() {
     return Container(
       height: 150,
@@ -130,9 +180,9 @@ class _HomeScreenState extends State<HomeScreen> {
           : ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: readshopModels.length,
-              itemBuilder: (_, index) {
+              itemBuilder: (context, index) {
                 return Padding(
-                  padding: EdgeInsets.all(8),
+                  padding: EdgeInsets.all(5),
                   child: Container(
                     child: Row(children: restaurantCards),
                   ),
@@ -141,38 +191,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Container categoryReataurant() {
-    return Container(
-      height: 120,
-      child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          itemCount: 10,
-          itemBuilder: (_, index) {
-            return Padding(
-              padding: EdgeInsets.all(8),
-              child: Container(
-                height: 100,
-                width: 90,
-                decoration: BoxDecoration(color: Colors.white, boxShadow: [
-                  BoxShadow(
-                      color: Colors.grey, offset: Offset(1, 1), blurRadius: 4)
-                ]),
-                child: Column(
-                  children: [
-                    Image.asset(
-                      'assets/images/1.jpg',
-                      height: 80,
-                      width: 80,
-                    ),
-                    Text('restaurant'),
-                  ],
-                ),
-              ),
-            );
-          }),
-    );
-  }
-
+//ค้นหาร้านอาหาร
   TextField searchRestaurant() {
     return TextField(
       decoration: new InputDecoration(
@@ -194,11 +213,12 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+//ไปหน้าร้านอาหารที่ใกล้เคียง
   ElevatedButton nearfood() {
     return ElevatedButton(
       onPressed: () {
         Navigator.push(context,
-            MaterialPageRoute(builder: (context) => NearbtReataurant()));
+            MaterialPageRoute(builder: (context) => NearbyReataurant()));
       },
       style: ElevatedButton.styleFrom(
           shape:
@@ -206,16 +226,17 @@ class _HomeScreenState extends State<HomeScreen> {
           primary: ksecondary),
       child: Text(
         'restaurant near',
-        style: TextStyle(color: Colors.black),
+        style: GoogleFonts.lato(),
       ),
     );
   }
 
+//ไปที่หน้าสั่งอาหาร
   ElevatedButton foodorder() {
     return ElevatedButton(
       onPressed: () {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => OrderFood()));
+            context, MaterialPageRoute(builder: (context) => TypeOfFood()));
       },
       style: ElevatedButton.styleFrom(
           shape:
@@ -223,11 +244,12 @@ class _HomeScreenState extends State<HomeScreen> {
           primary: ksecondary),
       child: Text(
         'order food',
-        style: TextStyle(color: Colors.black),
+        style: GoogleFonts.lato(),
       ),
     );
   }
 
+//ไปที่หน้าร้านอาหารที่จัดโปรโมชั่น
   ElevatedButton promotion() {
     return ElevatedButton(
       onPressed: () {
@@ -240,7 +262,7 @@ class _HomeScreenState extends State<HomeScreen> {
           primary: ksecondary),
       child: Text(
         'promotion',
-        style: TextStyle(color: Colors.black),
+        style: GoogleFonts.lato(),
       ),
     );
   }
@@ -263,7 +285,7 @@ class _HomeScreenState extends State<HomeScreen> {
               width: 150,
               height: 80,
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(0),
                   image: DecorationImage(
                       image: NetworkImage(
                         '${Myconstant().domain}${readshopModel.restaurantPicture}',
@@ -274,7 +296,7 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.all(8.0),
               child: Text(
                 '${readshopModel.restaurantNameshop}',
-                style: TextStyle(fontSize: 15),
+                style: GoogleFonts.lato(fontSize: 15),
               ),
             ),
           ],

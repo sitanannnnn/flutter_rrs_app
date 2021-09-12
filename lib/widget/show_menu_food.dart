@@ -95,10 +95,11 @@ class _ShowMenuFoodState extends State<ShowMenuFood> {
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(5),
             image: DecorationImage(
-                image: NetworkImage(
-                  '${Myconstant().domain}${foodmenuModels[index].foodmenuPicture!}',
-                ),
-                fit: BoxFit.cover)),
+              image: NetworkImage(
+                '${Myconstant().domain}${foodmenuModels[index].foodmenuPicture!}',
+              ),
+              fit: BoxFit.cover,
+            )),
       ),
     );
   }

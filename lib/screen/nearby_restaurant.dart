@@ -7,14 +7,14 @@ import 'package:flutter_rrs_app/screen/show_restaurant.dart';
 import 'package:flutter_rrs_app/utility/my_constant.dart';
 import 'package:flutter_rrs_app/utility/my_style.dart';
 
-class NearbtReataurant extends StatefulWidget {
-  const NearbtReataurant({Key? key}) : super(key: key);
+class NearbyReataurant extends StatefulWidget {
+  const NearbyReataurant({Key? key}) : super(key: key);
 
   @override
-  _NearbtReataurantState createState() => _NearbtReataurantState();
+  _NearbyReataurantState createState() => _NearbyReataurantState();
 }
 
-class _NearbtReataurantState extends State<NearbtReataurant> {
+class _NearbyReataurantState extends State<NearbyReataurant> {
   List<ReadshopModel> readshopModels = [];
   List<Widget> shopCards = [];
   @override
@@ -23,6 +23,7 @@ class _NearbtReataurantState extends State<NearbtReataurant> {
     readShop();
   }
 
+//function อ่านค่าร้านอาหารที่มีอยูในฐานข้อมูล
   Future<Null> readShop() async {
     String url =
         '${Myconstant().domain}/my_login_rrs/getRestaurantFromchooseType.php?isAdd=true&&chooseType=Shop';
@@ -48,21 +49,16 @@ class _NearbtReataurantState extends State<NearbtReataurant> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: kprimary,
-        title: Text('restaurant nearby'),
-      ),
-      body: shopCards.length == 0
-          ? MyStyle().showProgrsee()
-          : GridView.extent(
-              maxCrossAxisExtent: 400.0,
-              mainAxisSpacing: 20,
-              crossAxisSpacing: 20,
-              children: shopCards,
-            ),
-    );
+        appBar: AppBar(
+          backgroundColor: kprimary,
+          title: Text('restaurant nearby'),
+        ),
+        body: shopCards.length == 0
+            ? MyStyle().showProgrsee()
+            : GridView.count(crossAxisCount: 1, children: shopCards));
   }
 
+//สร้าง card ในการเเสดงข้อมูล
   Widget createCard(ReadshopModel readshopModel, int index) {
     return GestureDetector(
       onTap: () {

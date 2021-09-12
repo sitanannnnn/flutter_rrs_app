@@ -27,11 +27,13 @@ class _ShowRestaurantState extends State<ShowRestaurant> {
     ));
   }
 
+//ตั้งค่า BottomNavigationBar
   BottomNavigationBarItem aboutRestaurantNav() {
     return BottomNavigationBarItem(
         icon: Icon(Icons.fastfood), title: Text("about the restaurant"));
   }
 
+//ตั้งค่า BottomNavigationBar
   BottomNavigationBarItem showMenuFoodNav() {
     return BottomNavigationBarItem(
         icon: Icon(Icons.restaurant_menu), title: Text("food menu"));
@@ -51,6 +53,7 @@ class _ShowRestaurantState extends State<ShowRestaurant> {
     );
   }
 
+//เเสดง BottomNavigationBar ที่เรากำหนด
   BottomNavigationBar showBottomNavigationBar() {
     return BottomNavigationBar(
       selectedItemColor: Colors.white,

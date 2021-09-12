@@ -32,7 +32,15 @@ dependencies:
   fancy_bottom_navigation: ^0.3.2
   dio: ^4.0.0
   shared_preferences: ^2.0.6
-  form_field_validator: ^1.1.0
+  sqflite: ^2.0.0+3
+  intl: ^0.17.0
+  google_fonts: ^2.1.0
+  image_picker: ^0.8.3+2
+  carousel_slider: ^4.0.0
+  fluttertoast: ^8.0.8
+ 
+  # toast: ^0.1.5
+  
 
 
   
@@ -59,11 +67,45 @@ flutter:
     - assets/images/1.jpg
     - assets/images/2.jpg
     - assets/images/thaifood.jpg
-    - assets/images/table.png
+    - assets/images/dinner-table.png
+    - assets/images/user.png
+    - assets/images/tableres.png
+    - assets/images/bell.png
+
     - assets/images/c1.jpg
     - assets/images/c2.jpg
     - assets/images/c3.jpg
     - assets/images/c4.jpg
+    - assets/food/1.jpg
+    - assets/food/2.jpg
+    - assets/food/3.jpg
+    - assets/food/4.jpg
+  
+    - assets/food/6.jpg
+    - assets/food/7.jpg
+    - assets/food/8.jpg
+    - assets/food/9.jpg
+    - assets/food/10.jpg
+    - assets/food/11.jpg
+    - assets/food/12.jpg
+    - assets/food/13.jpg
+    
+    - assets/food/15.jpg
+    - assets/food/16.jpg
+    - assets/food/17.jpg
+    - assets/food/18.jpg
+    - assets/food/19.jpg
+    - assets/food/20.jpg
+    - assets/food/21.jpg
+    - assets/food/22.jpg
+    - assets/food/23.jpg
+    - assets/food/24.jpg
+    - assets/food/25.jpg
+    - assets/food/26.jpg
+    - assets/food/27.jpg
+    - assets/food/28.jpg
+    
+
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

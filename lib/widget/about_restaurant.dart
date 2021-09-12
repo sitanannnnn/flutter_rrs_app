@@ -2,11 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rrs_app/model/read_shop_model.dart';
 import 'package:flutter_rrs_app/utility/my_constant.dart';
 import 'package:flutter_rrs_app/utility/my_style.dart';
-import 'package:flutter_rrs_app/widget/show_table_restaurant.dart';
-import 'package:flutter_rrs_app/widget/time_picker_widget.dart';
-
-import 'date_picker_widget.dart';
-import 'datetime_picker_widget.dart';
+import 'package:flutter_rrs_app/widget/reservation.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AboutRestaurant extends StatefulWidget {
   final ReadshopModel readshopModel;
@@ -17,18 +14,7 @@ class AboutRestaurant extends StatefulWidget {
 
 class _AboutRestaurantState extends State<AboutRestaurant> {
   ReadshopModel? readshopModel;
-  int index = 0;
-  String? choosevalue;
-  List myitems = [
-    '1 people',
-    '2 people',
-    '3 people',
-    '4 people',
-    '5 people',
-    '6 people',
-    '7 people',
-    '8 people',
-  ];
+
   @override
   void initState() {
     super.initState();
@@ -66,69 +52,23 @@ class _AboutRestaurantState extends State<AboutRestaurant> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  primary: kprimary,
-                  onPrimary: Colors.white,
-                ),
-                onPressed: () {
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          scrollable: true,
-                          content: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Form(
-                              child: Column(
-                                children: <Widget>[
-                                  DropdownButton(
-                                    hint: Text("Choose number of people"),
-                                    icon: Icon(Icons.arrow_drop_down,
-                                        color: Colors.grey),
-                                    iconSize: 30,
-                                    isExpanded: true,
-                                    value: choosevalue,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        choosevalue = value.toString();
-                                        print(value);
-                                      });
-                                    },
-                                    items: myitems.map((newvalue) {
-                                      return DropdownMenuItem(
-                                        value: newvalue,
-                                        child: Text(newvalue),
-                                      );
-                                    }).toList(),
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.all(32),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        DatePickerWidget(),
-                                        const SizedBox(height: 24),
-                                        TimePickerWidget(),
-                                        const SizedBox(height: 24),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          actions: [
-                            ElevatedButton(
-                                child: Text("Next"), onPressed: () {})
-                          ],
-                        );
-                      });
-                },
-                child: Text(
-                  'Reserve',
-                  style: TextStyle(fontSize: 25),
+              Container(
+                width: 300,
+                height: 50,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      primary: kprimary,
+                      onPrimary: Colors.white,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(15)))),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                Reservation(readshopModel: readshopModel!)));
+                  },
+                  child: Text('Reserve', style: GoogleFonts.lato(fontSize: 20)),
                 ),
               ),
             ],
@@ -176,7 +116,7 @@ class _AboutRestaurantState extends State<AboutRestaurant> {
 
   BoxDecoration showImageRestaurant() {
     return BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(10),
         image: DecorationImage(
             image: NetworkImage(
               '${Myconstant().domain}${readshopModel!.restaurantPicture}',

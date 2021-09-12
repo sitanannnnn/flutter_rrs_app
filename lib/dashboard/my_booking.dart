@@ -1,8 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_rrs_app/screen/show_cancel_order_food.dart';
+import 'package:flutter_rrs_app/screen/show_cancel_table_reservation.dart';
+import 'package:flutter_rrs_app/screen/show_confirm_order_food.dart';
+import 'package:flutter_rrs_app/screen/show_confirm_table_reservation.dart';
+import 'package:flutter_rrs_app/screen/show_unconfirmed_order_food.dart';
+
+import 'package:flutter_rrs_app/screen/show_unconfirmed_table_reservation.dart';
+
 import 'package:flutter_rrs_app/utility/my_style.dart';
 
 class MyBooking extends StatefulWidget {
-  const MyBooking({Key? key}) : super(key: key);
+  const MyBooking({
+    Key? key,
+  }) : super(key: key);
 
   @override
   _MyBookingState createState() => _MyBookingState();
@@ -10,36 +20,60 @@ class MyBooking extends StatefulWidget {
 
 class _MyBookingState extends State<MyBooking> {
   @override
+  void initState() {
+    super.initState();
+  }
+
   Widget build(BuildContext context) {
     double wid = MediaQuery.of(context).size.width;
     return DefaultTabController(
-      length: 3,
+      length: 6,
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: kprimary,
-          toolbarHeight: wid / 5,
+          toolbarHeight: wid / 4,
           title: Center(
-            child: Text('My booking'),
-          ),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: TabBar(
-            unselectedLabelColor: Colors.black,
+              child: Text(
+            'My booking',
+            style: TextStyle(color: Colors.white),
+          )),
+          bottom: TabBar(
+            isScrollable: true,
+            labelColor: Colors.black,
+            unselectedLabelColor: Colors.white,
             indicator: BoxDecoration(
-                borderRadius: BorderRadius.circular(50), color: kprimary),
+                borderRadius: BorderRadius.circular(50), color: ksecondary),
             tabs: [
               Tab(
-                text: 'not comfirm',
+                text: 'table reservation',
               ),
               Tab(
-                text: 'verified',
+                text: 'confirm reservation ',
               ),
               Tab(
-                text: 'past booking',
+                text: 'reservation was canceled ',
+              ),
+              Tab(
+                text: 'order food',
+              ),
+              Tab(
+                text: 'order comfirm ',
+              ),
+              Tab(
+                text: 'order was canceled ',
               ),
             ],
           ),
+        ),
+        body: TabBarView(
+          children: [
+            ShowUnconfirmedTableReservation(),
+            ShowConfirmTableReservation(),
+            ShowCancelTableReservation(),
+            ShowUnconfirmedOrderFood(),
+            ShowConfirmedOrderFood(),
+            ShowCancelOrderFood()
+          ],
         ),
       ),
     );

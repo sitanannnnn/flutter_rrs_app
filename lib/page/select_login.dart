@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rrs_app/page/login.dart';
 import 'package:flutter_rrs_app/page/signup.dart';
 import 'package:flutter_rrs_app/utility/my_style.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class SelectLogin extends StatefulWidget {
   @override
@@ -14,53 +15,57 @@ class _SelectLoginState extends State<SelectLogin> {
     return Scaffold(
         body: ListView(
       children: [
-        MyStyle().showLogo(),
-        MyStyle().mySizebox(),
-        selectLogin(),
-        MyStyle().mySizebox(),
-        selectSignup(),
-        MyStyle().mySizebox(),
-        MyStyle().mySizebox(),
-        MyStyle().showLogotable()
+        Column(
+          children: [
+            MyStyle().mySizebox(),
+            MyStyle().mySizebox(),
+            MyStyle().mySizebox(),
+            MyStyle().showLogotable(),
+            MyStyle().mySizebox(),
+            MyStyle().mySizebox(),
+            selectLogin(),
+            MyStyle().mySizebox(),
+            MyStyle().mySizebox(),
+            selectSignup(),
+          ],
+        )
       ],
     ));
   }
 
-  Padding selectLogin() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            primary: kprimary,
-            onPrimary: Colors.white,
-          ),
-          onPressed: () {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => Login()));
-          },
-          child: Text(
-            'Login',
-            style: TextStyle(fontSize: 20),
-          )),
-    );
+// buttom selcet signup
+  Container selectSignup() {
+    return Container(
+        width: 300,
+        height: 50,
+        child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+                primary: kprimary,
+                onPrimary: Colors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(20)))),
+            onPressed: () {
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => Signup()));
+            },
+            child: Text("Sign up", style: GoogleFonts.lato(fontSize: 20))));
   }
 
-  Padding selectSignup() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            primary: kprimary,
-            onPrimary: Colors.white,
-          ),
-          onPressed: () {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => Signup()));
-          },
-          child: Text(
-            'Sign Up ',
-            style: TextStyle(fontSize: 20),
-          )),
-    );
+  // buttom selcet Login
+  Container selectLogin() {
+    return Container(
+        width: 300,
+        height: 50,
+        child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+                primary: kprimary,
+                onPrimary: Colors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(20)))),
+            onPressed: () {
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => Login()));
+            },
+            child: Text("Login", style: GoogleFonts.lato(fontSize: 20))));
   }
 }

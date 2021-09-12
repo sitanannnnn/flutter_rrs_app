@@ -1,7 +1,9 @@
 import 'package:fancy_bottom_navigation/fancy_bottom_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rrs_app/dashboard/my_booking.dart';
-import 'package:flutter_rrs_app/dashboard/profile.dart';
+import 'package:flutter_rrs_app/model/read_shop_model.dart';
+import 'package:flutter_rrs_app/screen/profile.dart';
+import 'package:flutter_rrs_app/model/user_model.dart';
 import 'package:flutter_rrs_app/screen/homescreen.dart';
 import 'package:flutter_rrs_app/utility/my_style.dart';
 
@@ -23,6 +25,7 @@ class _MyHomePageState extends State<MyHomePage> {
           child: _getPage(currentPage),
         ),
       ),
+      //เเสดง navigator bar Home,My booking,profile
       bottomNavigationBar: FancyBottomNavigation(
         barBackgroundColor: kprimary,
         circleColor: ksecondary,
@@ -45,8 +48,10 @@ class _MyHomePageState extends State<MyHomePage> {
           TabData(
               iconData: Icons.person,
               title: "Profile",
-              onclick: () => Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (context) => Profile()))),
+              onclick: () => Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => Profile(
+                        userModel: UserModel(),
+                      )))),
         ],
         initialSelection: 0,
         key: bottomNavigationKey,
@@ -66,7 +71,9 @@ class _MyHomePageState extends State<MyHomePage> {
       case 1:
         return MyBooking();
       default:
-        return Profile();
+        return Profile(
+          userModel: UserModel(),
+        );
     }
   }
 }

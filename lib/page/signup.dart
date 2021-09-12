@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rrs_app/utility/my_constant.dart';
 import 'package:flutter_rrs_app/utility/my_style.dart';
 import 'package:flutter_rrs_app/utility/normal_dialog.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class Signup extends StatefulWidget {
   @override
@@ -16,226 +18,159 @@ class _SignupState extends State<Signup> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: kprimary,
+        title: Text(
+          "Sign up",
+          style: GoogleFonts.lato(fontSize: 20, color: Colors.white),
+        ),
+      ),
       body: SingleChildScrollView(
         child: Form(
             key: formkey,
-            child: Column(
-              children: [
-                MyStyle().showLogo(),
-                MyStyle().mySizebox(),
-                nameForm(),
-                userForm(),
-                emailForm(),
-                phonenumberForm(),
-                passwordForm(),
-                confirmpasswordForm(),
-                MyStyle().mySizebox(),
-                MyStyle().showTitleH2('ชนิดของสมาชิก :'),
-                MyStyle().mySizebox(),
-                userRadio(),
-                shopRadio(),
-                registerButtom(),
-                MyStyle().mySizebox(),
-                MyStyle().showLogotable()
-              ],
+            child: Center(
+              child: Column(
+                children: [
+                  // MyStyle().showLogo(),
+                  MyStyle().mySizebox(),
+                  MyStyle().mySizebox(),
+                  MyStyle().showLogotable(),
+                  MyStyle().mySizebox(),
+                  nameForm(),
+                  MyStyle().mySizebox(),
+                  userForm(),
+                  MyStyle().mySizebox(),
+                  emailForm(),
+                  MyStyle().mySizebox(),
+                  phonenumberForm(),
+                  MyStyle().mySizebox(),
+                  passwordForm(),
+                  MyStyle().mySizebox(),
+                  confirmpasswordForm(),
+                  MyStyle().mySizebox(),
+                  chooseTypeuser(),
+                  MyStyle().mySizebox(),
+                  registerButtom(context),
+                  // registerButtom(),
+                  MyStyle().mySizebox(),
+                ],
+              ),
             )),
       ),
     );
   }
 
-  Widget userRadio() => Row(
-        mainAxisAlignment: MainAxisAlignment.end,
+//show choose userRadio,shopRadio
+  Container chooseTypeuser() {
+    return Container(
+      width: 300,
+      height: 150,
+      decoration: ShapeDecoration(
+          color: ksecondary,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            width: 250.0,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Radio(
-                  value: 'User',
-                  groupValue: chooseType,
-                  onChanged: (value) {
-                    setState(() {
-                      chooseType = value.toString();
-                    });
-                  },
-                ),
-                Text(
-                  'ผู้ใช้งานทั่วไป',
-                  style: TextStyle(fontSize: 15),
-                )
-              ],
-            ),
-          ),
+          MyStyle().showTitleH2('Type of Users '),
+          userRadio(),
+          shopRadio(),
         ],
-      );
-  Widget shopRadio() => Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Container(
-            width: 250.0,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Radio(
-                  value: 'Shop',
-                  groupValue: chooseType,
-                  onChanged: (value) {
-                    setState(() {
-                      chooseType = value.toString();
-                    });
-                  },
-                ),
-                Text(
-                  'ร้านอาหาร',
-                  style: TextStyle(fontSize: 15),
-                )
-              ],
-            ),
-          ),
-        ],
-      );
-
-  Padding registerButtom() {
-    return Padding(
-      padding: EdgeInsets.only(top: 20.0),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          primary: kprimary,
-          onPrimary: Colors.white,
-        ),
-        onPressed: () {
-          if (formkey.currentState!.validate()) {
-            print(chooseType);
-            switch (chooseType) {
-              case 'Shop':
-                checkShop();
-                break;
-              case 'User':
-                checkUser();
-                break;
-            }
-          } else if (chooseType == null) {
-            normalDialog(context, "Please select a usage type");
-          } else {
-            print('Error');
-          }
-          // registerThread();
-        },
-        child: Text("Register"),
       ),
     );
   }
 
-  Future<Null> checkUser() async {
-    String url =
-        '${Myconstant().domain}/my_login_rrs/getUser.php?isAdd=true&user=$user';
-    try {
-      Response response = await Dio().get(url);
-      print('res = $response');
-      if (response.toString() == 'null') {
-        registerThreadUser();
-      } else {
-        normalDialog(context, 'User นี้ $user มีคนใช้ไปแล้ว กรุณาเปลี่ยน User');
-      }
-    } catch (e) {}
-  }
-
-  Future<Null> checkShop() async {
-    String url =
-        '${Myconstant().domain}/my_login_rrs/getRestaurant.php?isAdd=true&user=$user';
-    try {
-      Response response = await Dio().get(url);
-      print('res = $response');
-      if (response.toString() == 'null') {
-        registerThreadShop();
-      } else {
-        normalDialog(context, 'User นี้ $user มีคนใช้ไปแล้ว กรุณาเปลี่ยน User');
-      }
-    } catch (e) {}
-  }
-
-  Future<Null> registerThreadUser() async {
-    var url =
-        '${Myconstant().domain}/my_login_rrs/addUser.php?isAdd=true&chooseType=$chooseType&name=$name&user=$user&email=$email&phonenumber=$phonenumber&password=$password&confirmpassword=$confirmpassword';
-    try {
-      Response response = await Dio().get(url);
-      print('res = $response');
-      if (response.toString() == 'true') {
-        Navigator.pop(context);
-      } else {
-        normalDialog(context, 'ไม่สามารถ สมัครได้ กรุณาลองใหม่อีกครั้ง ค่ะ');
-      }
-    } catch (e) {}
-  }
-
-  Future<Null> registerThreadShop() async {
-    var url =
-        '${Myconstant().domain}/my_login_rrs/addRestaurant.php?isAdd=true&chooseType=$chooseType&name=$name&user=$user&email=$email&phonenumber=$phonenumber&password=$password&confirmpassword=$confirmpassword';
-    try {
-      Response response = await Dio().get(url);
-      print('res = $response');
-      if (response.toString() == 'true') {
-        Navigator.pop(context);
-      } else {
-        normalDialog(context, 'ไม่สามารถ สมัครได้ กรุณาลองใหม่อีกครั้ง ค่ะ');
-      }
-    } catch (e) {}
-  }
-
-  Padding nameForm() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
+// form input confirmpassword
+  Container confirmpasswordForm() {
+    return Container(
+      width: 300,
+      height: 60,
       child: TextFormField(
         decoration: InputDecoration(
             prefixIcon: Icon(
-              Icons.person,
+              Icons.lock,
               color: MyStyle().darkColor,
             ),
-            labelText: "Name",
+            labelText: "ConformPassword",
+            border: OutlineInputBorder()),
+        validator: (val) {
+          if (val!.isEmpty) {
+            return "please input ConfirmPassword";
+          } else if (val.length < 8) {
+            return "At Least 8 chars required";
+          } else if (password != confirmpassword) {
+            return "password do not match";
+          } else {
+            return null;
+          }
+        },
+        onChanged: (val) => confirmpassword = val,
+        obscureText: true,
+      ),
+    );
+  }
+
+// form input password
+  Container passwordForm() {
+    return Container(
+      width: 300,
+      height: 60,
+      child: TextFormField(
+        decoration: InputDecoration(
+            prefixIcon: Icon(
+              Icons.lock,
+              color: MyStyle().darkColor,
+            ),
+            labelText: "Password",
+            border: OutlineInputBorder()),
+        validator: (val) {
+          if (val!.isEmpty) {
+            return "please input Password";
+          } else if (val.length < 8) {
+            return "At Least 8 chars required";
+          } else {
+            return null;
+          }
+        },
+        onChanged: (val) => password = val,
+        obscureText: true,
+      ),
+    );
+  }
+
+  // form input phonenumberForm
+  Container phonenumberForm() {
+    return Container(
+      width: 300,
+      height: 60,
+      child: TextFormField(
+        decoration: InputDecoration(
+            prefixIcon: Icon(
+              Icons.phone,
+              color: MyStyle().darkColor,
+            ),
+            labelText: "Phonenumber",
             border: OutlineInputBorder(
               borderSide: BorderSide(color: MyStyle().darkColor),
             )),
         validator: (val) {
           if (val!.isEmpty) {
-            return "please input Name";
+            return "please input Phonenumber";
           } else {
             return null;
           }
         },
-        onChanged: (val) => name = val,
+        onChanged: (val) => phonenumber = val,
       ),
     );
   }
 
-  Padding userForm() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: TextFormField(
-        decoration: InputDecoration(
-            prefixIcon: Icon(
-              Icons.account_box,
-              color: MyStyle().darkColor,
-            ),
-            labelText: "User",
-            border: OutlineInputBorder(
-              borderSide: BorderSide(color: MyStyle().darkColor),
-            )),
-        validator: (val) {
-          if (val!.isEmpty) {
-            return "please input User";
-          } else {
-            return null;
-          }
-        },
-        onChanged: (val) => user = val,
-      ),
-    );
-  }
-
-  Padding emailForm() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
+  // form input email
+  Container emailForm() {
+    return Container(
+      width: 300,
+      height: 60,
       child: TextFormField(
         decoration: InputDecoration(
             prefixIcon: Icon(
@@ -259,89 +194,221 @@ class _SignupState extends State<Signup> {
     );
   }
 
-  Padding phonenumberForm() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
+// form input user
+  Container userForm() {
+    return Container(
+      width: 300,
+      height: 60,
       child: TextFormField(
         decoration: InputDecoration(
             prefixIcon: Icon(
-              Icons.phone,
+              Icons.account_box,
               color: MyStyle().darkColor,
             ),
-            labelText: "Phonenumber",
+            labelText: "User",
             border: OutlineInputBorder(
               borderSide: BorderSide(color: MyStyle().darkColor),
             )),
         validator: (val) {
           if (val!.isEmpty) {
-            return "please input Phonenumber";
+            return "please input User";
           } else {
             return null;
           }
         },
-        onChanged: (val) => phonenumber = val,
+        onChanged: (val) => user = val,
       ),
     );
   }
 
-  Padding passwordForm() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
+// form input name
+  Container nameForm() {
+    return Container(
+      width: 300,
+      height: 60,
       child: TextFormField(
         decoration: InputDecoration(
             prefixIcon: Icon(
-              Icons.lock,
+              Icons.person,
               color: MyStyle().darkColor,
             ),
-            labelText: "Password",
-            border: OutlineInputBorder()),
+            labelText: "Name",
+            border: OutlineInputBorder(
+              borderSide: BorderSide(color: MyStyle().darkColor),
+            )),
         validator: (val) {
           if (val!.isEmpty) {
-            return "please input Password";
-          } else if (val.length < 8) {
-            return "At Least 8 chars required";
+            return "please input Name";
           } else {
             return null;
           }
         },
-        onChanged: (val) => password = val,
+        onChanged: (val) => name = val,
       ),
     );
   }
 
-  Padding confirmpasswordForm() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: TextFormField(
-        decoration: InputDecoration(
-            prefixIcon: Icon(
-              Icons.lock,
-              color: MyStyle().darkColor,
-            ),
-            labelText: "ConformPassword",
-            border: OutlineInputBorder()),
-        validator: (val) {
-          if (val!.isEmpty) {
-            return "please input ConfirmPassword";
-          } else if (val.length < 8) {
-            return "At Least 8 chars required";
-          } else if (password != confirmpassword) {
-            return "password do not match";
+//buttom register
+  Container registerButtom(BuildContext context) {
+    return Container(
+      width: 300,
+      height: 50,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+            primary: kprimary,
+            onPrimary: Colors.white,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(15)))),
+        onPressed: () {
+          if (formkey.currentState!.validate()) {
+            print(chooseType);
+            switch (chooseType) {
+              //choose =shop ใหhทำการ checkShop
+              case 'Shop':
+                checkShop();
+                break;
+              //choose =user ใหhทำการ checkuser
+              case 'User':
+                checkUser();
+                break;
+            }
+          } else if (chooseType == null) {
+            normalDialog(context, "Please select a usage type");
           } else {
-            return null;
+            print('Error');
           }
+          // registerThread();
         },
-        onChanged: (val) => confirmpassword = val,
+        child: Text(
+          "Register",
+          style: GoogleFonts.lato(fontSize: 20),
+        ),
       ),
     );
   }
 
+//function userRadio => ถ้าเลือกที่ userRadio  value=User
+  Widget userRadio() => Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Container(
+            width: 250.0,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Radio(
+                  value: 'User',
+                  groupValue: chooseType,
+                  onChanged: (value) {
+                    setState(() {
+                      chooseType = value.toString();
+                    });
+                  },
+                ),
+                Text('User', style: GoogleFonts.lato(fontSize: 15))
+              ],
+            ),
+          ),
+        ],
+      );
+  //function shopRadio => ถ้าเลือกที่ shopRadio  value=Shop
+  Widget shopRadio() => Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Container(
+            width: 250.0,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Radio(
+                  value: 'Shop',
+                  groupValue: chooseType,
+                  onChanged: (value) {
+                    setState(() {
+                      chooseType = value.toString();
+                    });
+                  },
+                ),
+                Text('Restaurant', style: GoogleFonts.lato(fontSize: 15))
+              ],
+            ),
+          ),
+        ],
+      );
+//function checkUser จะตรวจสอบว่า user ที่กรอกเข้ามาซ้ำกับuserในฐานข้อมูลหรือไม่
+  Future<Null> checkUser() async {
+    String url =
+        '${Myconstant().domain}/my_login_rrs/getUser.php?isAdd=true&user=$user';
+    try {
+      Response response = await Dio().get(url);
+      print('res = $response');
+      if (response.toString() == 'null') {
+        registerThreadUser();
+      } else {
+        normalDialog(context, ' $user someone already used please change User');
+      }
+    } catch (e) {}
+  }
+
+//function checkshop จะตรวจสอบว่า user ที่กรอกเข้ามาซ้ำกับuserในฐานข้อมูลหรือไม่
+  Future<Null> checkShop() async {
+    String url =
+        '${Myconstant().domain}/my_login_rrs/getRestaurant.php?isAdd=true&user=$user';
+    try {
+      Response response = await Dio().get(url);
+      print('res = $response');
+      if (response.toString() == 'null') {
+        registerThreadShop();
+      } else {
+        normalDialog(context, ' $user someone already used please change User');
+      }
+    } catch (e) {}
+  }
+
+//function บันทึกข้อมูลของ customerลงในฐานข้อมูล
+  Future<Null> registerThreadUser() async {
+    var url =
+        '${Myconstant().domain}/my_login_rrs/addUser.php?isAdd=true&chooseType=$chooseType&name=$name&user=$user&email=$email&phonenumber=$phonenumber&password=$password&confirmpassword=$confirmpassword';
+    try {
+      Response response = await Dio().get(url);
+      print('res = $response');
+      if (response.toString() == 'true') {
+        Fluttertoast.showToast(
+            msg: 'Signup complect',
+            toastLength: Toast.LENGTH_SHORT,
+            backgroundColor: kprimary,
+            textColor: Colors.white,
+            fontSize: 16.0);
+        Navigator.pop(context);
+      } else {
+        normalDialog(context, 'Unable to apply please try again');
+      }
+    } catch (e) {}
+  }
+
+//function บันทึกข้อมูลของ restaurant ลงในฐานข้อมูล
+  Future<Null> registerThreadShop() async {
+    var url =
+        '${Myconstant().domain}/my_login_rrs/addRestaurant.php?isAdd=true&chooseType=$chooseType&name=$name&user=$user&email=$email&phonenumber=$phonenumber&password=$password&confirmpassword=$confirmpassword';
+    try {
+      Response response = await Dio().get(url);
+      print('res = $response');
+      if (response.toString() == 'true') {
+        Navigator.pop(context);
+      } else {
+        normalDialog(context, 'Unable to apply please try again');
+      }
+    } catch (e) {}
+  }
+
+//function show image
   Widget myLogo() => Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           MyStyle().showLogo(),
         ],
       );
+  //function show image
   Widget myLogotable() => Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

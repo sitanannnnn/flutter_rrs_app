@@ -1,5 +1,5 @@
 class UserModel {
-  String? id;
+  String? customerId;
   String? chooseType;
   String? name;
   String? user;
@@ -7,19 +7,21 @@ class UserModel {
   String? phonenumber;
   String? password;
   String? confirmpassword;
+  String? urlPicture;
 
   UserModel(
-      {this.id,
+      {this.customerId,
       this.chooseType,
       this.name,
       this.user,
       this.email,
       this.phonenumber,
       this.password,
-      this.confirmpassword});
+      this.confirmpassword,
+      this.urlPicture});
 
   UserModel.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
+    customerId = json['customerId'];
     chooseType = json['chooseType'];
     name = json['name'];
     user = json['user'];
@@ -27,11 +29,12 @@ class UserModel {
     phonenumber = json['phonenumber'];
     password = json['password'];
     confirmpassword = json['confirmpassword'];
+    urlPicture = json['urlPicture'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
+    data['customerId'] = this.customerId;
     data['chooseType'] = this.chooseType;
     data['name'] = this.name;
     data['user'] = this.user;
@@ -39,6 +42,7 @@ class UserModel {
     data['phonenumber'] = this.phonenumber;
     data['password'] = this.password;
     data['confirmpassword'] = this.confirmpassword;
+    data['urlPicture'] = this.urlPicture;
     return data;
   }
 }
