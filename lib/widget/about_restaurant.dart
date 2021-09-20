@@ -38,43 +38,59 @@ class _AboutRestaurantState extends State<AboutRestaurant> {
         showNameRestaurant(),
         showPhonenumberRestaurant(),
         showNameBranchRestaurant(),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20, 5, 20, 5),
-          child: Row(
-            children: [
-              MyStyle().showTitleH2('Type of food :'),
-              Text(' ${readshopModel!.typeOfFood}'),
-            ],
-          ),
+        showTypeofFoodRestaurant(),
+        showPromotionRestaurant(),
+        SizedBox(
+          height: 70,
         ),
-        Padding(
-          padding: const EdgeInsets.all(70),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Container(
-                width: 300,
-                height: 50,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      primary: kprimary,
-                      onPrimary: Colors.white,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(15)))),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                Reservation(readshopModel: readshopModel!)));
-                  },
-                  child: Text('Reserve', style: GoogleFonts.lato(fontSize: 20)),
-                ),
+        Column(
+          children: [
+            Container(
+              width: 300,
+              height: 40,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    primary: kprimary,
+                    onPrimary: Colors.white,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(15)))),
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              Reservation(readshopModel: readshopModel!)));
+                },
+                child: Text('Reserve', style: GoogleFonts.lato(fontSize: 20)),
               ),
-            ],
-          ),
-        )
+            ),
+          ],
+        ),
       ],
+    );
+  }
+
+  Padding showPromotionRestaurant() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 5, 20, 5),
+      child: Row(
+        children: [
+          MyStyle().showTitleH2('Promotion :'),
+          Text(' ${readshopModel!.promotionType}'),
+        ],
+      ),
+    );
+  }
+
+  Padding showTypeofFoodRestaurant() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 5, 20, 5),
+      child: Row(
+        children: [
+          MyStyle().showTitleH2('Type of food :'),
+          Text(' ${readshopModel!.typeOfFood}'),
+        ],
+      ),
     );
   }
 

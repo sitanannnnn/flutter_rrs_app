@@ -44,7 +44,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
     restaurantId = readshopModel!.restaurantId;
     print('restautant id ==> $restaurantId');
     String url =
-        '${Myconstant().domain}/my_login_rrs/getPaymentWhererestaurantId.php?isAdd=true&restaurantId=$restaurantId';
+        '${Myconstant().domain}/getPaymentWhererestaurantId.php?isAdd=true&restaurantId=$restaurantId';
     Response response = await Dio().get(url);
     // print('res==> $response');
     var result = json.decode(response.data);
