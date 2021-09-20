@@ -56,7 +56,7 @@ class _DetailOrderfoodState extends State<DetailOrderfood> {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? customerId = preferences.getString("customerId");
     String? url =
-        '${Myconstant().domain}/my_login_rrs/getOrderfoodWherecustomerIdandId.php?isAdd=true&customerId=$customerId&id=$orderfoodId';
+        '${Myconstant().domain}/getOrderfoodWherecustomerIdandId.php?isAdd=true&customerId=$customerId&id=$orderfoodId';
     Response response = await Dio().get(url);
     print('res==> $response');
     if (response.toString() != 'null') {

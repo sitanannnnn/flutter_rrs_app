@@ -96,8 +96,7 @@ class _LoginState extends State<Login> {
 
 //function check type user
   Future<Null> checkAuthen() async {
-    var url =
-        '${Myconstant().domain}/my_login_rrs/getUser.php?isAdd=true&user=$user';
+    var url = '${Myconstant().domain}/getUser.php?isAdd=true&user=$user';
     try {
       Response response = await Dio().get(url);
       // print('res = $response');

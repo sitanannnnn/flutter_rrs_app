@@ -29,7 +29,7 @@ class _ShowMenuFoodState extends State<ShowMenuFood> {
   Future<Null> readFoodMenu() async {
     restaurantId = readshopModel!.restaurantId;
     String url =
-        '${Myconstant().domain}/my_login_rrs/getFoodWhererestaurantId.php?isAdd=true&restaurantId=$restaurantId';
+        '${Myconstant().domain}/getFoodWhererestaurantId.php?isAdd=true&restaurantId=$restaurantId';
     Response response = await Dio().get(url);
     print('res==> $response');
 

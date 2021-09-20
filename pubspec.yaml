@@ -38,6 +38,9 @@ dependencies:
   image_picker: ^0.8.3+2
   carousel_slider: ^4.0.0
   fluttertoast: ^8.0.8
+  flutter_rating_bar: ^4.0.0
+  flutter_typeahead: ^3.2.1
+  geolocator: ^7.6.2
  
   # toast: ^0.1.5
   
@@ -71,7 +74,10 @@ flutter:
     - assets/images/user.png
     - assets/images/tableres.png
     - assets/images/bell.png
-
+    - assets/images/discount.png
+    - assets/images/discount_table.png
+    - assets/images/discountfood.png
+    - assets/images/promotion.png
     - assets/images/c1.jpg
     - assets/images/c2.jpg
     - assets/images/c3.jpg

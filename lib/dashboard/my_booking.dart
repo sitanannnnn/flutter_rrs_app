@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rrs_app/screen/show_cancel_order_food.dart';
 import 'package:flutter_rrs_app/screen/show_cancel_table_reservation.dart';
+import 'package:flutter_rrs_app/screen/show_completed_orderfood.dart';
+import 'package:flutter_rrs_app/screen/show_completed_reservation.dart';
 import 'package:flutter_rrs_app/screen/show_confirm_order_food.dart';
 import 'package:flutter_rrs_app/screen/show_confirm_table_reservation.dart';
 import 'package:flutter_rrs_app/screen/show_unconfirmed_order_food.dart';
@@ -27,7 +29,7 @@ class _MyBookingState extends State<MyBooking> {
   Widget build(BuildContext context) {
     double wid = MediaQuery.of(context).size.width;
     return DefaultTabController(
-      length: 6,
+      length: 8,
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: kprimary,
@@ -54,6 +56,9 @@ class _MyBookingState extends State<MyBooking> {
                 text: 'reservation was canceled ',
               ),
               Tab(
+                text: 'reservation completed ',
+              ),
+              Tab(
                 text: 'order food',
               ),
               Tab(
@@ -61,6 +66,9 @@ class _MyBookingState extends State<MyBooking> {
               ),
               Tab(
                 text: 'order was canceled ',
+              ),
+              Tab(
+                text: 'order completed ',
               ),
             ],
           ),
@@ -70,9 +78,11 @@ class _MyBookingState extends State<MyBooking> {
             ShowUnconfirmedTableReservation(),
             ShowConfirmTableReservation(),
             ShowCancelTableReservation(),
+            ShowCompletedTableReservation(),
             ShowUnconfirmedOrderFood(),
             ShowConfirmedOrderFood(),
-            ShowCancelOrderFood()
+            ShowCancelOrderFood(),
+            ShowCompletedOrderFood()
           ],
         ),
       ),

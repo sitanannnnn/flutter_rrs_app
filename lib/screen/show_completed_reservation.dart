@@ -5,22 +5,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rrs_app/model/read_shop_model.dart';
 import 'package:flutter_rrs_app/model/reservation_model.dart';
 import 'package:flutter_rrs_app/screen/screen_detail/detail_table_orderfood.dart';
+import 'package:flutter_rrs_app/screen/screen_detail/rate_the_restaurant_reserve.dart';
 import 'package:flutter_rrs_app/utility/my_constant.dart';
 import 'package:flutter_rrs_app/utility/my_style.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class ShowCancelTableReservation extends StatefulWidget {
-  ShowCancelTableReservation({
+class ShowCompletedTableReservation extends StatefulWidget {
+  ShowCompletedTableReservation({
     Key? key,
   }) : super(key: key);
   @override
-  _ShowCancelTableReservationState createState() =>
-      _ShowCancelTableReservationState();
+  _ShowCompletedTableReservationState createState() =>
+      _ShowCompletedTableReservationState();
 }
 
-class _ShowCancelTableReservationState
-    extends State<ShowCancelTableReservation> {
+class _ShowCompletedTableReservationState
+    extends State<ShowCompletedTableReservation> {
   List<ReservationModel> reservationModels = [];
   String? customerId;
   @override
@@ -34,7 +35,7 @@ class _ShowCancelTableReservationState
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? customerId = preferences.getString("customerId");
     String url =
-        '${Myconstant().domain}/getReservationWherecustomerIdAndReservationStatusCancel.php?isAdd=true&customerId=$customerId&reservationStatus=cancel';
+        '${Myconstant().domain}/getReservationWherecustomerIdAndReservationStatusCompleted.php?isAdd=true&customerId=$customerId&reservationStatus=completed';
     Response response = await Dio().get(url);
     // print('res==> $response');
     var result = json.decode(response.data);
@@ -58,9 +59,8 @@ class _ShowCancelTableReservationState
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => DetailTableOrderfood(
-                                  reservationModel: reservationModels[index],
-                                )));
+                            builder: (context) => RateTheRestaurantReserve(
+                                reservationModel: reservationModels[index])));
                   },
                   child: Column(
                     children: [
@@ -70,7 +70,7 @@ class _ShowCancelTableReservationState
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Container(
-                              width: MediaQuery.of(context).size.width * 0.9,
+                              width: MediaQuery.of(context).size.width * 0.90,
                               height: MediaQuery.of(context).size.width * 0.42,
                               decoration: BoxDecoration(
                                 color: Colors.white,
@@ -197,7 +197,7 @@ class _ShowCancelTableReservationState
                                             Row(
                                               children: [
                                                 reservationModels[index]
-                                                            .orderfoodId! ==
+                                                            .orderfoodId ==
                                                         "0"
                                                     ? Text("")
                                                     : Row(
@@ -230,37 +230,9 @@ class _ShowCancelTableReservationState
                                                         .reservationStatus!,
                                                     style: GoogleFonts.lato(
                                                         fontSize: 18,
-                                                        color: Colors.grey,
+                                                        color: Colors.blue,
                                                         fontWeight:
                                                             FontWeight.bold))
-                                              ],
-                                            ),
-                                            SizedBox(
-                                              width: 10,
-                                            ),
-                                          ],
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Container(
-                                                    width:
-                                                        MediaQuery.of(context)
-                                                                    .size
-                                                                    .width *
-                                                                0.5 -
-                                                            7.0,
-                                                    child: Text(
-                                                        reservationModels[index]
-                                                            .reservationReasonCancelStatus!,
-                                                        style: GoogleFonts.lato(
-                                                            color: Colors.grey,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold))),
                                               ],
                                             ),
                                             SizedBox(

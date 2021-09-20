@@ -92,7 +92,7 @@ class _BookingTailTableOrderfoodState extends State<BookingTailTableOrderfood> {
     String? orderTime = orderfoodDateTime.toString().substring(0, 19);
     orderfoodDateTime = widget.orderfoodDateTime;
     String? url =
-        '${Myconstant().domain}/my_login_rrs/getOrderfoodWherecustomerIdandDateTime.php?isAdd=true&customerId=$customerId&orderfoodDateTime=$orderTime';
+        '${Myconstant().domain}/getOrderfoodWherecustomerIdandDateTime.php?isAdd=true&customerId=$customerId&orderfoodDateTime=$orderTime';
     Response response = await Dio().get(url);
     // print('res==> $response');
     if (response.toString() != 'null') {
@@ -146,7 +146,7 @@ class _BookingTailTableOrderfoodState extends State<BookingTailTableOrderfood> {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? customerId = preferences.getString("customerId");
     var url =
-        '${Myconstant().domain}/my_login_rrs/getReservation.php?isAdd=true&customerId=$customerId&reservationDate=$dateof&reservationTime=$reservationTime';
+        '${Myconstant().domain}/getReservation.php?isAdd=true&customerId=$customerId&reservationDate=$dateof&reservationTime=$reservationTime';
     Response response = await Dio().get(url);
     // print('res = $response');
     if (response.toString() != 'null') {
@@ -171,7 +171,7 @@ class _BookingTailTableOrderfoodState extends State<BookingTailTableOrderfood> {
     print('CustomerId is =$customerId');
 
     String? url =
-        '${Myconstant().domain}/my_login_rrs/addReservationIdWhereOrder_food.php?isAdd=true&id=$orderfoodId&reservationId=$reservationId';
+        '${Myconstant().domain}/addReservationIdWhereOrder_food.php?isAdd=true&id=$orderfoodId&reservationId=$reservationId';
     await Dio().get(url).then((value) {
       if (value.toString() == 'true') {
         Navigator.pop(context);
@@ -188,7 +188,7 @@ class _BookingTailTableOrderfoodState extends State<BookingTailTableOrderfood> {
     print('CustomerId is =$customerId');
 
     String? url =
-        '${Myconstant().domain}/my_login_rrs/addOrderfoodIdWheretable_reservation.php?isAdd=true&reservationId=$reservationId&id=$orderfoodId';
+        '${Myconstant().domain}/addOrderfoodIdWhereTable_reservation.php?isAdd=true&reservationId=$reservationId&id=$orderfoodId';
     await Dio().get(url).then((value) {
       if (value.toString() == 'true') {
         Navigator.pop(context);
@@ -334,6 +334,18 @@ class _BookingTailTableOrderfoodState extends State<BookingTailTableOrderfood> {
                     ),
                     Text(
                       '${readshopModel!.restaurantBranch}',
+                      style: GoogleFonts.lato(fontSize: 15),
+                    )
+                  ],
+                ),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.event_seat_rounded,
+                      size: 35,
+                    ),
+                    Text(
+                      'table No. ${tableModel!.tableResId} ',
                       style: GoogleFonts.lato(fontSize: 15),
                     )
                   ],

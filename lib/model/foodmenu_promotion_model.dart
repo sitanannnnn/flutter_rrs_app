@@ -1,4 +1,4 @@
-class FoodMenuModel {
+class FoodmenuPromotionModel {
   String? foodmenuId;
   String? restaurantId;
   String? foodmenuName;
@@ -20,7 +20,7 @@ class FoodMenuModel {
   String? foodMenuIdGetOne;
   String? promotionStatus;
 
-  FoodMenuModel(
+  FoodmenuPromotionModel(
       {this.foodmenuId,
       this.restaurantId,
       this.foodmenuName,
@@ -42,7 +42,7 @@ class FoodMenuModel {
       this.foodMenuIdGetOne,
       this.promotionStatus});
 
-  FoodMenuModel.fromJson(Map<String, dynamic> json) {
+  FoodmenuPromotionModel.fromJson(Map<String, dynamic> json) {
     foodmenuId = json['foodmenuId'];
     restaurantId = json['restaurantId'];
     foodmenuName = json['foodmenuName'];

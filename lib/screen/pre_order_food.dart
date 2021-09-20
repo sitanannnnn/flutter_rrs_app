@@ -1,9 +1,9 @@
 import 'dart:convert';
-// @dart=2.9
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rrs_app/model/cart_model.dart';
 import 'package:flutter_rrs_app/model/food_menu_model.dart';
+import 'package:flutter_rrs_app/model/foodmenu_promotion_model.dart';
 import 'package:flutter_rrs_app/model/read_shop_model.dart';
 import 'package:flutter_rrs_app/model/reservation_model.dart';
 import 'package:flutter_rrs_app/model/table_model.dart';
@@ -12,6 +12,7 @@ import 'package:flutter_rrs_app/utility/my_style.dart';
 import 'package:flutter_rrs_app/utility/normal_dialog.dart';
 import 'package:flutter_rrs_app/utility/sqlite_helper.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'show_cart.dart';
 
@@ -64,10 +65,9 @@ class _PreOrderFoodState extends State<PreOrderFood> {
   Future<Null> readFoodMenu() async {
     restaurantId = readshopModel!.restaurantId;
     String url =
-        '${Myconstant().domain}/my_login_rrs/getFoodWhererestaurantId.php?isAdd=true&restaurantId=$restaurantId';
+        '${Myconstant().domain}/getFoodWhererestaurantId.php?isAdd=true&restaurantId=$restaurantId';
     Response response = await Dio().get(url);
     // print('res==> $response');
-
     var result = json.decode(response.data);
     // print('result= $result');
     for (var map in result) {
@@ -102,67 +102,91 @@ class _PreOrderFoodState extends State<PreOrderFood> {
       ),
       appBar: AppBar(
         backgroundColor: kprimary,
-        title: Text(' ${readshopModel!.restaurantNameshop}'),
+        title: Text(' Select menu'),
       ),
       body: foodmenuModels.length == 0
           ? MyStyle().showProgrsee()
-          : ListView.builder(
-              itemCount: foodmenuModels.length,
-              itemBuilder: (context, index) => GestureDetector(
-                onTap: () {
-                  print('You Click  index = $index');
-                  amount = 1;
-                  confirmOrder(index);
-                },
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        showFoodMenuImage(context, index),
-                        Container(
-                          width: MediaQuery.of(context).size.width * 0.4,
-                          height: MediaQuery.of(context).size.width * 0.3,
-                          child: Column(
+          : SingleChildScrollView(
+              child: Column(
+                children: [
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: ScrollPhysics(),
+                    itemCount: foodmenuModels.length,
+                    itemBuilder: (context, index) => GestureDetector(
+                      onTap: () {
+                        print('You Click  index = $index');
+                        amount = 1;
+                        confirmOrder(index);
+                      },
+                      child: Column(
+                        children: [
+                          Row(
                             children: [
-                              Row(
-                                children: [
-                                  Text(foodmenuModels[index].foodmenuName!),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Container(
+                              showFoodMenuImage(context, index),
+                              Container(
+                                width: MediaQuery.of(context).size.width * 0.4,
+                                height: MediaQuery.of(context).size.width * 0.3,
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text(foodmenuModels[index]
+                                            .foodmenuName!),
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        Container(
+                                            width: MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.4 -
+                                                8.0,
+                                            child: Text(
+                                              'price ${foodmenuModels[index].foodmenuPrice!}LAK',
+                                              style: GoogleFonts.lato(
+                                                  fontSize: 16,
+                                                  color: Colors.green[800]),
+                                            ))
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 30,
+                                    ),
+                                    Container(
                                       width: MediaQuery.of(context).size.width *
                                               0.4 -
                                           8.0,
-                                      child: Text(
-                                          'price :${foodmenuModels[index].foodmenuPrice!}LAK')),
-                                ],
-                              ),
-                              SizedBox(
-                                height: 55,
-                              ),
-                              Container(
-                                width: MediaQuery.of(context).size.width * 0.4 -
-                                    8.0,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Icon(
-                                      Icons.add_circle_rounded,
-                                      color: kprimary,
-                                    )
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          Icon(
+                                            Icons.add_circle_rounded,
+                                            color: Colors.grey,
+                                          )
+                                        ],
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
                             ],
                           ),
-                        ),
-                      ],
+                          Divider(
+                            color: Colors.grey[200],
+                            thickness: 10,
+                            indent: 0,
+                            endIndent: 0,
+                          ),
+                        ],
+                      ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
     );
@@ -291,7 +315,7 @@ class _PreOrderFoodState extends State<PreOrderFood> {
             ));
   }
 
-//insert ข้อมูลรายการสั่งอาหารไปที่ฐานข้อมูล
+//insert ข้อมูลรายการสั่งอาหารไปที่ฐานข้อมูล SQLite
   Future<Null> addOrder(int index) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? customerId = preferences.getString("customerId");

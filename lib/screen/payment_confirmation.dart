@@ -92,7 +92,7 @@ class _PaymentConfirmationState extends State<PaymentConfirmation> {
     int image = random.nextInt(1000000);
     String? nameImage = 'slip$image.jpg';
     // print('nameImage =$nameImage,pathImage =${file!.path}');
-    String? url = '${Myconstant().domain}/my_login_rrs/saveSlip.php';
+    String? url = '${Myconstant().domain}/saveSlip.php';
 
     try {
       Map<String, dynamic> map = Map();
@@ -100,12 +100,12 @@ class _PaymentConfirmationState extends State<PaymentConfirmation> {
           await MultipartFile.fromFile(file!.path, filename: nameImage);
       FormData formData = FormData.fromMap(map);
       await Dio().post(url, data: formData).then((value) async {
-        String picture = '/my_login_rrs/Slip/$nameImage';
+        String picture = '/Slip/$nameImage';
         print('urlImage =${Myconstant().domain}$picture');
         SharedPreferences preferences = await SharedPreferences.getInstance();
         String? customerId = preferences.getString('customerId');
         var url =
-            '${Myconstant().domain}/my_login_rrs/addSlipPayment.php?isAdd=true&customerId=$customerId&id=$orderfoodId&paymentDate=$pickerDate&paymentTime=$time&picture=$picture';
+            '${Myconstant().domain}/addSlipPayment.php?isAdd=true&customerId=$customerId&id=$orderfoodId&paymentDate=$pickerDate&paymentTime=$time&picture=$picture';
         await Dio().get(url).then((value) => Fluttertoast.showToast(
             msg: 'Up load complete',
             toastLength: Toast.LENGTH_SHORT,

@@ -294,7 +294,7 @@ class _ShowCartState extends State<ShowCart> {
     restaurantNameshop = readshopModel!.restaurantNameshop!;
     print('name shop ==> $restaurantNameshop');
     String? url =
-        '${Myconstant().domain}/my_login_rrs/addOrderfood.php?isAdd=true&customerId=$customerId&restaurantId=$restaurantId&restaurantNameshop=$restaurantNameshop&foodmenuId=$foodmenuId&foodmenuName=$foodmenuName&foodmenuPrice=$foodmenuPrice&amount=$amount&netPrice=$netPrice&orderfoodDateTime=$orderfoodDateTime';
+        '${Myconstant().domain}/addOrderfood.php?isAdd=true&customerId=$customerId&restaurantId=$restaurantId&restaurantNameshop=$restaurantNameshop&foodmenuId=$foodmenuId&foodmenuName=$foodmenuName&foodmenuPrice=$foodmenuPrice&amount=$amount&netPrice=$netPrice&orderfoodDateTime=$orderfoodDateTime';
     await Dio().get(url).then((value) {
       // print('value is ===> $value');
       if (value.toString() == 'true') {

@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rrs_app/model/read_shop_model.dart';
 import 'package:flutter_rrs_app/model/reservation_model.dart';
+import 'package:flutter_rrs_app/screen/screen_detail/detail_table_orderfood.dart';
 import 'package:flutter_rrs_app/utility/my_constant.dart';
 import 'package:flutter_rrs_app/utility/my_style.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -33,7 +34,7 @@ class _ShowConfirmTableReservationState
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? customerId = preferences.getString("customerId");
     String url =
-        '${Myconstant().domain}/my_login_rrs/getReservationWherecustomerIdAndReservationStatusConfirm.php?isAdd=true&customerId=$customerId&reservationStatus=confirm';
+        '${Myconstant().domain}/getReservationWherecustomerIdAndReservationStatusConfirm.php?isAdd=true&customerId=$customerId&reservationStatus=confirm';
     Response response = await Dio().get(url);
     // print('res==> $response');
     var result = json.decode(response.data);
@@ -54,6 +55,12 @@ class _ShowConfirmTableReservationState
             itemBuilder: (context, index) => GestureDetector(
                   onTap: () {
                     print('onclick ==> $index');
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => DetailTableOrderfood(
+                                  reservationModel: reservationModels[index],
+                                )));
                   },
                   child: Column(
                     children: [
@@ -64,7 +71,7 @@ class _ShowConfirmTableReservationState
                             padding: const EdgeInsets.all(8.0),
                             child: Container(
                               width: MediaQuery.of(context).size.width * 0.90,
-                              height: MediaQuery.of(context).size.width * 0.3,
+                              height: MediaQuery.of(context).size.width * 0.42,
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.only(
@@ -89,8 +96,8 @@ class _ShowConfirmTableReservationState
                                   Container(
                                     width:
                                         MediaQuery.of(context).size.width * 0.6,
-                                    height:
-                                        MediaQuery.of(context).size.width * 0.3,
+                                    height: MediaQuery.of(context).size.width *
+                                        0.45,
                                     child: Column(
                                       children: [
                                         Padding(
@@ -183,6 +190,33 @@ class _ShowConfirmTableReservationState
                                                     style: GoogleFonts.lato())
                                               ],
                                             ),
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Row(
+                                              children: [
+                                                reservationModels[index]
+                                                            .orderfoodId! ==
+                                                        "0"
+                                                    ? Text("")
+                                                    : Row(
+                                                        children: [
+                                                          Row(
+                                                            children: [
+                                                              Icon(
+                                                                Icons.dining,
+                                                                color: kprimary,
+                                                              )
+                                                            ],
+                                                          ),
+                                                          Text('Pre-order food',
+                                                              style: GoogleFonts
+                                                                  .lato()),
+                                                        ],
+                                                      )
+                                              ],
+                                            )
                                           ],
                                         ),
                                         Row(

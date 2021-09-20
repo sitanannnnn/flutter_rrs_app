@@ -8,6 +8,7 @@ import 'package:flutter_rrs_app/screen/pre_order_food.dart';
 import 'package:flutter_rrs_app/utility/my_constant.dart';
 import 'package:flutter_rrs_app/utility/my_style.dart';
 import 'package:flutter_rrs_app/utility/normal_dialog.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ShowTable extends StatefulWidget {
@@ -41,7 +42,9 @@ class _ShowTableState extends State<ShowTable> {
       tableId,
       orderfoodId,
       reservationStatus,
-      tableStatus;
+      tableStatus,
+      promotionId,
+      promotionType;
   List<TableModel> tableModels = [];
 
   @override
@@ -49,6 +52,10 @@ class _ShowTableState extends State<ShowTable> {
   void initState() {
     super.initState();
     readshopModel = widget.readshopModel;
+    promotionId = readshopModel!.promotionId;
+    print('promotion id ==> $promotionId');
+    promotionType = readshopModel!.promotionType;
+    print('promotion Type ==>$promotionType');
     restaurantNameshop = readshopModel!.restaurantNameshop;
     numberOfGueste = widget.choosevalue;
     reservationDate = widget.date;
@@ -71,7 +78,7 @@ class _ShowTableState extends State<ShowTable> {
     print('table of ==>$numberpeople');
 
     String url =
-        '${Myconstant().domain}/my_login_rrs/getTableWhererestaurantId.php?isAdd=true&restaurantId=$restaurantId&tableNumseat=$numpeople&tableStatus=$tableStatus';
+        '${Myconstant().domain}/getTableWhererestaurantId.php?isAdd=true&restaurantId=$restaurantId&tableNumseat=$numpeople&tableStatus=$tableStatus';
     Response response = await Dio().get(url);
     // print('res==> $response');
     var result = json.decode(response.data);
@@ -93,7 +100,7 @@ class _ShowTableState extends State<ShowTable> {
       numpeople = numpeople + 1;
       print('null');
       String url =
-          '${Myconstant().domain}/my_login_rrs/getTableWhererestaurantId.php?isAdd=true&restaurantId=$restaurantId&tableNumseat=$numpeople&tableStatus=$tableStatus';
+          '${Myconstant().domain}/getTableWhererestaurantId.php?isAdd=true&restaurantId=$restaurantId&tableNumseat=$numpeople&tableStatus=$tableStatus';
       Response response = await Dio().get(url);
       var result = json.decode(response.data);
       for (var map in result) {
@@ -363,22 +370,16 @@ class _ShowTableState extends State<ShowTable> {
     String? customerId = preferences.getString("customerId");
     tableResId = tableModels[index].tableResId;
     tableId = tableModels[index].tableId;
-    // print('table id is ==> $tableId');
-    // print('Customer = $customerId');
-    // print('restaurantId =$restaurantId');
-    // print('restaurantNameshop =$restaurantNameshop');
-    // print('table = $tableResId');
-    // print('number of people = $numberOfGueste');
-    // print('date select = $reservationDate');
-    // print('time select = $reservationTime');
-
+    DateTime dateTime = DateTime.now();
+    String? reservationDateTime =
+        DateFormat('yyyy-MM-dd HH:mm').format(dateTime);
     var url =
-        '${Myconstant().domain}/my_login_rrs/addReservation.php?isAdd=true&customerId=$customerId&restaurantId=$restaurantId&tableResId=$tableResId&restaurantNameshop=$restaurantNameshop&numberOfGueste=$numberOfGueste&reservationDate=$reservationDate&reservationTime=$reservationTime&orderfoodId=$orderfoodId&reservationStatus=$reservationStatus';
+        '${Myconstant().domain}/addReservation.php?isAdd=true&customerId=$customerId&restaurantId=$restaurantId&tableResId=$tableResId&restaurantNameshop=$restaurantNameshop&numberOfGueste=$numberOfGueste&reservationDate=$reservationDate&reservationTime=$reservationTime&orderfoodId=$orderfoodId&reservationStatus=$reservationStatus&promotionId=$promotionId&promotionType=$promotionType&reservationDateTime=$reservationDateTime';
     try {
       Response response = await Dio().get(url);
       // print('res = $response');
       if (response.toString() == 'true') {
-        // Navigator.pop(context);
+        // Navigator.pop(context);x
       } else {
         normalDialog(context, 'Please try again');
       }
@@ -391,17 +392,8 @@ class _ShowTableState extends State<ShowTable> {
     String? customerId = preferences.getString("customerId");
     tableResId = tableModels[index].tableResId;
     tableId = tableModels[index].tableId;
-
-    // print('Customer = $customerId');
-    // print('restaurantId =$restaurantId');
-    // print('restaurantNameshop =$restaurantNameshop');
-    // print('table = $tableResId');
-    // print('number of people = $numberOfGueste');
-    // print('date select = $reservationDate');
-    // print('time select = $reservationTime');
-
     var url =
-        '${Myconstant().domain}/my_login_rrs/editTable_res.php?isAdd=true&tableId=$tableId&tableStatus=$tableStatus';
+        '${Myconstant().domain}/editTable_res.php?isAdd=true&tableId=$tableId&tableStatus=$tableStatus';
     try {
       Response response = await Dio().get(url);
       // print('res = $response');
@@ -411,35 +403,5 @@ class _ShowTableState extends State<ShowTable> {
         normalDialog(context, 'Please try again');
       }
     } catch (e) {}
-  }
-
-  //function บันทึกสถานะของโต๊ะ
-  Future<Null> editStatusTable(int index) async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    String? customerId = preferences.getString("customerId");
-    tableResId = tableModels[index].tableResId;
-    tableId = tableModels[index].tableId;
-
-    // print('Customer = $customerId');
-    // print('restaurantId =$restaurantId');
-    // print('restaurantNameshop =$restaurantNameshop');
-    // print('table = $tableResId');
-    // print('number of people = $numberOfGueste');
-    // print('date select = $reservationDate');
-    print('time select = $reservationTime');
-    // String? timereserv = reservationTime.toString().substring(1, 15);
-    // print('time reserv ====> $timereserv');
-
-    // var url =
-    //     '${Myconstant().domain}/my_login_rrs/editTable_res.php?isAdd=true&tableId=$tableId&tableStatus=$tableStatus';
-    // try {
-    //   Response response = await Dio().get(url);
-    //   // print('res = $response');
-    //   if (response.toString() == 'true') {
-    //     // Navigator.pop(context);
-    //   } else {
-    //     normalDialog(context, 'Please try again');
-    //   }
-    // } catch (e) {}
   }
 }

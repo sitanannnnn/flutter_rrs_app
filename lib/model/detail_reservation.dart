@@ -1,4 +1,4 @@
-class ReservationModel {
+class DetailReservationModel {
   String? reservationId;
   String? customerId;
   String? restaurantId;
@@ -10,14 +10,8 @@ class ReservationModel {
   String? orderfoodId;
   String? reservationStatus;
   String? reservationReasonCancelStatus;
-  String? foodmenuId;
-  String? foodmenuName;
-  String? foodmenuPrice;
-  String? amount;
-  String? netPrice;
-  String? orderfoodDateTime;
 
-  ReservationModel(
+  DetailReservationModel(
       {this.reservationId,
       this.customerId,
       this.restaurantId,
@@ -28,15 +22,9 @@ class ReservationModel {
       this.reservationTime,
       this.orderfoodId,
       this.reservationStatus,
-      this.reservationReasonCancelStatus,
-      this.foodmenuId,
-      this.foodmenuName,
-      this.foodmenuPrice,
-      this.amount,
-      this.netPrice,
-      this.orderfoodDateTime});
+      this.reservationReasonCancelStatus});
 
-  ReservationModel.fromJson(Map<String, dynamic> json) {
+  DetailReservationModel.fromJson(Map<String, dynamic> json) {
     reservationId = json['reservationId'];
     customerId = json['customerId'];
     restaurantId = json['restaurantId'];
@@ -48,12 +36,6 @@ class ReservationModel {
     orderfoodId = json['orderfoodId'];
     reservationStatus = json['reservationStatus'];
     reservationReasonCancelStatus = json['reservationReasonCancelStatus'];
-    foodmenuId = json['foodmenuId'];
-    foodmenuName = json['foodmenuName'];
-    foodmenuPrice = json['foodmenuPrice'];
-    amount = json['amount'];
-    netPrice = json['netPrice'];
-    orderfoodDateTime = json['orderfoodDateTime'];
   }
 
   Map<String, dynamic> toJson() {
@@ -69,12 +51,6 @@ class ReservationModel {
     data['orderfoodId'] = this.orderfoodId;
     data['reservationStatus'] = this.reservationStatus;
     data['reservationReasonCancelStatus'] = this.reservationReasonCancelStatus;
-    data['foodmenuId'] = this.foodmenuId;
-    data['foodmenuName'] = this.foodmenuName;
-    data['foodmenuPrice'] = this.foodmenuPrice;
-    data['amount'] = this.amount;
-    data['netPrice'] = this.netPrice;
-    data['orderfoodDateTime'] = this.orderfoodDateTime;
     return data;
   }
 }

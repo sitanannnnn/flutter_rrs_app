@@ -26,7 +26,11 @@ class _HomeScreenState extends State<HomeScreen> {
   List<ReadshopModel> readshopModels = [];
   List<Widget> restaurantCards = [];
   List<Widget> categoryCards = [];
-  String? reservatinDate, reservationTime, numberOfGueste, typeOfFood;
+  String? reservatinDate,
+      reservationTime,
+      numberOfGueste,
+      typeOfFood,
+      restaurantId;
 
   @override
   void initState() {
@@ -40,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
       readshopModels.clear();
     }
     String url =
-        '${Myconstant().domain}/my_login_rrs/getRestaurantFromchooseType.php?isAdd=true&&chooseType=Shop';
+        '${Myconstant().domain}/getRestaurantFromchooseType.php?isAdd=true&&chooseType=Shop';
     await Dio().get(url).then((value) {
       // print('value=$value');
 
@@ -54,29 +58,6 @@ class _HomeScreenState extends State<HomeScreen> {
           setState(() {
             readshopModels.add(model);
             restaurantCards.add(createCard(model, index));
-            index++;
-          });
-        }
-      }
-    });
-  }
-
-//อ่านค่าประเภทของอาหารจากฐานข้อมูลมาเเสดง
-  Future<Null> readcategoriesrestaurant() async {
-    String url =
-        '${Myconstant().domain}/my_login_rrs/getRestaurantFromtypeOfFood.php?isAdd=true&chooseType=Shop&typeOfFood=$typeOfFood';
-    await Dio().get(url).then((value) {
-      // print('value=$value');
-      var result = json.decode(value.data);
-      int index = 0;
-      for (var map in result) {
-        ReadshopModel model = ReadshopModel.fromJson(map);
-        String? NameShop = model.restaurantNameshop;
-        if (NameShop!.isNotEmpty) {
-          print('NameShop =${model.restaurantNameshop}');
-          setState(() {
-            readshopModels.add(model);
-            categoryCards.add(createCard(model, index));
             index++;
           });
         }

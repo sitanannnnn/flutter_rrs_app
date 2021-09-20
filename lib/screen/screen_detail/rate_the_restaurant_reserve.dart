@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_rrs_app/dashboard/my_booking.dart';
 import 'package:flutter_rrs_app/model/detail_reservation.dart';
 import 'package:flutter_rrs_app/model/orderfood_model.dart';
@@ -10,21 +11,23 @@ import 'package:flutter_rrs_app/model/reservation_model.dart';
 import 'package:flutter_rrs_app/model/table_model.dart';
 import 'package:flutter_rrs_app/utility/my_constant.dart';
 import 'package:flutter_rrs_app/utility/my_style.dart';
+import 'package:flutter_rrs_app/utility/normal_dialog.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class DetailTableOrderfood extends StatefulWidget {
+class RateTheRestaurantReserve extends StatefulWidget {
   final ReservationModel reservationModel;
-  const DetailTableOrderfood({
+  const RateTheRestaurantReserve({
     Key? key,
     required this.reservationModel,
   }) : super(key: key);
   @override
-  _DetailTableOrderfoodState createState() => _DetailTableOrderfoodState();
+  _RateTheRestaurantReserveState createState() =>
+      _RateTheRestaurantReserveState();
 }
 
-class _DetailTableOrderfoodState extends State<DetailTableOrderfood> {
+class _RateTheRestaurantReserveState extends State<RateTheRestaurantReserve> {
   ReservationModel? reservationModel;
   List<DetailReservationModel> detailreservationModels = [];
   List<OrderfoodModel> orderfoodModels = [];
@@ -40,13 +43,18 @@ class _DetailTableOrderfoodState extends State<DetailTableOrderfood> {
       orderfoodId,
       dateof,
       timeof,
-      table;
+      table,
+      opinion,
+      restaurantId;
+  double rating = 0;
   @override
   void initState() {
     super.initState();
     reservationModel = widget.reservationModel;
     reservationId = reservationModel!.reservationId!;
     orderfoodId = reservationModel!.orderfoodId;
+    restaurantId = reservationModel!.restaurantId;
+    restaurantNameshop = reservationModel!.restaurantNameshop;
     print('orderfoods Id ===> $orderfoodId');
     findUser();
     readReservation();
@@ -137,6 +145,29 @@ class _DetailTableOrderfoodState extends State<DetailTableOrderfood> {
     }
   }
 
+  //function บันทึกการรีวิวร้านอาหาร orderfood
+  Future<Null> recordReviewOrderfood() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    String? customerId = preferences.getString("customerId");
+    var url =
+        '${Myconstant().domain}/addReview_restaurant.php?isAdd=true&restaurantId=$restaurantId&restaurantNameshop=$restaurantNameshop&customerId=$customerId&reservationId=$reservationId&orderfoodId=$orderfoodId&rate=$rating&opinion=$opinion';
+    try {
+      Response response = await Dio().get(url);
+      // print('res = $response');
+      if (response.toString() == 'true') {
+        Fluttertoast.showToast(
+            msg: 'Rated',
+            toastLength: Toast.LENGTH_SHORT,
+            backgroundColor: kprimary,
+            textColor: Colors.white,
+            fontSize: 16.0);
+        // Navigator.pop(context);x
+      } else {
+        normalDialog(context, 'Please try again');
+      }
+    } catch (e) {}
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
@@ -177,7 +208,29 @@ class _DetailTableOrderfoodState extends State<DetailTableOrderfood> {
                       ? Text('')
                       : buildfoodorder(index),
                 ],
-              )
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              buildReviewRestaurant(),
+              SizedBox(
+                height: 10,
+              ),
+              Container(
+                  width: 300,
+                  height: 50,
+                  child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          primary: kprimary,
+                          onPrimary: Colors.white,
+                          shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(15)))),
+                      onPressed: () {
+                        recordReviewOrderfood();
+                        Navigator.pop(context);
+                      },
+                      child: Text('Submit')))
             ],
           ));
   Container buildfoodorder(int index) {
@@ -207,6 +260,82 @@ class _DetailTableOrderfoodState extends State<DetailTableOrderfood> {
           SizedBox(
             height: 10,
           )
+        ],
+      ),
+    );
+  }
+
+  Container buildReviewRestaurant() {
+    return Container(
+      width: 350,
+      height: 280,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: kprimary, width: 2)),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Text('Rate the restaurant',
+                    style: GoogleFonts.lato(fontSize: 20)),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              RatingBar.builder(
+                updateOnDrag: true,
+                initialRating: 0,
+                minRating: 1,
+                direction: Axis.horizontal,
+                allowHalfRating: true,
+                itemCount: 5,
+                itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                itemBuilder: (context, _) => Icon(
+                  Icons.star_rounded,
+                  color: Colors.amber,
+                ),
+                onRatingUpdate: (rate) {
+                  setState(() {
+                    rating = rate;
+                    print('Rating is $rating');
+                  });
+                },
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Text('Review the service the restaurant',
+                    style: GoogleFonts.lato(fontSize: 20))
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0),
+            child: TextFormField(
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: 'Enter comments',
+                labelText: 'Enter comments',
+              ),
+              onChanged: (val) => opinion = val,
+            ),
+          ),
         ],
       ),
     );

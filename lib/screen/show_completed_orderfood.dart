@@ -7,21 +7,21 @@ import 'package:flutter_rrs_app/model/read_shop_model.dart';
 import 'package:flutter_rrs_app/model/reservation_model.dart';
 import 'package:flutter_rrs_app/screen/booking_detail_orderfood.dart';
 import 'package:flutter_rrs_app/screen/screen_detail/detail_orderfood.dart';
+import 'package:flutter_rrs_app/screen/screen_detail/rate_the_restaurant_orderfood.dart';
 import 'package:flutter_rrs_app/utility/my_constant.dart';
 import 'package:flutter_rrs_app/utility/my_style.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class ShowUnconfirmedOrderFood extends StatefulWidget {
-  ShowUnconfirmedOrderFood({
+class ShowCompletedOrderFood extends StatefulWidget {
+  ShowCompletedOrderFood({
     Key? key,
   }) : super(key: key);
   @override
-  _ShowUnconfirmedOrderFoodState createState() =>
-      _ShowUnconfirmedOrderFoodState();
+  _ShowCompletedOrderFoodState createState() => _ShowCompletedOrderFoodState();
 }
 
-class _ShowUnconfirmedOrderFoodState extends State<ShowUnconfirmedOrderFood> {
+class _ShowCompletedOrderFoodState extends State<ShowCompletedOrderFood> {
   List<OrderfoodModel> orderfoodModels = [];
   String? customerId,
       name,
@@ -53,7 +53,7 @@ class _ShowUnconfirmedOrderFoodState extends State<ShowUnconfirmedOrderFood> {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? customerId = preferences.getString("customerId");
     String url =
-        '${Myconstant().domain}/getOrderfoodWherecustomerIdAndUnconfirmedOrderfoodStatus.php?isAdd=true&customerId=$customerId&reservationId=$reservationId&orderfoodStatus=$orderfoodStatus';
+        '${Myconstant().domain}/getOrderfoodWherecustomerIdAndCompletedOrderfoodStatus.php?isAdd=true&customerId=$customerId&reservationId=$reservationId&orderfoodStatus=$orderfoodStatus';
     Response response = await Dio().get(url);
     // print('res==> $response');
     var result = json.decode(response.data);
@@ -78,9 +78,8 @@ class _ShowUnconfirmedOrderFoodState extends State<ShowUnconfirmedOrderFood> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => DetailOrderfood(
-                                  orderfoodModel: orderfoodModels[index],
-                                )));
+                            builder: (context) => RateTheRestaurantOrderfood(
+                                orderfoodModel: orderfoodModels[index])));
                   },
                   child: Column(
                     children: [
@@ -177,7 +176,7 @@ class _ShowUnconfirmedOrderFoodState extends State<ShowUnconfirmedOrderFood> {
                                                     .orderfoodStatus!,
                                                 style: GoogleFonts.lato(
                                                     fontSize: 18,
-                                                    color: Colors.red,
+                                                    color: Colors.blue,
                                                     fontWeight:
                                                         FontWeight.bold))
                                           ],
@@ -190,7 +189,6 @@ class _ShowUnconfirmedOrderFoodState extends State<ShowUnconfirmedOrderFood> {
                             ),
                           ),
                         ],
-                        // showImage(context, index)
                       ),
                     ],
                   ),

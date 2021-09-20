@@ -53,7 +53,7 @@ class _ShowCancelOrderFoodState extends State<ShowCancelOrderFood> {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? customerId = preferences.getString("customerId");
     String url =
-        '${Myconstant().domain}/my_login_rrs/getOrderfoodWherecustomerIdAndCancelOrderfoodStatus.php?isAdd=true&customerId=$customerId&reservationId=$reservationId&orderfoodStatus=$orderfoodStatus';
+        '${Myconstant().domain}/getOrderfoodWherecustomerIdAndCancelOrderfoodStatus.php?isAdd=true&customerId=$customerId&reservationId=$reservationId&orderfoodStatus=$orderfoodStatus';
     Response response = await Dio().get(url);
     // print('res==> $response');
     var result = json.decode(response.data);

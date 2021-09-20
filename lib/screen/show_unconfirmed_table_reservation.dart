@@ -34,7 +34,7 @@ class _ShowUnconfirmedTableReservationState
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? customerId = preferences.getString("customerId");
     String url =
-        '${Myconstant().domain}/my_login_rrs/getReservationWherecustomerIdAndReservationStatusUnconfirmed.php?isAdd=true&customerId=$customerId&reservationStatus=unconfirmed';
+        '${Myconstant().domain}/getReservationWherecustomerIdAndReservationStatusUnconfirmed.php?isAdd=true&customerId=$customerId';
     Response response = await Dio().get(url);
     // print('res==> $response');
     var result = json.decode(response.data);
@@ -55,11 +55,12 @@ class _ShowUnconfirmedTableReservationState
             itemBuilder: (context, index) => GestureDetector(
                   onTap: () {
                     print('onclick ==> $index');
-                    //  Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //         builder: (context) => DetailTableOrderfood(
-                    //             )));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => DetailTableOrderfood(
+                                  reservationModel: reservationModels[index],
+                                )));
                   },
                   child: Column(
                     children: [
@@ -70,7 +71,7 @@ class _ShowUnconfirmedTableReservationState
                             padding: const EdgeInsets.all(8.0),
                             child: Container(
                               width: MediaQuery.of(context).size.width * 0.90,
-                              height: MediaQuery.of(context).size.width * 0.3,
+                              height: MediaQuery.of(context).size.width * 0.42,
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.only(
@@ -109,7 +110,7 @@ class _ShowUnconfirmedTableReservationState
   Container buildDetailReservation(BuildContext context, int index) {
     return Container(
       width: MediaQuery.of(context).size.width * 0.6,
-      height: MediaQuery.of(context).size.width * 0.3,
+      height: MediaQuery.of(context).size.width * 0.45,
       child: Column(
         children: [
           Padding(
@@ -196,21 +197,40 @@ class _ShowUnconfirmedTableReservationState
             ],
           ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Row(
                 children: [
-                  Text(reservationModels[index].reservationStatus!,
-                      style: GoogleFonts.lato(
-                          fontSize: 18,
-                          color: Colors.red,
-                          fontWeight: FontWeight.bold))
+                  reservationModels[index].orderfoodId! == "0"
+                      ? Text("")
+                      : Row(
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.dining,
+                                  color: kprimary,
+                                )
+                              ],
+                            ),
+                            Text('Pre-order food', style: GoogleFonts.lato()),
+                          ],
+                        )
                 ],
-              ),
-              SizedBox(
-                width: 10,
-              ),
+              )
             ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text(reservationModels[index].reservationStatus!,
+                  style: GoogleFonts.lato(
+                      fontSize: 18,
+                      color: Colors.red,
+                      fontWeight: FontWeight.bold))
+            ],
+          ),
+          SizedBox(
+            width: 10,
           ),
         ],
       ),

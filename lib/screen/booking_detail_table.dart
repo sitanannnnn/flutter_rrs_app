@@ -6,8 +6,6 @@ import 'package:flutter_rrs_app/dashboard/my_booking.dart';
 import 'package:flutter_rrs_app/model/read_shop_model.dart';
 import 'package:flutter_rrs_app/model/reservation_model.dart';
 import 'package:flutter_rrs_app/model/table_model.dart';
-import 'package:flutter_rrs_app/screen/show_unconfirmed_table_reservation.dart';
-
 import 'package:flutter_rrs_app/utility/my_constant.dart';
 import 'package:flutter_rrs_app/utility/my_style.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -79,11 +77,12 @@ class _BookingTailTableState extends State<BookingTailTable> {
     });
   }
 
+//อ่านค่าจาก table table_reservation ผ่าน customerId reservationDate reservationTime
   Future<Null> readReservation() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? customerId = preferences.getString("customerId");
     var url =
-        '${Myconstant().domain}/my_login_rrs/getReservation.php?isAdd=true&customerId=$customerId&reservationDate=$dateof&reservationTime=$reservationTime';
+        '${Myconstant().domain}/getReservation.php?isAdd=true&customerId=$customerId&reservationDate=$dateof&reservationTime=$reservationTime';
     Response response = await Dio().get(url);
     // print('res = $response');
     if (response.toString() != 'null') {
@@ -132,6 +131,7 @@ class _BookingTailTableState extends State<BookingTailTable> {
                 )));
   }
 
+//ปุ่มกด confirm
   Container buildBottomConfirm(BuildContext context) {
     return Container(
       width: 250,
@@ -158,6 +158,7 @@ class _BookingTailTableState extends State<BookingTailTable> {
     );
   }
 
+//เเสดงข้อมูลของลูกค้า
   Container buildinformationCustomer() {
     return Container(
       width: 350,
@@ -199,6 +200,7 @@ class _BookingTailTableState extends State<BookingTailTable> {
     );
   }
 
+//เเสดงข้อมูลการจองโต๊ะ
   Container buildReservationTable(int index) {
     return Container(
       width: 350,

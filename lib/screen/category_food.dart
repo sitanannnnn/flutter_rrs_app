@@ -30,7 +30,7 @@ class _CategoryFoodState extends State<CategoryFood> {
 //function อ่านค่าร้านประเภทอาหารที่มีอยูในฐานข้อมูล
   Future<Null> readcategoryrestaurant() async {
     String url =
-        '${Myconstant().domain}/my_login_rrs/getRestaurantFromtypeOfFood.php?isAdd=true&chooseType=Shop&typeOfFood=$typeOfFood';
+        '${Myconstant().domain}/getRestaurantFromtypeOfFood.php?isAdd=true&chooseType=Shop&typeOfFood=$typeOfFood';
     await Dio().get(url).then((value) {
       // print('value=$value');
       var result = json.decode(value.data);

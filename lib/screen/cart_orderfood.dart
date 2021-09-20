@@ -41,12 +41,17 @@ class _CartOrderfoodState extends State<CartOrderfood> {
       foodmenuName,
       table,
       orderfoodDateTime,
-      orderfoodStatus;
+      orderfoodStatus,
+      promotionId,
+      promotionType;
   int index = 0;
   @override
   void initState() {
     super.initState();
     readshopModel = widget.readshopModel;
+    promotionId = readshopModel!.promotionId;
+    promotionType = readshopModel!.promotionType;
+    print('promotionId==> $promotionId');
 
     readSQLite();
     findUser();
@@ -266,7 +271,7 @@ class _CartOrderfoodState extends State<CartOrderfood> {
     restaurantNameshop = readshopModel!.restaurantNameshop!;
     // print('name shop ==> $restaurantNameshop');
     String? url =
-        '${Myconstant().domain}/my_login_rrs/addOrderfood.php?isAdd=true&customerId=$customerId&restaurantId=$restaurantId&restaurantNameshop=$restaurantNameshop&foodmenuId=$foodmenuId&foodmenuName=$foodmenuName&foodmenuPrice=$foodmenuPrice&amount=$amount&netPrice=$netPrice&orderfoodDateTime=$orderfoodDateTime&reservationId=$reservationId&orderfoodStatus=$orderfoodStatus';
+        '${Myconstant().domain}/addOrderfood.php?isAdd=true&customerId=$customerId&restaurantId=$restaurantId&restaurantNameshop=$restaurantNameshop&foodmenuId=$foodmenuId&foodmenuName=$foodmenuName&foodmenuPrice=$foodmenuPrice&amount=$amount&netPrice=$netPrice&orderfoodDateTime=$orderfoodDateTime&reservationId=$reservationId&orderfoodStatus=$orderfoodStatus&promotionId=$promotionId&promotionType=$promotionType';
     await Dio().get(url).then((value) {
       // print('value is ===> $value');
       if (value.toString() == 'true') {

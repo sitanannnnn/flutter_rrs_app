@@ -48,7 +48,7 @@ class _OrderFoodState extends State<OrderFood> {
   Future<Null> readFoodMenu() async {
     restaurantId = readshopModel!.restaurantId;
     String url =
-        '${Myconstant().domain}/my_login_rrs/getFoodWhererestaurantId.php?isAdd=true&restaurantId=$restaurantId';
+        '${Myconstant().domain}/getFoodWhererestaurantId.php?isAdd=true&restaurantId=$restaurantId';
     Response response = await Dio().get(url);
     // print('res==> $response');
 
@@ -81,7 +81,7 @@ class _OrderFoodState extends State<OrderFood> {
       ),
       appBar: AppBar(
         backgroundColor: kprimary,
-        title: Text(' ${readshopModel!.restaurantNameshop}'),
+        title: Text('Select menu'),
       ),
       body: foodmenuModels.length == 0
           ? MyStyle().showProgrsee()
@@ -130,7 +130,7 @@ class _OrderFoodState extends State<OrderFood> {
                                   children: [
                                     Icon(
                                       Icons.add_circle_rounded,
-                                      color: kprimary,
+                                      color: Colors.grey,
                                     )
                                   ],
                                 ),
@@ -139,6 +139,12 @@ class _OrderFoodState extends State<OrderFood> {
                           ),
                         ),
                       ],
+                    ),
+                    Divider(
+                      color: Colors.grey[200],
+                      thickness: 10,
+                      indent: 0,
+                      endIndent: 0,
                     ),
                   ],
                 ),

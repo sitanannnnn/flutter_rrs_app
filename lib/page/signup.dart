@@ -337,8 +337,7 @@ class _SignupState extends State<Signup> {
       );
 //function checkUser จะตรวจสอบว่า user ที่กรอกเข้ามาซ้ำกับuserในฐานข้อมูลหรือไม่
   Future<Null> checkUser() async {
-    String url =
-        '${Myconstant().domain}/my_login_rrs/getUser.php?isAdd=true&user=$user';
+    String url = '${Myconstant().domain}/getUser.php?isAdd=true&user=$user';
     try {
       Response response = await Dio().get(url);
       print('res = $response');
@@ -353,7 +352,7 @@ class _SignupState extends State<Signup> {
 //function checkshop จะตรวจสอบว่า user ที่กรอกเข้ามาซ้ำกับuserในฐานข้อมูลหรือไม่
   Future<Null> checkShop() async {
     String url =
-        '${Myconstant().domain}/my_login_rrs/getRestaurant.php?isAdd=true&user=$user';
+        '${Myconstant().domain}/getRestaurant.php?isAdd=true&user=$user';
     try {
       Response response = await Dio().get(url);
       print('res = $response');
@@ -368,7 +367,7 @@ class _SignupState extends State<Signup> {
 //function บันทึกข้อมูลของ customerลงในฐานข้อมูล
   Future<Null> registerThreadUser() async {
     var url =
-        '${Myconstant().domain}/my_login_rrs/addUser.php?isAdd=true&chooseType=$chooseType&name=$name&user=$user&email=$email&phonenumber=$phonenumber&password=$password&confirmpassword=$confirmpassword';
+        '${Myconstant().domain}/addUser.php?isAdd=true&chooseType=$chooseType&name=$name&user=$user&email=$email&phonenumber=$phonenumber&password=$password&confirmpassword=$confirmpassword';
     try {
       Response response = await Dio().get(url);
       print('res = $response');
@@ -389,7 +388,7 @@ class _SignupState extends State<Signup> {
 //function บันทึกข้อมูลของ restaurant ลงในฐานข้อมูล
   Future<Null> registerThreadShop() async {
     var url =
-        '${Myconstant().domain}/my_login_rrs/addRestaurant.php?isAdd=true&chooseType=$chooseType&name=$name&user=$user&email=$email&phonenumber=$phonenumber&password=$password&confirmpassword=$confirmpassword';
+        '${Myconstant().domain}/addRestaurant.php?isAdd=true&chooseType=$chooseType&name=$name&user=$user&email=$email&phonenumber=$phonenumber&password=$password&confirmpassword=$confirmpassword';
     try {
       Response response = await Dio().get(url);
       print('res = $response');

@@ -26,7 +26,7 @@ class _NearbyReataurantState extends State<NearbyReataurant> {
 //function อ่านค่าร้านอาหารที่มีอยูในฐานข้อมูล
   Future<Null> readShop() async {
     String url =
-        '${Myconstant().domain}/my_login_rrs/getRestaurantFromchooseType.php?isAdd=true&&chooseType=Shop';
+        '${Myconstant().domain}/getRestaurantFromchooseType.php?isAdd=true&&chooseType=Shop';
     await Dio().get(url).then((value) {
       // print('value=$value');
       var result = json.decode(value.data);

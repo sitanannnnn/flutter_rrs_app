@@ -2,51 +2,59 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_rrs_app/dashboard/my_booking.dart';
+import 'package:flutter_rrs_app/model/detailorderfood_model.dart';
 import 'package:flutter_rrs_app/model/orderfood_model.dart';
 import 'package:flutter_rrs_app/model/read_shop_model.dart';
 import 'package:flutter_rrs_app/screen/payment_method.dart';
 import 'package:flutter_rrs_app/utility/my_constant.dart';
 import 'package:flutter_rrs_app/utility/my_style.dart';
+import 'package:flutter_rrs_app/utility/normal_dialog.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class BookingTailOrderfood extends StatefulWidget {
-  final ReadshopModel readshopModel;
-  final String orderfoodDateTime;
-  const BookingTailOrderfood({
+class RateTheRestaurantOrderfood extends StatefulWidget {
+  final OrderfoodModel orderfoodModel;
+  const RateTheRestaurantOrderfood({
     Key? key,
-    required this.readshopModel,
-    required this.orderfoodDateTime,
+    required this.orderfoodModel,
   }) : super(key: key);
   @override
-  _BookingTailOrderfoodState createState() => _BookingTailOrderfoodState();
+  _RateTheRestaurantOrderfoodState createState() =>
+      _RateTheRestaurantOrderfoodState();
 }
 
-class _BookingTailOrderfoodState extends State<BookingTailOrderfood> {
-  ReadshopModel? readshopModel;
-  String? name,
-      phonenumber,
+class _RateTheRestaurantOrderfoodState
+    extends State<RateTheRestaurantOrderfood> {
+  OrderfoodModel? orderfoodModel;
+  String? orderfoodId,
+      name,
       customerId,
-      orderfoodDateTime,
-      orderTime,
-      orderfoodId;
-  List<OrderfoodModel> orderfoodModels = [];
+      phonenumber,
+      restaurantId,
+      restaurantNameshop,
+      opinion;
+  double rating = 0;
+  List<DetailorderfoodModel> detailorderfoodModels = [];
   List<List<String>> listMenufoods = [];
   List<String> menufoods = [];
   List<List<String>> listPrices = [];
   List<List<String>> listAmounts = [];
   List<List<String>> listnetPrices = [];
   List<int> totalInt = [];
-
   @override
   void initState() {
     super.initState();
-    readshopModel = widget.readshopModel;
-    orderfoodDateTime = widget.orderfoodDateTime;
-    print('order time => $orderfoodDateTime');
     findUser();
     readOrderfood();
+    orderfoodModel = widget.orderfoodModel;
+    restaurantId = orderfoodModel!.restaurantId;
+    restaurantNameshop = orderfoodModel!.restaurantNameshop;
+    print('restaurantId =======>$restaurantId');
+    orderfoodId = orderfoodModel!.id;
+    print('id orderfoof==>$orderfoodId');
   }
 
   //function ค้นหาuser
@@ -63,23 +71,20 @@ class _BookingTailOrderfoodState extends State<BookingTailOrderfood> {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? customerId = preferences.getString("customerId");
     String? url =
-        '${Myconstant().domain}/getOrderfoodWherecustomerIdandDateTime.php?isAdd=true&customerId=$customerId&orderfoodDateTime=$orderfoodDateTime';
+        '${Myconstant().domain}/getOrderfoodWherecustomerIdandId.php?isAdd=true&customerId=$customerId&id=$orderfoodId';
     Response response = await Dio().get(url);
-    // print('res==> $response');
+    print('res==> $response');
     if (response.toString() != 'null') {
       var result = json.decode(response.data);
 
       for (var map in result) {
-        print('result= $result');
-        OrderfoodModel orderfoodModel = OrderfoodModel.fromJson(map);
-
-        // print('orderfood ===> $orderfoodModel');
-        // String orderfooddetail = jsonEncode(orderfoodModel.foodmenuName);
-        // print('ordercode ==>${orderfooddetail.length}');
-        menufoods = changeArray(orderfoodModel.foodmenuName!);
-        List<String> prices = changeArray(orderfoodModel.foodmenuPrice!);
-        List<String> amounts = changeArray(orderfoodModel.amount!);
-        List<String> netPrices = changeArray(orderfoodModel.netPrice!);
+        //print('result= $result');
+        DetailorderfoodModel detailorderfoodModel =
+            DetailorderfoodModel.fromJson(map);
+        menufoods = changeArray(detailorderfoodModel.foodmenuName!);
+        List<String> prices = changeArray(detailorderfoodModel.foodmenuPrice!);
+        List<String> amounts = changeArray(detailorderfoodModel.amount!);
+        List<String> netPrices = changeArray(detailorderfoodModel.netPrice!);
         int total = 0;
         for (var string in netPrices) {
           total = total + int.parse(string.trim());
@@ -87,15 +92,8 @@ class _BookingTailOrderfoodState extends State<BookingTailOrderfood> {
         print('total==> $total');
         print(' lenght menu ==>${menufoods.length}');
         setState(() {
-          orderfoodModels.add(orderfoodModel);
-          orderfoodId = orderfoodModel.id;
-          print('orderfood id ==> $orderfoodId');
-          print('menufood ====>$menufoods');
+          detailorderfoodModels.add(detailorderfoodModel);
           listMenufoods.add(menufoods);
-          print(' list menu foos $listMenufoods');
-          print('lenght menufood ==>${listMenufoods.length}');
-
-          // listPrices.add(prices);
           listAmounts.add(amounts);
           listnetPrices.add(netPrices);
           totalInt.add(total);
@@ -127,15 +125,16 @@ class _BookingTailOrderfoodState extends State<BookingTailOrderfood> {
         body: SingleChildScrollView(child: buildContent()));
   }
 
-//เเสดงชื่อร้านอาหาร ข้อมูลลูกค้า
+  //เเสดงชื่อร้านอาหาร ข้อมูลลูกค้า
   Widget buildContent() => ListView.builder(
         padding: EdgeInsets.all(16),
         shrinkWrap: true,
         physics: ScrollPhysics(),
-        itemCount: orderfoodModels.length,
+        itemCount: detailorderfoodModels.length,
         itemBuilder: (context, index) => Column(
           children: [
-            MyStyle().showheadText(orderfoodModels[index].restaurantNameshop!),
+            MyStyle()
+                .showheadText(detailorderfoodModels[index].restaurantNameshop!),
             SizedBox(
               height: 10,
             ),
@@ -151,41 +150,105 @@ class _BookingTailOrderfoodState extends State<BookingTailOrderfood> {
               height: 10,
             ),
             buildtotal(index),
+            buildReviewRestaurant(),
             SizedBox(
-              height: 80,
+              height: 10,
             ),
             Container(
-              width: 250,
-              height: 100,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Container(
-                    width: 300,
-                    height: 40,
-                    child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          primary: kprimary,
-                          onPrimary: Colors.white,
-                        ),
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => PaymentMethod(
-                                        readshopModel: readshopModel!,
-                                        totalInt: '$totalInt',
-                                        orderfoodModel: orderfoodModels[index],
-                                      )));
-                        },
-                        child: Text('Confirm')),
-                  ),
-                ],
-              ),
-            )
+                width: 300,
+                height: 50,
+                child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        primary: kprimary,
+                        onPrimary: Colors.white,
+                        shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(15)))),
+                    onPressed: () {
+                      recordReviewOrderfood();
+                      Navigator.pop(context);
+                    },
+                    child: Text('Submit')))
           ],
         ),
       );
+
+  Container buildReviewRestaurant() {
+    return Container(
+      width: 350,
+      height: 280,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: kprimary, width: 2)),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Text('Rate the restaurant',
+                    style: GoogleFonts.lato(fontSize: 20)),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              RatingBar.builder(
+                updateOnDrag: true,
+                initialRating: 0,
+                minRating: 1,
+                direction: Axis.horizontal,
+                allowHalfRating: true,
+                itemCount: 5,
+                itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                itemBuilder: (context, _) => Icon(
+                  Icons.star_rounded,
+                  color: Colors.amber,
+                ),
+                onRatingUpdate: (rate) {
+                  setState(() {
+                    rating = rate;
+                    print('Rating is $rating');
+                  });
+                },
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Text('Review the service the restaurant',
+                    style: GoogleFonts.lato(fontSize: 20))
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0),
+            child: TextFormField(
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: 'Enter comments',
+                labelText: 'Enter comments',
+              ),
+              onChanged: (val) => opinion = val,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
 //เเสดงยอดรวมของอาหาร
   Widget buildtotal(int index) => Padding(
         padding: const EdgeInsets.all(20.0),
@@ -296,4 +359,26 @@ class _BookingTailOrderfoodState extends State<BookingTailOrderfood> {
               ),
             ],
           ));
+  //function บันทึกการรีวิวร้านอาหาร orderfood
+  Future<Null> recordReviewOrderfood() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    String? customerId = preferences.getString("customerId");
+    var url =
+        '${Myconstant().domain}/addReview_restaurant.php?isAdd=true&restaurantId=$restaurantId&restaurantNameshop=$restaurantNameshop&customerId=$customerId&reservationId=Null&orderfoodId=$orderfoodId&rate=$rating&opinion=$opinion';
+    try {
+      Response response = await Dio().get(url);
+      // print('res = $response');
+      if (response.toString() == 'true') {
+        Fluttertoast.showToast(
+            msg: 'Rated ',
+            toastLength: Toast.LENGTH_SHORT,
+            backgroundColor: kprimary,
+            textColor: Colors.white,
+            fontSize: 16.0);
+        // Navigator.pop(context);x
+      } else {
+        normalDialog(context, 'Please try again');
+      }
+    } catch (e) {}
+  }
 }

@@ -47,29 +47,13 @@ class _ProfileState extends State<Profile> {
     // readPicture();
   }
 
-  // Future<Null> readPicture() async {
-  //   SharedPreferences preferences = await SharedPreferences.getInstance();
-  //   String? customerId = preferences.getString('customerId');
-  //   String url =
-  //       '${Myconstant().domain}/my_login_rrs/getProfileUserWherecustomerId.php?isAdd=true&customerId=$customerId&urlPicture=$urlPicture';
-  //   try {
-  //     Response response = await Dio().get(url);
-  //     print('res = $response');
-  //     if (response.toString() == 'true') {
-  //       Navigator.pop(context);
-  //     } else
-  //       print('ERROR');
-  //   } catch (e) {}
-  // }
-//edit name ที่ฐานข้อมูล
-
   Future<Null> editNameMySQL() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? customerId = preferences.getString("customerId");
     print('CustomerId is =$customerId');
 
     String? url =
-        '${Myconstant().domain}/my_login_rrs/editCustomerWhereName.php?isAdd=true&customerId=$customerId&name=$name';
+        '${Myconstant().domain}/editCustomerWhereName.php?isAdd=true&customerId=$customerId&name=$name';
     await Dio().get(url).then((value) {
       if (value.toString() == 'true') {
         Navigator.pop(context);
@@ -86,7 +70,7 @@ class _ProfileState extends State<Profile> {
     print('CustomerId is =$customerId');
 
     String? url =
-        '${Myconstant().domain}/my_login_rrs/editCustomerWhereEmail.php?isAdd=true&customerId=$customerId&email=$email';
+        '${Myconstant().domain}/editCustomerWhereEmail.php?isAdd=true&customerId=$customerId&email=$email';
     await Dio().get(url).then((value) {
       if (value.toString() == 'true') {
         Navigator.pop(context);
@@ -103,7 +87,7 @@ class _ProfileState extends State<Profile> {
     print('CustomerId is =$customerId');
 
     String? url =
-        '${Myconstant().domain}/my_login_rrs/editCustomerWherePhonenumber.php?isAdd=true&customerId=$customerId&phonenumber=$phonenumber';
+        '${Myconstant().domain}/editCustomerWherePhonenumber.php?isAdd=true&customerId=$customerId&phonenumber=$phonenumber';
     await Dio().get(url).then((value) {
       if (value.toString() == 'true') {
         Navigator.pop(context);
@@ -120,7 +104,7 @@ class _ProfileState extends State<Profile> {
     print('CustomerId is =$customerId');
 
     String? url =
-        '${Myconstant().domain}/my_login_rrs/editCustomerWherePassword.php?isAdd=true&customerId=$customerId&password=$password&confirmpassword=$confirmpassword';
+        '${Myconstant().domain}/editCustomerWherePassword.php?isAdd=true&customerId=$customerId&password=$password&confirmpassword=$confirmpassword';
     await Dio().get(url).then((value) {
       if (value.toString() == 'true') {
         Navigator.pop(context);
@@ -164,7 +148,7 @@ class _ProfileState extends State<Profile> {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? customerId = preferences.getString('customerId');
     String url =
-        '${Myconstant().domain}/my_login_rrs/editCustomerWhereImage.php?isAdd=true&customerId=$customerId&urlPicture=$urlImage';
+        '${Myconstant().domain}/editCustomerWhereImage.php?isAdd=true&customerId=$customerId&urlPicture=$urlImage';
     await Dio().get(url).then((value) {
       print('value ==>$value');
       if (value.toString() == 'true') {
@@ -180,7 +164,7 @@ class _ProfileState extends State<Profile> {
     int image = random.nextInt(1000000);
     String? nameImage = 'profile$image.jpg';
     print('nameImage =$nameImage,pathImage =${file!.path}');
-    String? url = '${Myconstant().domain}/my_login_rrs/saveImageProfile.php';
+    String? url = '${Myconstant().domain}/saveImageProfile.php';
 
     try {
       Map<String, dynamic> map = Map();
@@ -189,7 +173,7 @@ class _ProfileState extends State<Profile> {
       FormData formData = FormData.fromMap(map);
       await Dio().post(url, data: formData).then((value) {
         print('Response ===> $value');
-        urlImage = '/my_login_rrs/Profile/$nameImage';
+        urlImage = '/Profile/$nameImage';
         print('urlImage =$urlImage');
         editImageProfile();
       });
