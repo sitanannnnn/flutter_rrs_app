@@ -127,6 +127,9 @@ class _ShowCartState extends State<ShowCart> {
           buildHeadTitle(),
           buildListFood(),
           buildTotal(),
+          SizedBox(
+            height: 60,
+          ),
           buildOrderButton()
         ],
       ),
@@ -218,46 +221,49 @@ class _ShowCartState extends State<ShowCart> {
     );
   }
 
-  Widget buildListFood() => ListView.builder(
-        shrinkWrap: true,
-        physics: ScrollPhysics(),
-        itemCount: cartModels.length,
-        itemBuilder: (context, index) => Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  Expanded(
-                      flex: 2, child: Text(cartModels[index].foodmenuName!)),
-                  Expanded(flex: 1, child: Text(cartModels[index].amount!)),
-                  Expanded(flex: 1, child: Text(cartModels[index].netPrice!)),
-                  Expanded(
-                      flex: 1,
-                      child: IconButton(
-                        icon: Icon(
-                          Icons.clear_rounded,
-                          color: Colors.red,
-                        ),
-                        onPressed: () async {
-                          int? id = cartModels[index].id;
-                          print("You click Delete id ==> $id");
-                          await SQLiteHelper()
-                              .deleteDataWhereId(id!)
-                              .then((value) {
-                            print("sucess delete id ==> $id");
-                            readSQLite();
-                          });
-                        },
-                      ))
-                ],
+  Widget buildListFood() => Container(
+        child: ListView.builder(
+          shrinkWrap: true,
+          physics: ScrollPhysics(),
+          itemCount: cartModels.length,
+          itemBuilder: (context, index) => Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                        flex: 2, child: Text(cartModels[index].foodmenuName!)),
+                    Expanded(flex: 1, child: Text(cartModels[index].amount!)),
+                    Expanded(flex: 1, child: Text(cartModels[index].netPrice!)),
+                    Expanded(
+                        flex: 1,
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.clear_rounded,
+                            color: Colors.red,
+                          ),
+                          onPressed: () async {
+                            int? id = cartModels[index].id;
+                            print("You click Delete id ==> $id");
+                            await SQLiteHelper()
+                                .deleteDataWhereId(id!)
+                                .then((value) {
+                              print("sucess delete id ==> $id");
+                              readSQLite();
+                            });
+                          },
+                        ))
+                  ],
+                ),
               ),
-            ),
-            Divider(
-              height: 30,
-              color: Colors.grey,
-            ),
-          ],
+              Divider(
+                color: Colors.grey,
+                endIndent: 10,
+                indent: 10,
+              ),
+            ],
+          ),
         ),
       );
 //บันทึกข้อมูลการสั่งอาหารไปที่ฐานข้อมูล

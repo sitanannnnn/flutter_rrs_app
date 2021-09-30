@@ -239,7 +239,7 @@ class _ShowTableState extends State<ShowTable> {
                   width: 110,
                   child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                          primary: kprimary,
+                          primary: Colors.red,
                           onPrimary: Colors.white,
                           shape: RoundedRectangleBorder(
                               borderRadius:
@@ -253,7 +253,7 @@ class _ShowTableState extends State<ShowTable> {
                   width: 110,
                   child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                          primary: kprimary,
+                          primary: Colors.green,
                           onPrimary: Colors.white,
                           shape: RoundedRectangleBorder(
                               borderRadius:
@@ -270,6 +270,14 @@ class _ShowTableState extends State<ShowTable> {
                                         children: [
                                           Text(
                                               'Table number ${tableModels[index].tableResId!}'),
+                                          Container(
+                                            width: 100,
+                                            height: 100,
+                                            child: Image.asset(
+                                              'assets/images/reserved.png',
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
                                           Text('has been booked'),
                                           Text(' successfully.'),
                                           IconButton(
@@ -292,7 +300,16 @@ class _ShowTableState extends State<ShowTable> {
                                                                 Text(
                                                                     'Would you like to'),
                                                                 Text(
-                                                                    'pre-order food ?')
+                                                                    'pre-order food ?'),
+                                                                Container(
+                                                                    width: 80,
+                                                                    height: 80,
+                                                                    child: Image
+                                                                        .asset(
+                                                                      'assets/images/dish.png',
+                                                                      fit: BoxFit
+                                                                          .cover,
+                                                                    ))
                                                               ],
                                                             ),
                                                           ],
@@ -306,7 +323,7 @@ class _ShowTableState extends State<ShowTable> {
                                                               Container(
                                                                   width: 110,
                                                                   child: ElevatedButton(
-                                                                      style: ElevatedButton.styleFrom(primary: kprimary, onPrimary: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15)))),
+                                                                      style: ElevatedButton.styleFrom(primary: Colors.red, onPrimary: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15)))),
                                                                       onPressed: () {
                                                                         Navigator.push(
                                                                             context,
@@ -323,7 +340,7 @@ class _ShowTableState extends State<ShowTable> {
                                                               Container(
                                                                   width: 110,
                                                                   child: ElevatedButton(
-                                                                      style: ElevatedButton.styleFrom(primary: kprimary, onPrimary: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15)))),
+                                                                      style: ElevatedButton.styleFrom(primary: Colors.green, onPrimary: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15)))),
                                                                       onPressed: () {
                                                                         Navigator.push(
                                                                             context,
@@ -344,7 +361,8 @@ class _ShowTableState extends State<ShowTable> {
                                             },
                                             icon: Icon(
                                               Icons.check_circle,
-                                              color: kprimary,
+                                              color: Colors.green,
+                                              size: 30,
                                             ),
                                             iconSize: 30,
                                           )

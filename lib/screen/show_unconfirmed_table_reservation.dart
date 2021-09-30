@@ -200,7 +200,7 @@ class _ShowUnconfirmedTableReservationState
             children: [
               Row(
                 children: [
-                  reservationModels[index].orderfoodId! == "0"
+                  reservationModels[index].orderfoodId! == 'Null'
                       ? Text("")
                       : Row(
                           children: [

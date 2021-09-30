@@ -16,6 +16,18 @@ class ReservationModel {
   String? amount;
   String? netPrice;
   String? orderfoodDateTime;
+  String? promotionId;
+  String? promotionType;
+  String? reservationDateTime;
+  String? reviewId;
+  String? rate;
+  String? opinion;
+  String? tableId;
+  String? tableName;
+  String? tableNumseat;
+  String? tableDescrip;
+  String? tablePicture;
+  String? tableStatus;
 
   ReservationModel(
       {this.reservationId,
@@ -34,7 +46,19 @@ class ReservationModel {
       this.foodmenuPrice,
       this.amount,
       this.netPrice,
-      this.orderfoodDateTime});
+      this.orderfoodDateTime,
+      this.promotionId,
+      this.promotionType,
+      this.reservationDateTime,
+      this.reviewId,
+      this.rate,
+      this.opinion,
+      this.tableId,
+      this.tableName,
+      this.tableNumseat,
+      this.tableDescrip,
+      this.tablePicture,
+      this.tableStatus});
 
   ReservationModel.fromJson(Map<String, dynamic> json) {
     reservationId = json['reservationId'];
@@ -54,6 +78,18 @@ class ReservationModel {
     amount = json['amount'];
     netPrice = json['netPrice'];
     orderfoodDateTime = json['orderfoodDateTime'];
+    promotionId = json['promotionId'];
+    promotionType = json['promotionType'];
+    reservationDateTime = json['reservationDateTime'];
+    reviewId = json['reviewId'];
+    rate = json['rate'];
+    opinion = json['opinion'];
+    tableId = json['tableId'];
+    tableName = json['tableName'];
+    tableNumseat = json['tableNumseat'];
+    tableDescrip = json['tableDescrip'];
+    tablePicture = json['tablePicture'];
+    tableStatus = json['tableStatus'];
   }
 
   Map<String, dynamic> toJson() {
@@ -75,6 +111,18 @@ class ReservationModel {
     data['amount'] = this.amount;
     data['netPrice'] = this.netPrice;
     data['orderfoodDateTime'] = this.orderfoodDateTime;
+    data['promotionId'] = this.promotionId;
+    data['promotionType'] = this.promotionType;
+    data['reservationDateTime'] = this.reservationDateTime;
+    data['reviewId'] = this.reviewId;
+    data['rate'] = this.rate;
+    data['opinion'] = this.opinion;
+    data['tableId'] = this.tableId;
+    data['tableName'] = this.tableName;
+    data['tableNumseat'] = this.tableNumseat;
+    data['tableDescrip'] = this.tableDescrip;
+    data['tablePicture'] = this.tablePicture;
+    data['tableStatus'] = this.tableStatus;
     return data;
   }
 }

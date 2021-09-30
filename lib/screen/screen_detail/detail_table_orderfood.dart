@@ -147,44 +147,65 @@ class _DetailTableOrderfoodState extends State<DetailTableOrderfood> {
   }
 
   Widget buildcontext() => ListView.builder(
+      padding: EdgeInsets.all(16),
       shrinkWrap: true,
       physics: ScrollPhysics(),
       itemCount: detailreservationModels.length,
-      itemBuilder: (context, index) => Column(
-            children: [
-              SizedBox(
-                height: 10,
-              ),
-              Text(
-                detailreservationModels[index].restaurantNameshop!,
-                style: GoogleFonts.lato(fontSize: 25),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              buildinformationCustomer(),
-              SizedBox(
-                height: 20,
-              ),
-              buildReservationTable(index),
-              SizedBox(
-                height: 20,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  detailreservationModels[index].orderfoodId == "0"
-                      ? Text('')
-                      : buildfoodorder(index),
-                ],
-              )
-            ],
+      itemBuilder: (context, index) => Container(
+            color: ksecondary,
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  width: 80,
+                  height: 80,
+                  child: Column(
+                    children: [
+                      Image.asset(
+                        'assets/images/restaurant.png',
+                        fit: BoxFit.cover,
+                      )
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  detailreservationModels[index].restaurantNameshop!,
+                  style: GoogleFonts.lato(fontSize: 25),
+                ),
+                Divider(
+                  thickness: 3,
+                  color: Colors.white,
+                ),
+                buildinformationCustomer(),
+                Divider(
+                  thickness: 3,
+                  color: Colors.white,
+                ),
+                buildReservationTable(index),
+                SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    detailreservationModels[index].orderfoodId == 'Null'
+                        ? Text('')
+                        : buildfoodorder(index),
+                  ],
+                )
+              ],
+            ),
           ));
   Container buildfoodorder(int index) {
     return Container(
       width: 350,
       decoration: ShapeDecoration(
-          color: ksecondary,
+          color: Colors.white,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
       child: Column(
@@ -232,7 +253,7 @@ class _DetailTableOrderfoodState extends State<DetailTableOrderfood> {
       width: 350,
       height: 120,
       decoration: ShapeDecoration(
-          color: ksecondary,
+          color: Colors.white,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
       child: Column(
@@ -272,9 +293,8 @@ class _DetailTableOrderfoodState extends State<DetailTableOrderfood> {
   Container buildReservationTable(int index) {
     return Container(
       width: 350,
-      height: 250,
       decoration: ShapeDecoration(
-          color: ksecondary,
+          color: Colors.white,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
       child: Column(
@@ -342,6 +362,19 @@ class _DetailTableOrderfoodState extends State<DetailTableOrderfood> {
                     Text(
                       'table No. ${detailreservationModels[index].tableResId} ',
                       style: GoogleFonts.lato(fontSize: 15),
+                    )
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 300,
+                      height: 150,
+                      child: Image.network(
+                        '${Myconstant().domain}${detailreservationModels[index].tablePicture!}',
+                        fit: BoxFit.cover,
+                      ),
                     )
                   ],
                 ),

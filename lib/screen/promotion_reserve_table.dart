@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rrs_app/model/promotion_model.dart';
@@ -13,7 +12,6 @@ class PromotionReserveTable extends StatefulWidget {
   PromotionReserveTable({
     Key? key,
   }) : super(key: key);
-
   @override
   _PromotionReserveTableState createState() => _PromotionReserveTableState();
 }
@@ -29,6 +27,7 @@ class _PromotionReserveTableState extends State<PromotionReserveTable> {
     readPromotion();
   }
 
+//read promotion restaurant
   Future<Null> readPromotion() async {
     String url =
         '${Myconstant().domain}/getPromotionReserve_a_table.php?isAdd=true&promotion.promotion_type=Reserve a table';

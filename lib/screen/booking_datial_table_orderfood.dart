@@ -11,6 +11,7 @@ import 'package:flutter_rrs_app/utility/my_style.dart';
 import 'package:flutter_rrs_app/utility/normal_dialog.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart';
 
 class BookingTailTableOrderfood extends StatefulWidget {
   final ReadshopModel readshopModel;
@@ -34,12 +35,19 @@ class BookingTailTableOrderfood extends StatefulWidget {
 
 class _BookingTailTableOrderfoodState extends State<BookingTailTableOrderfood> {
   ReadshopModel? readshopModel;
+
+  final formatCurrency = new NumberFormat.simpleCurrency();
+  var myFormat = NumberFormat("#,##0.00", "en_US");
+
   TableModel? tableModel;
+  bool loadstatus = true;
   // bool statusOrder = true;
   List<ReservationModel> reservationModels = [];
   List<OrderfoodModel> orderfoodModels = [];
   List<List<String>> listMenufoods = [];
   List<String> menufoods = [];
+  List<String> amounts = [];
+  List<String> netPrices = [];
   List<List<String>> listPrices = [];
   List<List<String>> listAmounts = [];
   List<List<String>> listnetPrices = [];
@@ -94,8 +102,11 @@ class _BookingTailTableOrderfoodState extends State<BookingTailTableOrderfood> {
     String? url =
         '${Myconstant().domain}/getOrderfoodWherecustomerIdandDateTime.php?isAdd=true&customerId=$customerId&orderfoodDateTime=$orderTime';
     Response response = await Dio().get(url);
-    // print('res==> $response');
+    print('res==> $response');
     if (response.toString() != 'null') {
+      setState(() {
+        loadstatus = false;
+      });
       var result = json.decode(response.data);
 
       for (var map in result) {
@@ -104,15 +115,17 @@ class _BookingTailTableOrderfoodState extends State<BookingTailTableOrderfood> {
         // print('orderfood ===> $orderfoodModel');
         // String orderfooddetail = jsonEncode(orderfoodModel.foodmenuName);
         // print('ordercode ==>${orderfooddetail.length}');
-        menufoods = changeArray(orderfoodModel.foodmenuName!);
-        List<String> prices = changeArray(orderfoodModel.foodmenuPrice!);
-        List<String> amounts = changeArray(orderfoodModel.amount!);
-        List<String> netPrices = changeArray(orderfoodModel.netPrice!);
 
         print(' lenght menu ==>${menufoods.length}');
         setState(() {
+          menufoods = changeArray(orderfoodModel.foodmenuName!);
+          List<String> prices = changeArray(orderfoodModel.foodmenuPrice!);
+          amounts = changeArray(orderfoodModel.amount!);
+          netPrices = changeArray(orderfoodModel.netPrice!);
           orderfoodModels.add(orderfoodModel);
           print('menufood ====>$menufoods');
+          print('amount ====>$amounts');
+          print('netprice ====>$netPrices');
           orderfoodId = orderfoodModel.id;
           print('orderfood id ==> $orderfoodId');
           listMenufoods.add(menufoods);
@@ -204,7 +217,7 @@ class _BookingTailTableOrderfoodState extends State<BookingTailTableOrderfood> {
           backgroundColor: kprimary,
           title: Text('Booking details'),
         ),
-        body: buildContent());
+        body: loadstatus == true ? MyStyle().showProgrsee() : buildContent());
   }
 
   Widget buildContent() => ListView.builder(
@@ -214,17 +227,145 @@ class _BookingTailTableOrderfoodState extends State<BookingTailTableOrderfood> {
         itemCount: orderfoodModels.length,
         itemBuilder: (context, index) => Column(
           children: [
+            Container(
+              width: 80,
+              height: 80,
+              child: Column(
+                children: [
+                  Image.asset(
+                    'assets/images/restaurant.png',
+                    fit: BoxFit.cover,
+                  )
+                ],
+              ),
+            ),
             MyStyle().showheadText(orderfoodModels[index].restaurantNameshop!),
-            SizedBox(
-              height: 10,
+            Divider(
+              thickness: 3,
             ),
             buildinformationCustomer(),
-            SizedBox(
-              height: 10,
+            Divider(
+              thickness: 3,
             ),
-            buildtableReservationinformation(),
-            SizedBox(
-              height: 10,
+            Container(
+              width: 350,
+              decoration: ShapeDecoration(
+                  color: Colors.white,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10))),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              'Table reservation information',
+                              style: GoogleFonts.lato(fontSize: 20),
+                            )
+                          ],
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.today_rounded,
+                              size: 35,
+                            ),
+                            Text(
+                              dateof!,
+                              style: GoogleFonts.lato(fontSize: 15),
+                            )
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.access_time_filled_outlined,
+                              size: 35,
+                            ),
+                            Text(
+                              timeof!,
+                              style: GoogleFonts.lato(fontSize: 15),
+                            )
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.people_alt_sharp,
+                              size: 35,
+                            ),
+                            Text(
+                              numberOfGueste!,
+                              style: GoogleFonts.lato(fontSize: 15),
+                            )
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.location_pin,
+                              size: 35,
+                            ),
+                            Text(
+                              '${readshopModel!.restaurantBranch}',
+                              style: GoogleFonts.lato(fontSize: 15),
+                            )
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.event_seat_rounded,
+                              size: 35,
+                            ),
+                            Text(
+                              'table No. ${tableModel!.tableResId} ',
+                              style: GoogleFonts.lato(fontSize: 15),
+                            )
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              width: 300,
+                              height: 150,
+                              child: Image.network(
+                                '${Myconstant().domain}${reservationModels[index].tablePicture!}',
+                                fit: BoxFit.cover,
+                              ),
+                            )
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            readshopModel!.promotionId == null
+                                ? Text("")
+                                : Row(
+                                    children: [
+                                      Text(
+                                        'Promotion. ${readshopModel!.promotionType}  ${readshopModel!.promotionDiscount} % ',
+                                        style: GoogleFonts.lato(fontSize: 15),
+                                      )
+                                    ],
+                                  ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Divider(
+              thickness: 3,
             ),
             buildfoodorder(index),
             buttomConfirm(context)
@@ -236,7 +377,7 @@ class _BookingTailTableOrderfoodState extends State<BookingTailTableOrderfood> {
     return Container(
       width: 350,
       decoration: ShapeDecoration(
-          color: ksecondary,
+          color: Colors.white,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
       child: Column(
@@ -264,118 +405,12 @@ class _BookingTailTableOrderfoodState extends State<BookingTailTableOrderfood> {
     );
   }
 
-  Container buildtableReservationinformation() {
-    return Container(
-      width: 350,
-      height: 250,
-      decoration: ShapeDecoration(
-          color: ksecondary,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      'Table reservation information',
-                      style: GoogleFonts.lato(fontSize: 20),
-                    )
-                  ],
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.today_rounded,
-                      size: 35,
-                    ),
-                    Text(
-                      dateof!,
-                      style: GoogleFonts.lato(fontSize: 15),
-                    )
-                  ],
-                ),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.access_time_filled_outlined,
-                      size: 35,
-                    ),
-                    Text(
-                      timeof!,
-                      style: GoogleFonts.lato(fontSize: 15),
-                    )
-                  ],
-                ),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.people_alt_sharp,
-                      size: 35,
-                    ),
-                    Text(
-                      numberOfGueste!,
-                      style: GoogleFonts.lato(fontSize: 15),
-                    )
-                  ],
-                ),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.location_pin,
-                      size: 35,
-                    ),
-                    Text(
-                      '${readshopModel!.restaurantBranch}',
-                      style: GoogleFonts.lato(fontSize: 15),
-                    )
-                  ],
-                ),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.event_seat_rounded,
-                      size: 35,
-                    ),
-                    Text(
-                      'table No. ${tableModel!.tableResId} ',
-                      style: GoogleFonts.lato(fontSize: 15),
-                    )
-                  ],
-                ),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.event_seat_rounded,
-                      size: 35,
-                    ),
-                    Text(
-                      'table No. ${tableModel!.tableResId} ',
-                      style: GoogleFonts.lato(fontSize: 15),
-                    )
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Container buildinformationCustomer() {
     return Container(
       width: 350,
       height: 120,
       decoration: ShapeDecoration(
-          color: ksecondary,
+          color: Colors.white,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
       child: Column(
@@ -423,7 +458,7 @@ class _BookingTailTableOrderfoodState extends State<BookingTailTableOrderfood> {
             height: 40,
             child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  primary: kprimary,
+                  primary: Colors.green,
                   onPrimary: Colors.white,
                 ),
                 onPressed: () {
@@ -451,8 +486,15 @@ class _BookingTailTableOrderfoodState extends State<BookingTailTableOrderfood> {
             children: [
               Expanded(flex: 3, child: Text(listMenufoods[index][index2])),
               Expanded(flex: 1, child: Text(listAmounts[index][index2])),
-              // Expanded(flex: 1, child: Text(listPrices[index][index2])),
-              Expanded(flex: 1, child: Text(listnetPrices[index][index2]))
+              Expanded(
+                  flex: 1,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                          '${myFormat.format(int.parse(listnetPrices[index][index2]))}'),
+                    ],
+                  ))
             ],
           ));
 }

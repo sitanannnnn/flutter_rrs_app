@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rrs_app/model/cart_model.dart';
 import 'package:flutter_rrs_app/model/food_menu_model.dart';
@@ -65,7 +66,7 @@ class _PreOrderFoodState extends State<PreOrderFood> {
   Future<Null> readFoodMenu() async {
     restaurantId = readshopModel!.restaurantId;
     String url =
-        '${Myconstant().domain}/getFoodWhererestaurantId.php?isAdd=true&restaurantId=$restaurantId';
+        '${Myconstant().domain}/getFoodmenuWhererestaurantId.php?isAdd=true&restaurantId=$restaurantId';
     Response response = await Dio().get(url);
     // print('res==> $response');
     var result = json.decode(response.data);
@@ -125,34 +126,157 @@ class _PreOrderFoodState extends State<PreOrderFood> {
                             children: [
                               showFoodMenuImage(context, index),
                               Container(
-                                width: MediaQuery.of(context).size.width * 0.4,
-                                height: MediaQuery.of(context).size.width * 0.3,
+                                width: MediaQuery.of(context).size.width * 0.5,
+                                height:
+                                    MediaQuery.of(context).size.width * 0.35,
                                 child: Column(
                                   children: [
                                     Row(
                                       children: [
-                                        Text(foodmenuModels[index]
-                                            .foodmenuName!),
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
                                         Container(
-                                            width: MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.4 -
-                                                8.0,
-                                            child: Text(
-                                              'price ${foodmenuModels[index].foodmenuPrice!}LAK',
-                                              style: GoogleFonts.lato(
-                                                  fontSize: 16,
-                                                  color: Colors.green[800]),
-                                            ))
+                                          width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.4 -
+                                              8.0,
+                                          child: foodmenuModels[index]
+                                                      .foodMenuIdBuyOne ==
+                                                  null
+                                              ? Text(
+                                                  foodmenuModels[index]
+                                                      .foodmenuName!,
+                                                  style: GoogleFonts.lato(
+                                                      fontSize: 16,
+                                                      color: Colors.blue[800]),
+                                                )
+                                              : Text(
+                                                  '${foodmenuModels[index].foodmenunameBuyOne} + ${foodmenuModels[index].foodmenunameGetOne}',
+                                                  style: GoogleFonts.lato(
+                                                      fontSize: 16,
+                                                      color: Colors.blue[800]),
+                                                ),
+                                        )
                                       ],
                                     ),
                                     SizedBox(
-                                      height: 30,
+                                      height: 5,
+                                    ),
+                                    //show price food
+                                    Row(
+                                      children: [
+                                        foodmenuModels[index].promotionId ==
+                                                null
+                                            ? Container(
+                                                width: MediaQuery.of(context)
+                                                            .size
+                                                            .width *
+                                                        0.4 -
+                                                    8.0,
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.end,
+                                                  children: [
+                                                    Text(
+                                                      foodmenuModels[index]
+                                                          .foodmenuPrice!,
+                                                      style: GoogleFonts.lato(
+                                                          fontSize: 16,
+                                                          color: Colors
+                                                              .green[800]),
+                                                    ),
+                                                    Text("K",
+                                                        style: GoogleFonts.lato(
+                                                            fontSize: 16,
+                                                            color: Colors
+                                                                .grey[800],
+                                                            decoration:
+                                                                TextDecoration
+                                                                    .lineThrough))
+                                                  ],
+                                                ))
+                                            : Container(
+                                                width: MediaQuery.of(context)
+                                                            .size
+                                                            .width *
+                                                        0.4 -
+                                                    8.0,
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.end,
+                                                  children: [
+                                                    Text(
+                                                      foodmenuModels[index]
+                                                          .promotionOldPrice!,
+                                                      style: GoogleFonts.lato(
+                                                          fontSize: 14,
+                                                          color:
+                                                              Colors.grey[800],
+                                                          decoration:
+                                                              TextDecoration
+                                                                  .lineThrough,
+                                                          decorationColor:
+                                                              Colors.red,
+                                                          decorationThickness:
+                                                              3),
+                                                    ),
+                                                    Text("K",
+                                                        style: GoogleFonts.lato(
+                                                            fontSize: 16,
+                                                            color: Colors
+                                                                .grey[800],
+                                                            decoration:
+                                                                TextDecoration
+                                                                    .lineThrough))
+                                                  ],
+                                                ))
+                                      ],
+                                    ),
+                                    Column(
+                                      children: [
+                                        foodmenuModels[index].promotionId ==
+                                                null
+                                            ? Text("")
+                                            : Row(
+                                                children: [
+                                                  Container(
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                                      .size
+                                                                      .width *
+                                                                  0.4 -
+                                                              8.0,
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .end,
+                                                        children: [
+                                                          Text(
+                                                            foodmenuModels[
+                                                                    index]
+                                                                .promotionNewPrice!,
+                                                            style: GoogleFonts.lato(
+                                                                fontSize: 16,
+                                                                color: Colors
+                                                                        .green[
+                                                                    800]),
+                                                          ),
+                                                          Text("K",
+                                                              style: GoogleFonts.lato(
+                                                                  fontSize: 16,
+                                                                  color: Colors
+                                                                          .grey[
+                                                                      800],
+                                                                  decoration:
+                                                                      TextDecoration
+                                                                          .lineThrough))
+                                                        ],
+                                                      ))
+                                                ],
+                                              ),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 15,
                                     ),
                                     Container(
                                       width: MediaQuery.of(context).size.width *
@@ -221,7 +345,10 @@ class _PreOrderFoodState extends State<PreOrderFood> {
                   children: [
                     Column(
                       children: [
-                        Text(foodmenuModels[index].foodmenuName!),
+                        foodmenuModels[index].foodMenuIdBuyOne == null
+                            ? Text(foodmenuModels[index].foodmenuName!)
+                            : Text(
+                                '${foodmenuModels[index].foodmenunameBuyOne} + ${foodmenuModels[index].foodmenunameGetOne} ')
                       ],
                     ),
                   ],
@@ -280,7 +407,7 @@ class _PreOrderFoodState extends State<PreOrderFood> {
                             width: 90,
                             child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                    primary: kprimary,
+                                    primary: Colors.red,
                                     onPrimary: Colors.white,
                                     shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.all(
@@ -294,7 +421,7 @@ class _PreOrderFoodState extends State<PreOrderFood> {
                             width: 90,
                             child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                    primary: kprimary,
+                                    primary: Colors.green,
                                     onPrimary: Colors.white,
                                     shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.all(
@@ -321,10 +448,15 @@ class _PreOrderFoodState extends State<PreOrderFood> {
     String? customerId = preferences.getString("customerId");
     String? restaurantNameshop = readshopModel!.restaurantNameshop;
     String? foodmenuId = foodmenuModels[index].foodmenuId;
-    String? foodmenuName = foodmenuModels[index].foodmenuName;
-    String? foodmenuPrice = foodmenuModels[index].foodmenuPrice;
+    String? foodmenuName = foodmenuModels[index].foodMenuIdBuyOne == null
+        ? foodmenuModels[index].foodmenuName
+        : '${foodmenuModels[index].foodmenunameBuyOne} + ${foodmenuModels[index].foodmenunameGetOne}';
+    String? foodmenuPrice = foodmenuModels[index].promotionId == null
+        ? foodmenuModels[index].foodmenuPrice
+        : foodmenuModels[index].promotionNewPrice;
     int priceInt = int.parse(foodmenuPrice!);
     int netPrice = priceInt * amount;
+    print('foodmenu price==>$foodmenuPrice');
 
     // print(
     //     'customerId = $customerId,restaurantId = $restaurantId,restaurantNameshop =$restaurantNameshop,foodmenuId =$foodmenuId,foodmenuName =$foodmenuName,foodmenuPrice =$foodmenuPrice,amount =$amount ,netPrice =$netPrice');
@@ -337,6 +469,7 @@ class _PreOrderFoodState extends State<PreOrderFood> {
     map['foodmenuPrice'] = foodmenuPrice;
     map['amount'] = amount.toString();
     map['netPrice'] = netPrice.toString();
+
     // print('map ==> ${map.toString()}');
     CartModel cartModel = CartModel.fromJson(map);
     //อ่านค่าข้อมูลจากฐานข้อมูลSQLite

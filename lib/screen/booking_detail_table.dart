@@ -111,21 +111,37 @@ class _BookingTailTableState extends State<BookingTailTable> {
                     SizedBox(
                       height: 10,
                     ),
+                    Container(
+                      width: 80,
+                      height: 80,
+                      child: Column(
+                        children: [
+                          Image.asset(
+                            'assets/images/restaurant.png',
+                            fit: BoxFit.cover,
+                          )
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
                     Text(
                       reservationModels[index].restaurantNameshop!,
                       style: GoogleFonts.lato(fontSize: 25),
                     ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    buildReservationTable(index),
-                    SizedBox(
-                      height: 30,
+                    Divider(
+                      thickness: 3,
+                      endIndent: 16,
+                      indent: 16,
                     ),
                     buildinformationCustomer(),
-                    SizedBox(
-                      height: 50,
+                    Divider(
+                      thickness: 3,
+                      endIndent: 16,
+                      indent: 16,
                     ),
+                    buildReservationTable(index),
                     buildBottomConfirm(context)
                   ],
                 )));
@@ -144,7 +160,7 @@ class _BookingTailTableState extends State<BookingTailTable> {
             height: 40,
             child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  primary: kprimary,
+                  primary: Colors.green,
                   onPrimary: Colors.white,
                 ),
                 onPressed: () {
@@ -164,9 +180,9 @@ class _BookingTailTableState extends State<BookingTailTable> {
       width: 350,
       height: 120,
       decoration: ShapeDecoration(
-          color: ksecondary,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+        color: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -204,9 +220,8 @@ class _BookingTailTableState extends State<BookingTailTable> {
   Container buildReservationTable(int index) {
     return Container(
       width: 350,
-      height: 250,
       decoration: ShapeDecoration(
-          color: ksecondary,
+          color: Colors.white,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
       child: Column(
@@ -274,9 +289,22 @@ class _BookingTailTableState extends State<BookingTailTable> {
                     Text(
                       'table No. ${reservationModels[index].tableResId} ',
                       style: GoogleFonts.lato(fontSize: 15),
-                    )
+                    ),
                   ],
                 ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 300,
+                      height: 150,
+                      child: Image.network(
+                        '${Myconstant().domain}${reservationModels[index].tablePicture!}',
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                  ],
+                )
               ],
             ),
           ),

@@ -1,8 +1,7 @@
 import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_rrs_app/dashboard/my_booking.dart';
+
 import 'package:flutter_rrs_app/model/orderfood_model.dart';
 import 'package:flutter_rrs_app/model/read_shop_model.dart';
 import 'package:flutter_rrs_app/screen/payment_method.dart';
@@ -10,6 +9,7 @@ import 'package:flutter_rrs_app/utility/my_constant.dart';
 import 'package:flutter_rrs_app/utility/my_style.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart';
 
 class BookingTailOrderfood extends StatefulWidget {
   final ReadshopModel readshopModel;
@@ -25,6 +25,8 @@ class BookingTailOrderfood extends StatefulWidget {
 
 class _BookingTailOrderfoodState extends State<BookingTailOrderfood> {
   ReadshopModel? readshopModel;
+  var myFormat = NumberFormat("#,##0.00", "en_US");
+  bool loadstatus = true;
   String? name,
       phonenumber,
       customerId,
@@ -38,13 +40,16 @@ class _BookingTailOrderfoodState extends State<BookingTailOrderfood> {
   List<List<String>> listAmounts = [];
   List<List<String>> listnetPrices = [];
   List<int> totalInt = [];
+  List<double> discountAmount = [];
+  List<double> totalPrice = [];
+  double totaldiscount = 0;
 
   @override
   void initState() {
     super.initState();
     readshopModel = widget.readshopModel;
     orderfoodDateTime = widget.orderfoodDateTime;
-    print('order time => $orderfoodDateTime');
+
     findUser();
     readOrderfood();
   }
@@ -62,27 +67,33 @@ class _BookingTailOrderfoodState extends State<BookingTailOrderfood> {
   Future<Null> readOrderfood() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? customerId = preferences.getString("customerId");
+    //print('customerId========>$customerId');
+    print('order time => $orderfoodDateTime');
     String? url =
         '${Myconstant().domain}/getOrderfoodWherecustomerIdandDateTime.php?isAdd=true&customerId=$customerId&orderfoodDateTime=$orderfoodDateTime';
     Response response = await Dio().get(url);
-    // print('res==> $response');
+    print('res?==> $response');
     if (response.toString() != 'null') {
       var result = json.decode(response.data);
 
       for (var map in result) {
-        print('result= $result');
         OrderfoodModel orderfoodModel = OrderfoodModel.fromJson(map);
-
-        // print('orderfood ===> $orderfoodModel');
-        // String orderfooddetail = jsonEncode(orderfoodModel.foodmenuName);
-        // print('ordercode ==>${orderfooddetail.length}');
         menufoods = changeArray(orderfoodModel.foodmenuName!);
-        List<String> prices = changeArray(orderfoodModel.foodmenuPrice!);
         List<String> amounts = changeArray(orderfoodModel.amount!);
         List<String> netPrices = changeArray(orderfoodModel.netPrice!);
         int total = 0;
+        String? caldiscount = orderfoodModel.promotionDiscount;
+        int discount;
+        caldiscount == null ? discount = 0 : discount = int.parse(caldiscount);
+        double netTotal = 0;
         for (var string in netPrices) {
+          //หาราคารวมไม่มีส่วนลด
           total = total + int.parse(string.trim());
+          //หาราคาส่วนลด
+          totaldiscount = (total * (discount / 100));
+          print('total ==> $totaldiscount');
+          //ราคาหักส่วนลด
+          netTotal = (total - totaldiscount);
         }
         print('total==> $total');
         print(' lenght menu ==>${menufoods.length}');
@@ -94,8 +105,6 @@ class _BookingTailOrderfoodState extends State<BookingTailOrderfood> {
           listMenufoods.add(menufoods);
           print(' list menu foos $listMenufoods');
           print('lenght menufood ==>${listMenufoods.length}');
-
-          // listPrices.add(prices);
           listAmounts.add(amounts);
           listnetPrices.add(netPrices);
           totalInt.add(total);
@@ -124,7 +133,9 @@ class _BookingTailOrderfoodState extends State<BookingTailOrderfood> {
           backgroundColor: kprimary,
           title: Text('order food detail'),
         ),
-        body: SingleChildScrollView(child: buildContent()));
+        body: orderfoodModels.length == 0
+            ? MyStyle().showProgrsee()
+            : SingleChildScrollView(child: buildContent()));
   }
 
 //เเสดงชื่อร้านอาหาร ข้อมูลลูกค้า
@@ -135,25 +146,28 @@ class _BookingTailOrderfoodState extends State<BookingTailOrderfood> {
         itemCount: orderfoodModels.length,
         itemBuilder: (context, index) => Column(
           children: [
+            Container(
+              width: 80,
+              height: 80,
+              child: Column(
+                children: [
+                  Image.asset(
+                    'assets/images/restaurant.png',
+                    fit: BoxFit.cover,
+                  )
+                ],
+              ),
+            ),
             MyStyle().showheadText(orderfoodModels[index].restaurantNameshop!),
-            SizedBox(
-              height: 10,
+            Divider(
+              thickness: 3,
             ),
             buildinformationCustomer(),
-            SizedBox(
-              height: 10,
-            ),
-            SizedBox(
-              height: 20,
+            Divider(
+              thickness: 3,
             ),
             buildfoodorder(index),
-            SizedBox(
-              height: 10,
-            ),
             buildtotal(index),
-            SizedBox(
-              height: 80,
-            ),
             Container(
               width: 250,
               height: 100,
@@ -165,7 +179,7 @@ class _BookingTailOrderfoodState extends State<BookingTailOrderfood> {
                     height: 40,
                     child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          primary: kprimary,
+                          primary: Colors.green,
                           onPrimary: Colors.white,
                         ),
                         onPressed: () {
@@ -188,19 +202,108 @@ class _BookingTailOrderfoodState extends State<BookingTailOrderfood> {
       );
 //เเสดงยอดรวมของอาหาร
   Widget buildtotal(int index) => Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(5.0),
         child: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Text('total ', style: GoogleFonts.lato(fontSize: 25)),
-                Text(
-                  totalInt[index].toString(),
-                  style: GoogleFonts.lato(fontSize: 20),
-                )
-              ],
+            Container(
+              width: 350,
+              decoration: ShapeDecoration(
+                  color: Colors.white,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10))),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Total food price  ', style: GoogleFonts.lato()),
+                        Row(
+                          children: [
+                            Text(
+                              '${myFormat.format(int.parse(totalInt[index].toString()))} ',
+                            ),
+                            Text('K',
+                                style: GoogleFonts.lato(
+                                    decoration: TextDecoration.lineThrough))
+                          ],
+                        )
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Discount ', style: GoogleFonts.lato()),
+                        orderfoodModels[index].promotionDiscount == null
+                            ? Text('0%')
+                            : Text(
+                                '${orderfoodModels[index].promotionDiscount} %')
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Discount amount', style: GoogleFonts.lato()),
+                        orderfoodModels[index].promotionDiscount == null
+                            ? Row(
+                                children: [
+                                  Text(' 0 '),
+                                  Text('K',
+                                      style: GoogleFonts.lato(
+                                          decoration:
+                                              TextDecoration.lineThrough))
+                                ],
+                              )
+                            : Row(
+                                children: [
+                                  Text(
+                                      '${myFormat.format((discountAmount[index]))}'),
+                                  Text('K',
+                                      style: GoogleFonts.lato(
+                                          decoration:
+                                              TextDecoration.lineThrough))
+                                ],
+                              )
+                      ],
+                    ),
+                    Divider(
+                      thickness: 1,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Total ', style: GoogleFonts.lato(fontSize: 18)),
+                        orderfoodModels[index].promotionDiscount == null
+                            ? Row(
+                                children: [
+                                  Text('${myFormat.format((totalInt[index]))}'),
+                                  Text('K',
+                                      style: GoogleFonts.lato(
+                                          decoration:
+                                              TextDecoration.lineThrough))
+                                ],
+                              )
+                            : Row(
+                                children: [
+                                  Text(
+                                      '${myFormat.format((totalPrice[index]))}'),
+                                  Text('K',
+                                      style: GoogleFonts.lato(
+                                          decoration:
+                                              TextDecoration.lineThrough))
+                                ],
+                              )
+                      ],
+                    ),
+                  ],
+                ),
+              ),
             ),
+
+            Container()
+            // Text('total ', style: GoogleFonts.lato(fontSize: 25)),
+            //
           ],
         ),
       );
@@ -209,7 +312,7 @@ class _BookingTailOrderfoodState extends State<BookingTailOrderfood> {
     return Container(
       width: 350,
       decoration: ShapeDecoration(
-          color: ksecondary,
+          color: Colors.white,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
       child: Column(
@@ -243,7 +346,7 @@ class _BookingTailOrderfoodState extends State<BookingTailOrderfood> {
       width: 350,
       height: 120,
       decoration: ShapeDecoration(
-          color: ksecondary,
+          color: Colors.white,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
       child: Column(
@@ -289,9 +392,12 @@ class _BookingTailOrderfoodState extends State<BookingTailOrderfood> {
             children: [
               Row(
                 children: [
-                  Expanded(flex: 3, child: Text(listMenufoods[index][index2])),
+                  Expanded(flex: 2, child: Text(listMenufoods[index][index2])),
                   Expanded(flex: 1, child: Text(listAmounts[index][index2])),
-                  Expanded(flex: 1, child: Text(listnetPrices[index][index2])),
+                  Expanded(
+                      flex: 1,
+                      child: Text(
+                          '${myFormat.format(int.parse(listnetPrices[index][index2]))}')),
                 ],
               ),
             ],

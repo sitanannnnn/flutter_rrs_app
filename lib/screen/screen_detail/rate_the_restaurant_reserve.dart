@@ -155,12 +155,12 @@ class _RateTheRestaurantReserveState extends State<RateTheRestaurantReserve> {
       Response response = await Dio().get(url);
       // print('res = $response');
       if (response.toString() == 'true') {
-        Fluttertoast.showToast(
-            msg: 'Rated',
-            toastLength: Toast.LENGTH_SHORT,
-            backgroundColor: kprimary,
-            textColor: Colors.white,
-            fontSize: 16.0);
+        // Fluttertoast.showToast(
+        //     msg: 'Rated',
+        //     toastLength: Toast.LENGTH_SHORT,
+        //     backgroundColor: kprimary,
+        //     textColor: Colors.white,
+        //     fontSize: 16.0);
         // Navigator.pop(context);x
       } else {
         normalDialog(context, 'Please try again');
@@ -178,36 +178,56 @@ class _RateTheRestaurantReserveState extends State<RateTheRestaurantReserve> {
   }
 
   Widget buildcontext() => ListView.builder(
+      padding: EdgeInsets.all(16),
       shrinkWrap: true,
       physics: ScrollPhysics(),
       itemCount: detailreservationModels.length,
       itemBuilder: (context, index) => Column(
             children: [
-              SizedBox(
-                height: 10,
-              ),
-              Text(
-                detailreservationModels[index].restaurantNameshop!,
-                style: GoogleFonts.lato(fontSize: 25),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              buildinformationCustomer(),
-              SizedBox(
-                height: 20,
-              ),
-              buildReservationTable(index),
-              SizedBox(
-                height: 20,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  detailreservationModels[index].orderfoodId == "0"
-                      ? Text('')
-                      : buildfoodorder(index),
-                ],
+              Container(
+                color: ksecondary,
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      width: 80,
+                      height: 80,
+                      child: Column(
+                        children: [
+                          Image.asset(
+                            'assets/images/restaurant.png',
+                            fit: BoxFit.cover,
+                          )
+                        ],
+                      ),
+                    ),
+                    Text(
+                      detailreservationModels[index].restaurantNameshop!,
+                      style: GoogleFonts.lato(fontSize: 25),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    buildinformationCustomer(),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    buildReservationTable(index),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        detailreservationModels[index].orderfoodId == 'Null'
+                            ? Text('')
+                            : buildfoodorder(index),
+                      ],
+                    ),
+                  ],
+                ),
               ),
               SizedBox(
                 height: 20,
@@ -229,6 +249,50 @@ class _RateTheRestaurantReserveState extends State<RateTheRestaurantReserve> {
                       onPressed: () {
                         recordReviewOrderfood();
                         Navigator.pop(context);
+                        showDialog(
+                            context: context,
+                            builder: (context) => SimpleDialog(
+                                  title: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Column(
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Text(
+                                                  'You have successfully rated'),
+                                            ],
+                                          ),
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          Container(
+                                              width: 80,
+                                              height: 80,
+                                              child: Image.asset(
+                                                'assets/images/reviews.png',
+                                                fit: BoxFit.cover,
+                                              )),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              TextButton(
+                                                onPressed: () =>
+                                                    Navigator.pop(context),
+                                                child: Icon(
+                                                  Icons.check_circle,
+                                                  color: Colors.green,
+                                                  size: 50,
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ));
                       },
                       child: Text('Submit')))
             ],
@@ -237,7 +301,7 @@ class _RateTheRestaurantReserveState extends State<RateTheRestaurantReserve> {
     return Container(
       width: 350,
       decoration: ShapeDecoration(
-          color: ksecondary,
+          color: Colors.white,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
       child: Column(
@@ -361,7 +425,7 @@ class _RateTheRestaurantReserveState extends State<RateTheRestaurantReserve> {
       width: 350,
       height: 120,
       decoration: ShapeDecoration(
-          color: ksecondary,
+          color: Colors.white,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
       child: Column(
@@ -403,7 +467,7 @@ class _RateTheRestaurantReserveState extends State<RateTheRestaurantReserve> {
       width: 350,
       height: 250,
       decoration: ShapeDecoration(
-          color: ksecondary,
+          color: Colors.white,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
       child: Column(

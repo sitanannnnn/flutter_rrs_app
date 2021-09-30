@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_rrs_app/model/read_shop_model.dart';
 import 'package:flutter_rrs_app/screen/show_cancel_order_food.dart';
 import 'package:flutter_rrs_app/screen/show_cancel_table_reservation.dart';
 import 'package:flutter_rrs_app/screen/show_completed_orderfood.dart';
@@ -78,7 +79,9 @@ class _MyBookingState extends State<MyBooking> {
             ShowUnconfirmedTableReservation(),
             ShowConfirmTableReservation(),
             ShowCancelTableReservation(),
-            ShowCompletedTableReservation(),
+            ShowCompletedTableReservation(
+              readshopModel: ReadshopModel(),
+            ),
             ShowUnconfirmedOrderFood(),
             ShowConfirmedOrderFood(),
             ShowCancelOrderFood(),

@@ -6,6 +6,7 @@ class FoodMenuModel {
   String? foodmenuPicture;
   String? foodmenuDescrip;
   String? promotionId;
+
   String? restaurantNameshop;
   String? promotionType;
   String? promotionStartDate;
@@ -19,6 +20,8 @@ class FoodMenuModel {
   String? foodMenuIdBuyOne;
   String? foodMenuIdGetOne;
   String? promotionStatus;
+  String? foodmenunameBuyOne;
+  String? foodmenunameGetOne;
 
   FoodMenuModel(
       {this.foodmenuId,
@@ -40,7 +43,9 @@ class FoodMenuModel {
       this.promotionNewPrice,
       this.foodMenuIdBuyOne,
       this.foodMenuIdGetOne,
-      this.promotionStatus});
+      this.promotionStatus,
+      this.foodmenunameBuyOne,
+      this.foodmenunameGetOne});
 
   FoodMenuModel.fromJson(Map<String, dynamic> json) {
     foodmenuId = json['foodmenuId'];
@@ -63,6 +68,8 @@ class FoodMenuModel {
     foodMenuIdBuyOne = json['foodMenuId_buy_one'];
     foodMenuIdGetOne = json['foodMenuId_get_one'];
     promotionStatus = json['promotion_status'];
+    foodmenunameBuyOne = json['foodmenunameBuy_one'];
+    foodmenunameGetOne = json['foodmenunameGet_one'];
   }
 
   Map<String, dynamic> toJson() {
@@ -87,6 +94,8 @@ class FoodMenuModel {
     data['foodMenuId_buy_one'] = this.foodMenuIdBuyOne;
     data['foodMenuId_get_one'] = this.foodMenuIdGetOne;
     data['promotion_status'] = this.promotionStatus;
+    data['foodmenunameBuy_one'] = this.foodmenunameBuyOne;
+    data['foodmenunameGet_one'] = this.foodmenunameGetOne;
     return data;
   }
 }

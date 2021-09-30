@@ -198,7 +198,7 @@ class _ShowConfirmTableReservationState
                                               children: [
                                                 reservationModels[index]
                                                             .orderfoodId! ==
-                                                        "0"
+                                                        'Null'
                                                     ? Text("")
                                                     : Row(
                                                         children: [

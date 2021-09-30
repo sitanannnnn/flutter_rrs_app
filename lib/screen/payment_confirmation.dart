@@ -285,31 +285,49 @@ class _PaymentConfirmationState extends State<PaymentConfirmation> {
                         showDialog(
                             context: context,
                             builder: (context) => SimpleDialog(
-                                  title: Text(
-                                    'Upload Receipt success',
-                                    style: TextStyle(color: Colors.red),
-                                  ),
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        TextButton(
-                                          onPressed: () =>
-                                              Navigator.pushReplacement(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          MyBooking())),
-                                          child: Icon(
-                                            Icons.check_circle,
-                                            color: kprimary,
-                                            size: 30,
+                                  title: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Column(
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Text('Upload Receipt success'),
+                                            ],
                                           ),
-                                        ),
-                                      ],
-                                    )
-                                  ],
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          Container(
+                                              width: 80,
+                                              height: 80,
+                                              child: Image.asset(
+                                                'assets/images/transfer.png',
+                                                fit: BoxFit.cover,
+                                              )),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              TextButton(
+                                                onPressed: () =>
+                                                    Navigator.pushReplacement(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                MyBooking())),
+                                                child: Icon(
+                                                  Icons.check_circle,
+                                                  color: kprimary,
+                                                  size: 30,
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ));
                       }
                     },

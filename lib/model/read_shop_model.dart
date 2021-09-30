@@ -13,6 +13,9 @@ class ReadshopModel {
   String? restaurantBranch;
   String? restaurantAddress;
   String? typeOfFood;
+  String? id;
+  String? latitude;
+  String? longitude;
   String? promotionId;
   String? promotionType;
   String? promotionStartDate;
@@ -47,6 +50,9 @@ class ReadshopModel {
       this.restaurantBranch,
       this.restaurantAddress,
       this.typeOfFood,
+      this.id,
+      this.latitude,
+      this.longitude,
       this.promotionId,
       this.promotionType,
       this.promotionStartDate,
@@ -81,6 +87,9 @@ class ReadshopModel {
     restaurantBranch = json['restaurantBranch'];
     restaurantAddress = json['restaurantAddress'];
     typeOfFood = json['typeOfFood'];
+    id = json['id'];
+    latitude = json['latitude'];
+    longitude = json['longitude'];
     promotionId = json['promotion_id'];
     promotionType = json['promotion_type'];
     promotionStartDate = json['promotion_start_date'];
@@ -117,6 +126,9 @@ class ReadshopModel {
     data['restaurantBranch'] = this.restaurantBranch;
     data['restaurantAddress'] = this.restaurantAddress;
     data['typeOfFood'] = this.typeOfFood;
+    data['id'] = this.id;
+    data['latitude'] = this.latitude;
+    data['longitude'] = this.longitude;
     data['promotion_id'] = this.promotionId;
     data['promotion_type'] = this.promotionType;
     data['promotion_start_date'] = this.promotionStartDate;

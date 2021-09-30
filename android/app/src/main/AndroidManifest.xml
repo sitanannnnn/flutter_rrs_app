@@ -5,6 +5,8 @@
    <application
         android:label="flutter_rrs_app"
         android:icon="@mipmap/ic_launcher">
+        <meta-data android:name="com.google.android.geo.API_KEY"
+               android:value="AIzaSyBJ9d7zKs43mhEjTXxqcRZowNA05dS-4DE"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

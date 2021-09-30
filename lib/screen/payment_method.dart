@@ -48,7 +48,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
     Response response = await Dio().get(url);
     // print('res==> $response');
     var result = json.decode(response.data);
-    // print('result= $result');
+    print('result= $result');
     for (var map in result) {
       PaymentModel paymentModel = PaymentModel.fromJson(map);
       setState(() {
@@ -61,7 +61,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: kprimary,
-        title: Text('Payment method'),
+        title: Text('Select bank'),
       ),
       body: paymentModels.length == 0
           ? MyStyle().showProgrsee()

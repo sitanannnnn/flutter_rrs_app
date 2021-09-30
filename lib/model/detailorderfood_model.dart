@@ -11,6 +11,9 @@ class DetailorderfoodModel {
   String? orderfoodDateTime;
   String? reservationId;
   String? orderfoodStatus;
+  String? promotionId;
+  String? promotionType;
+  String? promotionDiscount;
 
   DetailorderfoodModel(
       {this.id,
@@ -24,7 +27,10 @@ class DetailorderfoodModel {
       this.netPrice,
       this.orderfoodDateTime,
       this.reservationId,
-      this.orderfoodStatus});
+      this.orderfoodStatus,
+      this.promotionId,
+      this.promotionType,
+      this.promotionDiscount});
 
   DetailorderfoodModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -39,6 +45,9 @@ class DetailorderfoodModel {
     orderfoodDateTime = json['orderfoodDateTime'];
     reservationId = json['reservationId'];
     orderfoodStatus = json['orderfoodStatus'];
+    promotionId = json['promotionId'];
+    promotionType = json['promotion_type'];
+    promotionDiscount = json['promotion_discount'];
   }
 
   Map<String, dynamic> toJson() {
@@ -55,6 +64,9 @@ class DetailorderfoodModel {
     data['orderfoodDateTime'] = this.orderfoodDateTime;
     data['reservationId'] = this.reservationId;
     data['orderfoodStatus'] = this.orderfoodStatus;
+    data['promotionId'] = this.promotionId;
+    data['promotion_type'] = this.promotionType;
+    data['promotion_discount'] = this.promotionDiscount;
     return data;
   }
 }

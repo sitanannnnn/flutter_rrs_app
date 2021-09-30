@@ -41,6 +41,8 @@ dependencies:
   flutter_rating_bar: ^4.0.0
   flutter_typeahead: ^3.2.1
   geolocator: ^7.6.2
+  google_maps_flutter: ^2.0.9
+  location: ^4.3.0
  
   # toast: ^0.1.5
   
@@ -70,14 +72,21 @@ flutter:
     - assets/images/1.jpg
     - assets/images/2.jpg
     - assets/images/thaifood.jpg
+    - assets/images/reservation.jpg
     - assets/images/dinner-table.png
     - assets/images/user.png
+    - assets/images/dish.png
+    - assets/images/reviews.png
+    - assets/images/transfer.png
     - assets/images/tableres.png
     - assets/images/bell.png
+    - assets/images/reserved.png
     - assets/images/discount.png
+    - assets/images/discounts.png
     - assets/images/discount_table.png
     - assets/images/discountfood.png
     - assets/images/promotion.png
+    - assets/images/restaurant.png
     - assets/images/c1.jpg
     - assets/images/c2.jpg
     - assets/images/c3.jpg

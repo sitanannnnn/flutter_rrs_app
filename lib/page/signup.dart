@@ -4,6 +4,7 @@ import 'package:flutter_rrs_app/utility/my_constant.dart';
 import 'package:flutter_rrs_app/utility/my_style.dart';
 import 'package:flutter_rrs_app/utility/normal_dialog.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class Signup extends StatefulWidget {
@@ -15,7 +16,67 @@ class _SignupState extends State<Signup> {
   GlobalKey<FormState> formkey = GlobalKey<FormState>();
   void validate;
   String? chooseType, name, user, email, phonenumber, password, confirmpassword;
+  double? lat, lng;
   @override
+  void initState() {
+    super.initState();
+    checkPermission();
+  }
+
+  //function ว่าเราได้มีการเปิดเเชร์ตำเเหน่งที่ตั้งของเราหรือไม่
+  Future<Null> checkPermission() async {
+    bool locationService;
+    LocationPermission locationPermission;
+
+    locationService = await Geolocator.isLocationServiceEnabled();
+    if (locationService) {
+      print('Service Location Open');
+
+      locationPermission = await Geolocator.checkPermission();
+      if (locationPermission == LocationPermission.denied) {
+        locationPermission = await Geolocator.requestPermission();
+        if (locationPermission == LocationPermission.deniedForever) {
+          locationnormalDialog(context, 'please open my location');
+        } else {
+          // Find LatLang
+          findLatLng();
+        }
+      } else {
+        if (locationPermission == LocationPermission.deniedForever) {
+          locationnormalDialog(context, 'please open my location');
+        } else {
+          // Find LatLng
+          findLatLng();
+        }
+      }
+    } else {
+      print('Service Location Close');
+      locationnormalDialog(context, 'please open my location');
+    }
+  }
+
+  //function ค้นหา latitude longitude
+  Future<Null> findLatLng() async {
+    print('findLatLan ==> Work');
+    Position? position = await findPostion();
+    setState(() {
+      lat = position!.latitude;
+      lng = position.longitude;
+      print('lat = $lat, lng = $lng');
+    });
+  }
+
+//function หา position
+  Future<Position?> findPostion() async {
+    Position position;
+    try {
+      position = await Geolocator.getCurrentPosition();
+      return position;
+    } catch (e) {
+      return null;
+    }
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(

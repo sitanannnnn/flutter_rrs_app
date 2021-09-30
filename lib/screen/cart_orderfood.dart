@@ -35,6 +35,7 @@ class _CartOrderfoodState extends State<CartOrderfood> {
   List<CartModel> cartModels = [];
   int total = 0;
   bool status = true;
+  String? reviewId;
   String? customerId,
       restaurantNameshop,
       reservationId,
@@ -108,7 +109,7 @@ class _CartOrderfoodState extends State<CartOrderfood> {
         children: [
           buildHeadTitle(),
           buildListFood(),
-          buildTotal(),
+          // buildTotal(),
           buildOrderButton()
         ],
       ),
@@ -124,7 +125,7 @@ class _CartOrderfoodState extends State<CartOrderfood> {
             width: 150,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                  primary: kprimary,
+                  primary: Colors.green,
                   onPrimary: Colors.white,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(15)))),
@@ -135,31 +136,30 @@ class _CartOrderfoodState extends State<CartOrderfood> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => BookingTailOrderfood(
-                              readshopModel: readshopModel!,
-                              orderfoodDateTime: '$orderfoodDateTime',
-                            )));
+                            readshopModel: readshopModel!,
+                            orderfoodDateTime: '$orderfoodDateTime')));
               },
             )),
       ],
     );
   }
 
-  Widget buildTotal() => Row(
-        children: [
-          Expanded(
-              flex: 5,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text(
-                    " ",
-                    style: TextStyle(fontSize: 25),
-                  ),
-                ],
-              )),
-          // Expanded(flex: 1, child: Text(total.toString()))
-        ],
-      );
+  // Widget buildTotal() => Row(
+  //       children: [
+  //         Expanded(
+  //             flex: 5,
+  //             child: Row(
+  //               mainAxisAlignment: MainAxisAlignment.end,
+  //               children: [
+  //                 Text(
+  //                   " ",
+  //                   style: TextStyle(fontSize: 25),
+  //                 ),
+  //               ],
+  //             )),
+  //         // Expanded(flex: 1, child: Text(total.toString()))
+  //       ],
+  //     );
   Widget buildHeadTitle() {
     return Container(
       margin: EdgeInsets.all(5),
@@ -269,9 +269,10 @@ class _CartOrderfoodState extends State<CartOrderfood> {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? customerId = preferences.getString('customerId');
     restaurantNameshop = readshopModel!.restaurantNameshop!;
+
     // print('name shop ==> $restaurantNameshop');
     String? url =
-        '${Myconstant().domain}/addOrderfood.php?isAdd=true&customerId=$customerId&restaurantId=$restaurantId&restaurantNameshop=$restaurantNameshop&foodmenuId=$foodmenuId&foodmenuName=$foodmenuName&foodmenuPrice=$foodmenuPrice&amount=$amount&netPrice=$netPrice&orderfoodDateTime=$orderfoodDateTime&reservationId=$reservationId&orderfoodStatus=$orderfoodStatus&promotionId=$promotionId&promotionType=$promotionType';
+        '${Myconstant().domain}/addOrderfood.php?isAdd=true&customerId=$customerId&restaurantId=$restaurantId&restaurantNameshop=$restaurantNameshop&foodmenuId=$foodmenuId&foodmenuName=$foodmenuName&foodmenuPrice=$foodmenuPrice&amount=$amount&netPrice=$netPrice&orderfoodDateTime=$orderfoodDateTime&reservationId=$reservationId&orderfoodStatus=$orderfoodStatus&promotionId=$promotionId&promotionType=$promotionType&reviewid=$reviewId';
     await Dio().get(url).then((value) {
       // print('value is ===> $value');
       if (value.toString() == 'true') {

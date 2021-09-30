@@ -12,21 +12,36 @@ class OrderfoodModel {
   String? reservationId;
   String? orderfoodStatus;
   String? orderfoodReasonCancelStatus;
+  String? promotionId;
+  String? promotionType;
+  String? reviewId;
+  String? orderfoodId;
+  String? rate;
+  String? opinion;
+  String? promotionDiscount;
 
-  OrderfoodModel(
-      {this.id,
-      this.customerId,
-      this.restaurantId,
-      this.restaurantNameshop,
-      this.foodmenuId,
-      this.foodmenuName,
-      this.foodmenuPrice,
-      this.amount,
-      this.netPrice,
-      this.orderfoodDateTime,
-      this.reservationId,
-      this.orderfoodStatus,
-      this.orderfoodReasonCancelStatus});
+  OrderfoodModel({
+    this.id,
+    this.customerId,
+    this.restaurantId,
+    this.restaurantNameshop,
+    this.foodmenuId,
+    this.foodmenuName,
+    this.foodmenuPrice,
+    this.amount,
+    this.netPrice,
+    this.orderfoodDateTime,
+    this.reservationId,
+    this.orderfoodStatus,
+    this.orderfoodReasonCancelStatus,
+    this.promotionId,
+    this.promotionType,
+    this.reviewId,
+    this.orderfoodId,
+    this.rate,
+    this.opinion,
+    this.promotionDiscount,
+  });
 
   OrderfoodModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -42,6 +57,13 @@ class OrderfoodModel {
     reservationId = json['reservationId'];
     orderfoodStatus = json['orderfoodStatus'];
     orderfoodReasonCancelStatus = json['orderfoodReasonCancelStatus'];
+    promotionId = json['promotionId'];
+    promotionType = json['promotionType'];
+    reviewId = json['reviewId'];
+    orderfoodId = json['orderfoodId'];
+    rate = json['rate'];
+    opinion = json['opinion'];
+    promotionDiscount = json['promotion_discount'];
   }
 
   Map<String, dynamic> toJson() {
@@ -59,6 +81,13 @@ class OrderfoodModel {
     data['reservationId'] = this.reservationId;
     data['orderfoodStatus'] = this.orderfoodStatus;
     data['orderfoodReasonCancelStatus'] = this.orderfoodReasonCancelStatus;
+    data['promotionId'] = this.promotionId;
+    data['promotionType'] = this.promotionType;
+    data['reviewId'] = this.reviewId;
+    data['orderfoodId'] = this.orderfoodId;
+    data['rate'] = this.rate;
+    data['opinion'] = this.opinion;
+    data['promotion_discount'] = this.promotionDiscount;
     return data;
   }
 }

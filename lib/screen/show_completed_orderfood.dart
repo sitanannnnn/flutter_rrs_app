@@ -6,6 +6,7 @@ import 'package:flutter_rrs_app/model/orderfood_model.dart';
 import 'package:flutter_rrs_app/model/read_shop_model.dart';
 import 'package:flutter_rrs_app/model/reservation_model.dart';
 import 'package:flutter_rrs_app/screen/booking_detail_orderfood.dart';
+import 'package:flutter_rrs_app/screen/order_food.dart';
 import 'package:flutter_rrs_app/screen/screen_detail/detail_orderfood.dart';
 import 'package:flutter_rrs_app/screen/screen_detail/rate_the_restaurant_orderfood.dart';
 import 'package:flutter_rrs_app/utility/my_constant.dart';
@@ -75,11 +76,21 @@ class _ShowCompletedOrderFoodState extends State<ShowCompletedOrderFood> {
             itemBuilder: (context, index) => GestureDetector(
                   onTap: () {
                     print('onclick ==> ${orderfoodModels[index].id}');
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => RateTheRestaurantOrderfood(
-                                orderfoodModel: orderfoodModels[index])));
+                    orderfoodModels[index].reviewId == null
+                        ? Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    RateTheRestaurantOrderfood(
+                                        orderfoodModel:
+                                            orderfoodModels[index])))
+                        : Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => OrderFood(
+                                    readshopModel: ReadshopModel(
+                                        restaurantId: orderfoodModels[index]
+                                            .restaurantId))));
                   },
                   child: Column(
                     children: [
@@ -90,7 +101,7 @@ class _ShowCompletedOrderFoodState extends State<ShowCompletedOrderFood> {
                             padding: const EdgeInsets.all(8.0),
                             child: Container(
                               width: MediaQuery.of(context).size.width * 0.90,
-                              height: MediaQuery.of(context).size.width * 0.3,
+                              height: MediaQuery.of(context).size.width * 0.35,
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.only(
@@ -122,15 +133,24 @@ class _ShowCompletedOrderFoodState extends State<ShowCompletedOrderFood> {
                                         Padding(
                                           padding: const EdgeInsets.all(8.0),
                                           child: Row(
-                                            // mainAxisAlignment:
-                                            //     MainAxisAlignment.start,
                                             children: [
                                               Text(
                                                 orderfoodModels[index]
                                                     .restaurantNameshop!,
                                                 style: GoogleFonts.lato(
                                                     fontSize: 20),
-                                              )
+                                              ),
+                                              SizedBox(
+                                                width: 20,
+                                              ),
+                                              Text(
+                                                  orderfoodModels[index]
+                                                      .orderfoodStatus!,
+                                                  style: GoogleFonts.lato(
+                                                      fontSize: 16,
+                                                      color: Colors.blue,
+                                                      fontWeight:
+                                                          FontWeight.bold))
                                             ],
                                           ),
                                         ),
@@ -167,20 +187,68 @@ class _ShowCompletedOrderFoodState extends State<ShowCompletedOrderFood> {
                                             )
                                           ],
                                         ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          children: [
-                                            Text(
-                                                orderfoodModels[index]
-                                                    .orderfoodStatus!,
-                                                style: GoogleFonts.lato(
-                                                    fontSize: 18,
-                                                    color: Colors.blue,
-                                                    fontWeight:
-                                                        FontWeight.bold))
-                                          ],
-                                        ),
+                                        orderfoodModels[index].reviewId == null
+                                            ? Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.end,
+                                                children: [
+                                                  Container(
+                                                    height: 20,
+                                                    child: ElevatedButton(
+                                                        style: ElevatedButton.styleFrom(
+                                                            primary:
+                                                                Colors.orange,
+                                                            onPrimary:
+                                                                Colors.white,
+                                                            shape: RoundedRectangleBorder(
+                                                                borderRadius: BorderRadius
+                                                                    .all(Radius
+                                                                        .circular(
+                                                                            5)))),
+                                                        onPressed: () {
+                                                          Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                  builder: (context) =>
+                                                                      RateTheRestaurantOrderfood(
+                                                                          orderfoodModel:
+                                                                              orderfoodModels[index])));
+                                                        },
+                                                        child: Text('Rate')),
+                                                  )
+                                                ],
+                                              )
+                                            : Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.end,
+                                                children: [
+                                                  Container(
+                                                    height: 20,
+                                                    child: ElevatedButton(
+                                                        style: ElevatedButton.styleFrom(
+                                                            primary:
+                                                                Colors.orange,
+                                                            onPrimary:
+                                                                Colors.white,
+                                                            shape: RoundedRectangleBorder(
+                                                                borderRadius: BorderRadius
+                                                                    .all(Radius
+                                                                        .circular(
+                                                                            5)))),
+                                                        onPressed: () {
+                                                          Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                  builder: (context) =>
+                                                                      OrderFood(
+                                                                          readshopModel:
+                                                                              ReadshopModel(restaurantId: orderfoodModels[index].restaurantId))));
+                                                        },
+                                                        child: Text(
+                                                            'Order again')),
+                                                  )
+                                                ],
+                                              ),
                                       ],
                                     ),
                                   )

@@ -10,6 +10,7 @@ import 'package:flutter_rrs_app/screen/payment_method.dart';
 import 'package:flutter_rrs_app/utility/my_constant.dart';
 import 'package:flutter_rrs_app/utility/my_style.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DetailOrderfood extends StatefulWidget {
@@ -24,6 +25,8 @@ class DetailOrderfood extends StatefulWidget {
 
 class _DetailOrderfoodState extends State<DetailOrderfood> {
   OrderfoodModel? orderfoodModel;
+  var myFormat = NumberFormat("#,##0.00", "en_US");
+
   String? orderfoodId, name, customerId, phonenumber;
   List<DetailorderfoodModel> detailorderfoodModels = [];
   List<List<String>> listMenufoods = [];
@@ -32,6 +35,10 @@ class _DetailOrderfoodState extends State<DetailOrderfood> {
   List<List<String>> listAmounts = [];
   List<List<String>> listnetPrices = [];
   List<int> totalInt = [];
+  List<double> discountAmount = [];
+  List<double> totalPrice = [];
+  double totaldiscount = 0;
+
   @override
   void initState() {
     super.initState();
@@ -70,18 +77,30 @@ class _DetailOrderfoodState extends State<DetailOrderfood> {
         List<String> prices = changeArray(detailorderfoodModel.foodmenuPrice!);
         List<String> amounts = changeArray(detailorderfoodModel.amount!);
         List<String> netPrices = changeArray(detailorderfoodModel.netPrice!);
+        String? caldiscount = detailorderfoodModel.promotionDiscount;
+        int discount;
+        caldiscount == null ? discount = 0 : discount = int.parse(caldiscount);
         int total = 0;
+        double netTotal = 0;
+
         for (var string in netPrices) {
+          //หาราคารวมไม่มีส่วนลด
           total = total + int.parse(string.trim());
+          //หาราคาส่วนลด
+          totaldiscount = (total * (discount / 100));
+          print('total ==> $totaldiscount');
+          netTotal = (total - totaldiscount);
         }
-        print('total==> $total');
-        print(' lenght menu ==>${menufoods.length}');
+
+        print(detailorderfoodModel.promotionDiscount);
         setState(() {
           detailorderfoodModels.add(detailorderfoodModel);
           listMenufoods.add(menufoods);
           listAmounts.add(amounts);
           listnetPrices.add(netPrices);
           totalInt.add(total);
+          discountAmount.add(totaldiscount);
+          totalPrice.add(netTotal);
         });
       }
     }
@@ -116,55 +135,152 @@ class _DetailOrderfoodState extends State<DetailOrderfood> {
         shrinkWrap: true,
         physics: ScrollPhysics(),
         itemCount: detailorderfoodModels.length,
-        itemBuilder: (context, index) => Column(
-          children: [
-            MyStyle()
-                .showheadText(detailorderfoodModels[index].restaurantNameshop!),
-            SizedBox(
-              height: 10,
-            ),
-            buildinformationCustomer(),
-            SizedBox(
-              height: 10,
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            buildfoodorder(index),
-            SizedBox(
-              height: 10,
-            ),
-            buildtotal(index),
-            SizedBox(
-              height: 80,
-            ),
-          ],
+        itemBuilder: (context, index) => Container(
+          color: ksecondary,
+          child: Column(
+            children: [
+              SizedBox(
+                height: 10,
+              ),
+              Container(
+                width: 80,
+                height: 80,
+                child: Column(
+                  children: [
+                    Image.asset(
+                      'assets/images/restaurant.png',
+                      fit: BoxFit.cover,
+                    )
+                  ],
+                ),
+              ),
+              MyStyle().showheadText(
+                  detailorderfoodModels[index].restaurantNameshop!),
+              Divider(
+                thickness: 3,
+                color: Colors.white,
+              ),
+              buildinformationCustomer(),
+              Divider(
+                thickness: 3,
+                color: Colors.white,
+              ),
+              buildfoodorder(index),
+              Divider(
+                thickness: 3,
+                color: Colors.white,
+              ),
+              buildtotal(index),
+              SizedBox(
+                height: 80,
+              ),
+            ],
+          ),
         ),
       );
 //เเสดงยอดรวมของอาหาร
-  Widget buildtotal(int index) => Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Text('total ', style: GoogleFonts.lato(fontSize: 25)),
-                Text(
-                  totalInt[index].toString(),
-                  style: GoogleFonts.lato(fontSize: 20),
-                )
-              ],
+  Widget buildtotal(int index) => Column(
+        children: [
+          Container(
+            width: 350,
+            decoration: ShapeDecoration(
+                color: Colors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10))),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Total food price ', style: GoogleFonts.lato()),
+                      Row(
+                        children: [
+                          Text(
+                            '${myFormat.format((totalInt[index]))}',
+                            style: GoogleFonts.lato(),
+                          ),
+                          Text('K',
+                              style: GoogleFonts.lato(
+                                  decoration: TextDecoration.lineThrough))
+                        ],
+                      )
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Discount ', style: GoogleFonts.lato()),
+                      detailorderfoodModels[index].promotionDiscount == null
+                          ? Text('0%')
+                          : Text(
+                              '${detailorderfoodModels[index].promotionDiscount} %')
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Discount amount', style: GoogleFonts.lato()),
+                      detailorderfoodModels[index].promotionDiscount == null
+                          ? Row(
+                              children: [
+                                Text(' 0 '),
+                                Text('K',
+                                    style: GoogleFonts.lato(
+                                        decoration: TextDecoration.lineThrough))
+                              ],
+                            )
+                          : Row(
+                              children: [
+                                Text(
+                                    '${myFormat.format((discountAmount[index]))}'),
+                                Text('K',
+                                    style: GoogleFonts.lato(
+                                        decoration: TextDecoration.lineThrough))
+                              ],
+                            )
+                    ],
+                  ),
+                  Divider(
+                    thickness: 1,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Total ', style: GoogleFonts.lato(fontSize: 18)),
+                      detailorderfoodModels[index].promotionDiscount == null
+                          ? Row(
+                              children: [
+                                Text('${myFormat.format((totalInt[index]))}'),
+                                Text('K',
+                                    style: GoogleFonts.lato(
+                                        decoration: TextDecoration.lineThrough))
+                              ],
+                            )
+                          : Row(
+                              children: [
+                                Text('${myFormat.format((totalPrice[index]))}'),
+                                Text('K',
+                                    style: GoogleFonts.lato(
+                                        decoration: TextDecoration.lineThrough))
+                              ],
+                            )
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ],
-        ),
+          ),
+        ],
       );
+
 //เเสดงรายการเมนูอาหารที่สั่ง
   Container buildfoodorder(int index) {
     return Container(
       width: 350,
       decoration: ShapeDecoration(
-          color: ksecondary,
+          color: Colors.white,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
       child: Column(
@@ -198,7 +314,7 @@ class _DetailOrderfoodState extends State<DetailOrderfood> {
       width: 350,
       height: 120,
       decoration: ShapeDecoration(
-          color: ksecondary,
+          color: Colors.white,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
       child: Column(
