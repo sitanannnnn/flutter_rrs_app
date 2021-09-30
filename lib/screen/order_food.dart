@@ -372,7 +372,7 @@ class _OrderFoodState extends State<OrderFood> {
                             width: 90,
                             child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                    primary: kprimary,
+                                    primary: Colors.red,
                                     onPrimary: Colors.white,
                                     shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.all(
@@ -386,7 +386,7 @@ class _OrderFoodState extends State<OrderFood> {
                             width: 90,
                             child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                    primary: kprimary,
+                                    primary: Colors.green,
                                     onPrimary: Colors.white,
                                     shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.all(

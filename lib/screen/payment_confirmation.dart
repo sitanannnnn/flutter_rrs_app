@@ -194,14 +194,13 @@ class _PaymentConfirmationState extends State<PaymentConfirmation> {
                                                   color: Colors.grey,
                                                 ),
                                                 TextButton(
-                                                    onPressed: () =>
-                                                        chooseImage(
-                                                            ImageSource.camera),
-                                                    child: Text('Camera',
-                                                        style: GoogleFonts.lato(
-                                                            fontSize: 20,
-                                                            color:
-                                                                Colors.black))),
+                                                  onPressed: () => chooseImage(
+                                                      ImageSource.camera),
+                                                  child: Text('Camera',
+                                                      style: GoogleFonts.lato(
+                                                          fontSize: 20,
+                                                          color: Colors.black)),
+                                                ),
                                                 Divider(
                                                   height: 5,
                                                   color: Colors.grey,
@@ -272,7 +271,7 @@ class _PaymentConfirmationState extends State<PaymentConfirmation> {
                 width: 200,
                 child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                        primary: kprimary,
+                        primary: Colors.green,
                         onPrimary: Colors.white,
                         shape: RoundedRectangleBorder(
                             borderRadius:
@@ -318,7 +317,7 @@ class _PaymentConfirmationState extends State<PaymentConfirmation> {
                                                                 MyBooking())),
                                                 child: Icon(
                                                   Icons.check_circle,
-                                                  color: kprimary,
+                                                  color: Colors.green,
                                                   size: 30,
                                                 ),
                                               ),

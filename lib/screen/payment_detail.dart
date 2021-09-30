@@ -9,6 +9,7 @@ import 'package:flutter_rrs_app/screen/payment_confirmation.dart';
 import 'package:flutter_rrs_app/utility/my_constant.dart';
 import 'package:flutter_rrs_app/utility/my_style.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 
 class PaymentDetail extends StatefulWidget {
   final ReadshopModel? readshopModel;
@@ -27,6 +28,8 @@ class PaymentDetail extends StatefulWidget {
 }
 
 class _PaymentDetailState extends State<PaymentDetail> {
+  var myFormat = NumberFormat("#,##0.00", "en_US");
+
   ReadshopModel? readshopModel;
   OrderfoodModel? orderfoodModel;
   PaymentModel? paymentModel;
@@ -73,7 +76,7 @@ class _PaymentDetailState extends State<PaymentDetail> {
                               children: [
                                 Text('Transaction amount',
                                     style: GoogleFonts.lato(fontSize: 18)),
-                                Text(sum!,
+                                Text('${myFormat.format(int.parse(sum!))}',
                                     style: GoogleFonts.lato(fontSize: 18))
                               ],
                             ),

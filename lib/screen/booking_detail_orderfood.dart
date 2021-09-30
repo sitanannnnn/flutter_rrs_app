@@ -54,15 +54,6 @@ class _BookingTailOrderfoodState extends State<BookingTailOrderfood> {
     readOrderfood();
   }
 
-  //function ค้นหาuser
-  Future<Null> findUser() async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    setState(() {});
-    name = preferences.getString('name');
-    phonenumber = preferences.getString('phonenumber');
-    customerId = preferences.getString('customerId');
-  }
-
 //function อ่านค่าของรายการสั่งอาหารล่วงหน้า ที่ customerId,orderfoodDateTime
   Future<Null> readOrderfood() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
@@ -111,6 +102,15 @@ class _BookingTailOrderfoodState extends State<BookingTailOrderfood> {
         });
       }
     }
+  }
+
+  //function ค้นหาuser
+  Future<Null> findUser() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    setState(() {});
+    name = preferences.getString('name');
+    phonenumber = preferences.getString('phonenumber');
+    customerId = preferences.getString('customerId');
   }
 
 //function เปลี่ยนarray
@@ -396,8 +396,13 @@ class _BookingTailOrderfoodState extends State<BookingTailOrderfood> {
                   Expanded(flex: 1, child: Text(listAmounts[index][index2])),
                   Expanded(
                       flex: 1,
-                      child: Text(
-                          '${myFormat.format(int.parse(listnetPrices[index][index2]))}')),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text(
+                              '${myFormat.format(int.parse(listnetPrices[index][index2]))}'),
+                        ],
+                      )),
                 ],
               ),
             ],
