@@ -4,10 +4,7 @@ import 'package:flutter_rrs_app/model/cart_model.dart';
 import 'package:flutter_rrs_app/model/read_shop_model.dart';
 import 'package:flutter_rrs_app/model/reservation_model.dart';
 import 'package:flutter_rrs_app/model/table_model.dart';
-import 'package:flutter_rrs_app/screen/booking_datial_table_orderfood.dart';
 import 'package:flutter_rrs_app/screen/booking_detail_orderfood.dart';
-import 'package:flutter_rrs_app/screen/payment_method.dart';
-import 'package:flutter_rrs_app/screen/pre_order_food.dart';
 import 'package:flutter_rrs_app/utility/my_constant.dart';
 import 'package:flutter_rrs_app/utility/my_style.dart';
 import 'package:flutter_rrs_app/utility/normal_dialog.dart';
@@ -236,11 +233,12 @@ class _CartOrderfoodState extends State<CartOrderfood> {
           ],
         ),
       );
-
+//บันทึกการสั่งอาหารไปที่ฐานข้อมูล
   Future<Null> orderrecord() async {
     DateTime dateTime = DateTime.now();
-    orderfoodDateTime = DateFormat('yyyy-MM-dd HH:mm').format(dateTime);
-
+    orderfoodDateTime = DateFormat('yyyy-MM-dd HH:mm:ss').format(dateTime);
+    //print("date is now===>$dateTime");
+    //print('date ==>$orderfoodDateTime');
     String? restaurantId = cartModels[0].restaurantId;
     String? restaurantNameshop = cartModels[0].restaurantNameshop;
     List<String> foodmenuIds = [];
@@ -261,7 +259,6 @@ class _CartOrderfoodState extends State<CartOrderfood> {
     String amount = amounts.toString();
     String netPrice = netPrices.toString();
 
-    // print('date ==>$orderfoodDateTime');
     // print(
     //     'orderDateTime = $orderfoodDateTime,restaurantId= $restaurantId,restaurantNameshop=$restaurantNameshop');
     // print(
@@ -272,10 +269,10 @@ class _CartOrderfoodState extends State<CartOrderfood> {
 
     // print('name shop ==> $restaurantNameshop');
     String? url =
-        '${Myconstant().domain}/addOrderfood.php?isAdd=true&customerId=$customerId&restaurantId=$restaurantId&restaurantNameshop=$restaurantNameshop&foodmenuId=$foodmenuId&foodmenuName=$foodmenuName&foodmenuPrice=$foodmenuPrice&amount=$amount&netPrice=$netPrice&orderfoodDateTime=$orderfoodDateTime&reservationId=$reservationId&orderfoodStatus=$orderfoodStatus&promotionId=$promotionId&promotionType=$promotionType&reviewid=$reviewId';
+        '${Myconstant().domain_00webhost}/addOrderfood.php?isAdd=true&customerId=$customerId&restaurantId=$restaurantId&restaurantNameshop=$restaurantNameshop&foodmenuId=$foodmenuId&foodmenuName=$foodmenuName&foodmenuPrice=$foodmenuPrice&amount=$amount&netPrice=$netPrice&orderfoodDateTime=$orderfoodDateTime&reservationId=$reservationId&orderfoodStatus=$orderfoodStatus&promotionId=$promotionId&promotionType=$promotionType';
     await Dio().get(url).then((value) {
       // print('value is ===> $value');
-      if (value.toString() == 'true') {
+      if (value.statusCode == 200) {
         clearAllSQLite();
       } else {
         normalDialog(context, 'Please try again');

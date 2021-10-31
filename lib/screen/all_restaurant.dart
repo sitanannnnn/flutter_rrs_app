@@ -1,45 +1,51 @@
 import 'dart:convert';
-
+import 'dart:math';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rrs_app/model/read_shop_model.dart';
 import 'package:flutter_rrs_app/screen/show_restaurant.dart';
 import 'package:flutter_rrs_app/utility/my_constant.dart';
 import 'package:flutter_rrs_app/utility/my_style.dart';
-import 'package:flutter_rrs_app/screen/order_food.dart';
+import 'package:intl/intl.dart';
+import 'package:location/location.dart';
 
-class CategoryFood extends StatefulWidget {
-  final String category_name;
-  const CategoryFood({Key? key, required this.category_name}) : super(key: key);
-
+class AllReataurant extends StatefulWidget {
+  const AllReataurant({
+    Key? key,
+  }) : super(key: key);
   @override
-  _CategoryFoodState createState() => _CategoryFoodState();
+  _AllReataurantState createState() => _AllReataurantState();
 }
 
-class _CategoryFoodState extends State<CategoryFood> {
+class _AllReataurantState extends State<AllReataurant> {
   List<ReadshopModel> readshopModels = [];
-  String? typeOfFood;
+  List<String> distances = [];
+  double? lat1, lng1, lat2, lng2, distance;
+  late String distanceString;
+  bool loadstate = true;
   @override
   void initState() {
     super.initState();
-    typeOfFood = widget.category_name;
-    readcategoryrestaurant();
+    readShop().then((value) => findLat1Lng1());
   }
 
-//function อ่านค่าร้านประเภทอาหารที่มีอยูในฐานข้อมูล
-  Future<Null> readcategoryrestaurant() async {
+//function อ่านค่าร้านอาหารที่มีอยูในฐานข้อมูล
+  Future<Null> readShop() async {
     String url =
-        '${Myconstant().domain_00webhost}/getRestaurantFromtypeOfFood.php?isAdd=true&chooseType=Shop&typeOfFood=$typeOfFood';
+        '${Myconstant().domain_00webhost}/getRestaurantFromchooseType.php?isAdd=true&chooseType=Shop';
     await Dio().get(url).then((value) {
       // print('value=$value');
       var result = json.decode(value.data);
-      int index = 0;
+
       for (var map in result) {
         ReadshopModel model = ReadshopModel.fromJson(map);
+
         String? NameShop = model.restaurantNameshop;
         if (NameShop!.isNotEmpty) {
           print('NameShop =${model.restaurantNameshop}');
+
           setState(() {
+            loadstate = false;
             readshopModels.add(model);
           });
         }
@@ -47,15 +53,58 @@ class _CategoryFoodState extends State<CategoryFood> {
     });
   }
 
+  //function หา ตำเเหน่งของลูกค้า และ ร้านอาหาร
+  Future<Null> findLat1Lng1() async {
+    LocationData? locationData = await findLocationData();
+    setState(() {
+      lat1 = locationData!.latitude;
+      lng1 = locationData.longitude;
+    });
+    for (int index = 0; index < readshopModels.length; index++) {
+      setState(() {
+        lat2 = double.parse(readshopModels[index].latitude.toString());
+        lng2 = double.parse(readshopModels[index].longitude.toString());
+        print('lat2 = ${lat2.toString()}, lng2 = ${lng2.toString()}');
+        distance = calculateDistance(lat1!, lng1!, lat2!, lng2!);
+
+        var myFormat = NumberFormat('#0.0#', 'en_US');
+        distanceString = myFormat.format(distance);
+        distances.add(distanceString);
+      });
+    }
+  }
+
+//คำนวณระยะห่างจากลูกค้า กับ ร้านอาหาร
+  double calculateDistance(double lat1, double lng1, double lat2, double lng2) {
+    double distance = 0;
+    var p = 0.017453292519943295;
+    var c = cos;
+    var a = 0.5 -
+        c((lat2 - lat1) * p) / 2 +
+        c(lat1 * p) * c(lat2 * p) * (1 - c((lng2 - lng1) * p)) / 2;
+    distance = 12742 * asin(sqrt(a));
+    return distance;
+  }
+
+  //เก็บตำเเหน่งปัจจุบันของลูกค้า
+  Future<LocationData?> findLocationData() async {
+    Location location = Location();
+    try {
+      return await location.getLocation();
+    } catch (e) {
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: kprimary,
-          title: Text('$typeOfFood'),
+          title: Text('restaurant '),
         ),
-        body: readshopModels.length == 0
-            ? Center(child: Text('There is no restaurant of this type'))
+        body: loadstate == true
+            ? MyStyle().showProgrsee()
             : ListView.builder(
                 itemCount: readshopModels.length,
                 itemBuilder: (context, index) => GestureDetector(
@@ -63,8 +112,10 @@ class _CategoryFoodState extends State<CategoryFood> {
                         print('You click index $index');
 
                         MaterialPageRoute route = MaterialPageRoute(
-                            builder: (context) => OrderFood(
-                                readshopModel: readshopModels[index]));
+                          builder: (context) => ShowRestaurant(
+                            readshopModel: readshopModels[index],
+                          ),
+                        );
                         Navigator.push(context, route);
                       },
                       child: Column(
@@ -110,11 +161,20 @@ class _CategoryFoodState extends State<CategoryFood> {
                                   Text(
                                       'Name restaurant : ${readshopModels[index].restaurantNameshop}'),
                                   Text(
-                                      ' branch :${readshopModels[index].restaurantBranch}'),
+                                      'Name branch :${readshopModels[index].restaurantBranch}'),
                                   Text(
                                       'Type of food :${readshopModels[index].typeOfFood}'),
-                                  SizedBox(
-                                    height: 8,
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        Icon(Icons.location_on_rounded),
+                                        distances.length == 0
+                                            ? MyStyle().showProgrsee()
+                                            : Text('${distances[index]} km')
+                                      ],
+                                    ),
                                   )
                                 ],
                               ),

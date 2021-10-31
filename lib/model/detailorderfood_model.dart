@@ -14,23 +14,32 @@ class DetailorderfoodModel {
   String? promotionId;
   String? promotionType;
   String? promotionDiscount;
+  String? vat;
+  String? rate_thb;
+  String? rate_usd;
+  String? rate_eur;
 
-  DetailorderfoodModel(
-      {this.id,
-      this.customerId,
-      this.restaurantId,
-      this.restaurantNameshop,
-      this.foodmenuId,
-      this.foodmenuName,
-      this.foodmenuPrice,
-      this.amount,
-      this.netPrice,
-      this.orderfoodDateTime,
-      this.reservationId,
-      this.orderfoodStatus,
-      this.promotionId,
-      this.promotionType,
-      this.promotionDiscount});
+  DetailorderfoodModel({
+    this.id,
+    this.customerId,
+    this.restaurantId,
+    this.restaurantNameshop,
+    this.foodmenuId,
+    this.foodmenuName,
+    this.foodmenuPrice,
+    this.amount,
+    this.netPrice,
+    this.orderfoodDateTime,
+    this.reservationId,
+    this.orderfoodStatus,
+    this.promotionId,
+    this.promotionType,
+    this.promotionDiscount,
+    this.vat,
+    this.rate_thb,
+    this.rate_usd,
+    this.rate_eur,
+  });
 
   DetailorderfoodModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -48,6 +57,10 @@ class DetailorderfoodModel {
     promotionId = json['promotionId'];
     promotionType = json['promotion_type'];
     promotionDiscount = json['promotion_discount'];
+    vat = json['vat'];
+    rate_thb = json['rate_thb'];
+    rate_usd = json['rate_usd'];
+    rate_eur = json['rate_eur'];
   }
 
   Map<String, dynamic> toJson() {
@@ -67,6 +80,10 @@ class DetailorderfoodModel {
     data['promotionId'] = this.promotionId;
     data['promotion_type'] = this.promotionType;
     data['promotion_discount'] = this.promotionDiscount;
+    data['vat'] = this.vat;
+    data['rate_thb'] = this.rate_thb;
+    data['rate_usd'] = this.rate_usd;
+    data['rate_eur'] = this.rate_eur;
     return data;
   }
 }

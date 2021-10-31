@@ -60,16 +60,18 @@ class _CategoriesState extends State<Categories> {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-        itemCount: list_item.length,
-        gridDelegate:
-            SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-        itemBuilder: (BuildContext context, int index) {
-          return Category(
-            category_name: list_item[index]['name'],
-            category_picture: list_item[index]['picture'],
-          );
-        });
+    return list_item.length == 0
+        ? MyStyle().showProgrsee()
+        : GridView.builder(
+            itemCount: list_item.length,
+            gridDelegate:
+                SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+            itemBuilder: (BuildContext context, int index) {
+              return Category(
+                category_name: list_item[index]['name'],
+                category_picture: list_item[index]['picture'],
+              );
+            });
   }
 }
 

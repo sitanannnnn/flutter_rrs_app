@@ -43,6 +43,13 @@ dependencies:
   geolocator: ^7.6.2
   google_maps_flutter: ^2.0.9
   location: ^4.3.0
+  http: ^0.13.3
+  gcloud: ^0.8.3
+  mime: ^1.0.0
+  googleapis_auth: ^1.2.0
+  time_range: ^1.0.2
+  
+
  
   # toast: ^0.1.5
   
@@ -61,18 +68,25 @@ dev_dependencies:
 
 # The following section is specific to Flutter.
 flutter:
+ 
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
 
+
+ 
+    
   # To add assets to your application, add an assets section, like this:
   assets:
+
     - assets/images/1.jpg
     - assets/images/2.jpg
     - assets/images/thaifood.jpg
     - assets/images/reservation.jpg
+    - assets/images/unconfirm.png
+    - assets/images/order-now.png
     - assets/images/dinner-table.png
     - assets/images/user.png
     - assets/images/dish.png
@@ -120,6 +134,7 @@ flutter:
     - assets/food/27.jpg
     - assets/food/28.jpg
     
+    - assets/credentials.json
 
   #   - images/a_dot_ham.jpeg
 

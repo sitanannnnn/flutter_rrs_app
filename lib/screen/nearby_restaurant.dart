@@ -6,6 +6,7 @@ import 'package:flutter_rrs_app/model/read_shop_model.dart';
 import 'package:flutter_rrs_app/screen/show_restaurant.dart';
 import 'package:flutter_rrs_app/utility/my_constant.dart';
 import 'package:flutter_rrs_app/utility/my_style.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:location/location.dart';
 
@@ -32,11 +33,11 @@ class _NearbyReataurantState extends State<NearbyReataurant> {
 //function อ่านค่าร้านอาหารที่มีอยูในฐานข้อมูล
   Future<Null> readShop() async {
     String url =
-        '${Myconstant().domain}/getRestaurantFromchooseType.php?isAdd=true&chooseType=Shop';
+        '${Myconstant().domain_00webhost}/getRestaurantFromchooseType.php?isAdd=true&chooseType=Shop';
     await Dio().get(url).then((value) {
-      // print('value=$value');
+      //print('value=$value');
       var result = json.decode(value.data);
-
+      //print('value=$result');
       for (var map in result) {
         ReadshopModel model = ReadshopModel.fromJson(map);
 
@@ -70,6 +71,14 @@ class _NearbyReataurantState extends State<NearbyReataurant> {
         var myFormat = NumberFormat('#0.0#', 'en_US');
         distanceString = myFormat.format(distance);
         distances.add(distanceString);
+        var dis = Geolocator.distanceBetween(lat1!, lng1!, lat2!, lng2!);
+        print(lat1);
+        print(lng1);
+
+        print('location is>>>${dis.toString()}');
+
+        // distances.sort();
+        print('location >>$distances');
       });
     }
   }
@@ -121,7 +130,7 @@ class _NearbyReataurantState extends State<NearbyReataurant> {
                       child: Column(
                         children: [
                           Padding(
-                            padding: const EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.fromLTRB(8, 2, 8, 2),
                             child: Container(
                               decoration: BoxDecoration(
                                 color: Colors.white,
@@ -152,7 +161,7 @@ class _NearbyReataurantState extends State<NearbyReataurant> {
                                               BorderRadius.circular(5),
                                           image: DecorationImage(
                                               image: NetworkImage(
-                                                '${Myconstant().domain}${readshopModels[index].restaurantPicture}',
+                                                '${Myconstant().domain_restaurantPic}${readshopModels[index].restaurantPicture}',
                                               ),
                                               fit: BoxFit.cover)),
                                     ),
@@ -164,12 +173,17 @@ class _NearbyReataurantState extends State<NearbyReataurant> {
                                       'Name branch :${readshopModels[index].restaurantBranch}'),
                                   Text(
                                       'Type of food :${readshopModels[index].typeOfFood}'),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Icon(Icons.location_on_rounded),
-                                      Text('${distances[index]} km')
-                                    ],
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        Icon(Icons.location_on_rounded),
+                                        distances.length == 0
+                                            ? MyStyle().showProgrsee()
+                                            : Text('${distances[index]} km')
+                                      ],
+                                    ),
                                   )
                                 ],
                               ),

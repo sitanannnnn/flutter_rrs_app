@@ -26,7 +26,6 @@ class BookingTailOrderfood extends StatefulWidget {
 class _BookingTailOrderfoodState extends State<BookingTailOrderfood> {
   ReadshopModel? readshopModel;
   var myFormat = NumberFormat("#,##0.00", "en_US");
-  bool loadstatus = true;
   String? name,
       phonenumber,
       customerId,
@@ -43,6 +42,12 @@ class _BookingTailOrderfoodState extends State<BookingTailOrderfood> {
   List<double> discountAmount = [];
   List<double> totalPrice = [];
   double totaldiscount = 0;
+  double netTotal = 0;
+  double vatTotal = 0;
+  double netprice = 0;
+  double netpricethb = 0;
+  double netpriceusd = 0;
+  double netpriceeur = 0;
 
   @override
   void initState() {
@@ -58,14 +63,13 @@ class _BookingTailOrderfoodState extends State<BookingTailOrderfood> {
   Future<Null> readOrderfood() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? customerId = preferences.getString("customerId");
-    //print('customerId========>$customerId');
-    print('order time => $orderfoodDateTime');
     String? url =
-        '${Myconstant().domain}/getOrderfoodWherecustomerIdandDateTime.php?isAdd=true&customerId=$customerId&orderfoodDateTime=$orderfoodDateTime';
+        '${Myconstant().domain_00webhost}/getOrderfoodWherecustomerIdandDateTime.php?isAdd=true&customerId=$customerId&orderfoodDateTime=$orderfoodDateTime';
     Response response = await Dio().get(url);
-    print('res?==> $response');
-    if (response.toString() != 'null') {
+
+    if (response.statusCode == 200) {
       var result = json.decode(response.data);
+      print('result orderfood=>$result');
 
       for (var map in result) {
         OrderfoodModel orderfoodModel = OrderfoodModel.fromJson(map);
@@ -73,32 +77,57 @@ class _BookingTailOrderfoodState extends State<BookingTailOrderfood> {
         List<String> amounts = changeArray(orderfoodModel.amount!);
         List<String> netPrices = changeArray(orderfoodModel.netPrice!);
         int total = 0;
+        //ใส่ค่า % ส่วนลด ไว้ใน caldiscount
         String? caldiscount = orderfoodModel.promotionDiscount;
+        String? ratethb = orderfoodModel.rate_thb;
+        String? rateusd = orderfoodModel.rate_usd;
+        String? rateeur = orderfoodModel.rate_eur;
+        double rate_thb = double.parse(ratethb!);
+        double rate_usd = double.parse(rateusd!);
+        double rate_eur = double.parse(rateeur!);
+        print('rate thb=>$rate_thb');
+        //ใส่ค่า  % vat  ไว้ใน vat
+        String? vat = orderfoodModel.vat;
+        //แปลงค่าให้เป็น int
+        int vatdiscount = int.parse(vat!);
         int discount;
+        //แปลงค่าให้เป็น int
         caldiscount == null ? discount = 0 : discount = int.parse(caldiscount);
-        double netTotal = 0;
+
         for (var string in netPrices) {
           //หาราคารวมไม่มีส่วนลด
           total = total + int.parse(string.trim());
           //หาราคาส่วนลด
           totaldiscount = (total * (discount / 100));
-          print('total ==> $totaldiscount');
+          //print('total ==> $totaldiscount');
           //ราคาหักส่วนลด
           netTotal = (total - totaldiscount);
+          print('nettotal$netTotal');
+          //ราคาvat
+          vatTotal = (netTotal * (vatdiscount / 100));
+          print('vat==> $vatTotal');
+          //ราคาสุทธ์
+          netprice = (netTotal + vatTotal);
+          print('total==> $netprice');
+          netpricethb = (netprice * rate_thb);
+          netpriceusd = (netprice * rate_usd);
+          netpriceeur = (netprice * rate_eur);
+          print('thai baht =>$netpricethb');
         }
-        print('total==> $total');
-        print(' lenght menu ==>${menufoods.length}');
+
+        //print(' lenght menu ==>${menufoods.length}');
         setState(() {
           orderfoodModels.add(orderfoodModel);
           orderfoodId = orderfoodModel.id;
-          print('orderfood id ==> $orderfoodId');
-          print('menufood ====>$menufoods');
+          //print('orderfood id ==> $orderfoodId');
+          //print('menufood ====>$menufoods');
           listMenufoods.add(menufoods);
-          print(' list menu foos $listMenufoods');
-          print('lenght menufood ==>${listMenufoods.length}');
+          // print(' list menu foos $listMenufoods');
+          //print('lenght menufood ==>${listMenufoods.length}');
           listAmounts.add(amounts);
           listnetPrices.add(netPrices);
           totalInt.add(total);
+          discountAmount.add(totaldiscount);
         });
       }
     }
@@ -117,7 +146,7 @@ class _BookingTailOrderfoodState extends State<BookingTailOrderfood> {
   List<String> changeArray(String string) {
     List<String> list = [];
     String myString = string.substring(1, string.length - 1);
-    print('myString =$myString');
+    //print('myString =$myString');
     list = myString.split(',');
     int index = 0;
     for (String string in list) {
@@ -200,113 +229,126 @@ class _BookingTailOrderfoodState extends State<BookingTailOrderfood> {
           ],
         ),
       );
+
 //เเสดงยอดรวมของอาหาร
-  Widget buildtotal(int index) => Padding(
-        padding: const EdgeInsets.all(5.0),
-        child: Column(
-          children: [
-            Container(
-              width: 350,
-              decoration: ShapeDecoration(
-                  color: Colors.white,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10))),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Total food price  ', style: GoogleFonts.lato()),
-                        Row(
+  Padding buildtotal(int index) {
+    return Padding(
+      padding: const EdgeInsets.all(5.0),
+      child: Column(
+        children: [
+          Container(
+            width: 350,
+            decoration: ShapeDecoration(
+                color: Colors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10))),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Total money  ', style: GoogleFonts.lato()),
+                      Text(
+                        '${myFormat.format(int.parse(totalInt[index].toString()))} ',
+                      ),
+                    ],
+                  ),
+                  orderfoodModels[index].promotionDiscount == null
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              '${myFormat.format(int.parse(totalInt[index].toString()))} ',
-                            ),
-                            Text('K',
-                                style: GoogleFonts.lato(
-                                    decoration: TextDecoration.lineThrough))
+                            Text('Discount ', style: GoogleFonts.lato()),
+                            Text('0 %'),
+                            Text('0.00')
                           ],
                         )
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Discount ', style: GoogleFonts.lato()),
-                        orderfoodModels[index].promotionDiscount == null
-                            ? Text('0%')
-                            : Text(
-                                '${orderfoodModels[index].promotionDiscount} %')
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Discount amount', style: GoogleFonts.lato()),
-                        orderfoodModels[index].promotionDiscount == null
-                            ? Row(
-                                children: [
-                                  Text(' 0 '),
-                                  Text('K',
-                                      style: GoogleFonts.lato(
-                                          decoration:
-                                              TextDecoration.lineThrough))
-                                ],
-                              )
-                            : Row(
-                                children: [
-                                  Text(
-                                      '${myFormat.format((discountAmount[index]))}'),
-                                  Text('K',
-                                      style: GoogleFonts.lato(
-                                          decoration:
-                                              TextDecoration.lineThrough))
-                                ],
-                              )
-                      ],
-                    ),
-                    Divider(
-                      thickness: 1,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Total ', style: GoogleFonts.lato(fontSize: 18)),
-                        orderfoodModels[index].promotionDiscount == null
-                            ? Row(
-                                children: [
-                                  Text('${myFormat.format((totalInt[index]))}'),
-                                  Text('K',
-                                      style: GoogleFonts.lato(
-                                          decoration:
-                                              TextDecoration.lineThrough))
-                                ],
-                              )
-                            : Row(
-                                children: [
-                                  Text(
-                                      '${myFormat.format((totalPrice[index]))}'),
-                                  Text('K',
-                                      style: GoogleFonts.lato(
-                                          decoration:
-                                              TextDecoration.lineThrough))
-                                ],
-                              )
-                      ],
-                    ),
-                  ],
-                ),
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('Discount ', style: GoogleFonts.lato()),
+                            Text(
+                                '${orderfoodModels[index].promotionDiscount} %'),
+                            Text('${myFormat.format((totaldiscount))}'),
+                          ],
+                        ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Amount after discount'),
+                      Text('${myFormat.format((netTotal))}'),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Vat'),
+                      Text('${orderfoodModels[index].vat} %',
+                          style: GoogleFonts.lato()),
+                      Text('${myFormat.format((vatTotal))}'),
+                    ],
+                  ),
+                  Divider(
+                    thickness: 1,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Total ', style: GoogleFonts.lato(fontSize: 18)),
+                      Row(
+                        children: [
+                          Text('${myFormat.format((netprice))}'),
+                          Text('KIP', style: GoogleFonts.lato())
+                        ],
+                      )
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(' ', style: GoogleFonts.lato(fontSize: 18)),
+                      Row(
+                        children: [
+                          Text('${myFormat.format((netpricethb))}'),
+                          Text('THB', style: GoogleFonts.lato())
+                        ],
+                      )
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(' ', style: GoogleFonts.lato(fontSize: 18)),
+                      Row(
+                        children: [
+                          Text('${myFormat.format((netpriceusd))}'),
+                          Text('USD', style: GoogleFonts.lato())
+                        ],
+                      )
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(' ', style: GoogleFonts.lato(fontSize: 18)),
+                      Row(
+                        children: [
+                          Text('${myFormat.format((netpriceeur))}'),
+                          Text('EUR', style: GoogleFonts.lato())
+                        ],
+                      )
+                    ],
+                  ),
+                ],
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
 
-            Container()
-            // Text('total ', style: GoogleFonts.lato(fontSize: 25)),
-            //
-          ],
-        ),
-      );
 //เเสดงรายการเมนูอาหารที่สั่ง
   Container buildfoodorder(int index) {
     return Container(
@@ -392,17 +434,16 @@ class _BookingTailOrderfoodState extends State<BookingTailOrderfood> {
             children: [
               Row(
                 children: [
-                  Expanded(flex: 2, child: Text(listMenufoods[index][index2])),
+                  Expanded(flex: 1, child: Text(listMenufoods[index][index2])),
                   Expanded(flex: 1, child: Text(listAmounts[index][index2])),
                   Expanded(
-                      flex: 1,
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Text(
-                              '${myFormat.format(int.parse(listnetPrices[index][index2]))}'),
-                        ],
-                      )),
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                          '${myFormat.format(int.parse(listnetPrices[index][index2]))}'),
+                    ],
+                  )),
                 ],
               ),
             ],

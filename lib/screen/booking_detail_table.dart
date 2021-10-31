@@ -17,14 +17,14 @@ class BookingTailTable extends StatefulWidget {
 
   final TableModel tableModel;
   final String choosevalue;
-  final String date;
-  final String timeFormt;
+  final String reservationDate;
+  final String reservationTime;
   const BookingTailTable({
     Key? key,
     required this.readshopModel,
-    required this.date,
+    required this.reservationDate,
     required this.choosevalue,
-    required this.timeFormt,
+    required this.reservationTime,
     required this.tableModel,
   }) : super(key: key);
   @override
@@ -50,22 +50,14 @@ class _BookingTailTableState extends State<BookingTailTable> {
     super.initState();
     readshopModel = widget.readshopModel;
     tableModel = widget.tableModel;
-    reservationDate = widget.date;
-    reservationTime = widget.timeFormt;
+    reservationDate = widget.reservationDate;
+    reservationTime = widget.reservationTime;
     numberOfGueste = widget.choosevalue;
     print('date ==> $reservationDate');
-    print('time ==> $reservationTime');
+    print('time is ==> $reservationTime');
 
     findUser();
     readReservation();
-    setState(() {
-      dateof = reservationDate.toString().substring(0, 10);
-      // print('dateof ==> $dateof');
-    });
-    setState(() {
-      timeof = reservationTime.toString().substring(10, 15);
-      print('timeof ==> $timeof');
-    });
   }
 
   Future<Null> findUser() async {
@@ -82,17 +74,17 @@ class _BookingTailTableState extends State<BookingTailTable> {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? customerId = preferences.getString("customerId");
     var url =
-        '${Myconstant().domain}/getReservation.php?isAdd=true&customerId=$customerId&reservationDate=$dateof&reservationTime=$reservationTime';
+        '${Myconstant().domain_00webhost}/getReservation.php?isAdd=true&customerId=$customerId&reservationDate=$reservationDate&reservationTime=$reservationTime';
     Response response = await Dio().get(url);
     // print('res = $response');
-    if (response.toString() != 'null') {
+    if (response.statusCode == 200) {
       var result = json.decode(response.data);
-      print('result= $result');
+      //print('result= $result');
       for (var map in result) {
         ReservationModel reservationModel = ReservationModel.fromJson(map);
-        print("reservation==> $reservationModel ");
         setState(() {
           reservationModels.add(reservationModel);
+          //print('lenght reservation =>${reservationModels.length}');
         });
       }
     }
@@ -104,47 +96,49 @@ class _BookingTailTableState extends State<BookingTailTable> {
           backgroundColor: kprimary,
           title: Text('Booking details'),
         ),
-        body: ListView.builder(
-            itemCount: reservationModels.length,
-            itemBuilder: (context, index) => Column(
-                  children: [
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Container(
-                      width: 80,
-                      height: 80,
-                      child: Column(
-                        children: [
-                          Image.asset(
-                            'assets/images/restaurant.png',
-                            fit: BoxFit.cover,
-                          )
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    Text(
-                      reservationModels[index].restaurantNameshop!,
-                      style: GoogleFonts.lato(fontSize: 25),
-                    ),
-                    Divider(
-                      thickness: 3,
-                      endIndent: 16,
-                      indent: 16,
-                    ),
-                    buildinformationCustomer(),
-                    Divider(
-                      thickness: 3,
-                      endIndent: 16,
-                      indent: 16,
-                    ),
-                    buildReservationTable(index),
-                    buildBottomConfirm(context)
-                  ],
-                )));
+        body: reservationModels.length == 0
+            ? MyStyle().showProgrsee()
+            : ListView.builder(
+                itemCount: 1,
+                itemBuilder: (context, index) => Column(
+                      children: [
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Container(
+                          width: 80,
+                          height: 80,
+                          child: Column(
+                            children: [
+                              Image.asset(
+                                'assets/images/restaurant.png',
+                                fit: BoxFit.cover,
+                              )
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Text(
+                          reservationModels[index].restaurantNameshop!,
+                          style: GoogleFonts.lato(fontSize: 25),
+                        ),
+                        Divider(
+                          thickness: 3,
+                          endIndent: 16,
+                          indent: 16,
+                        ),
+                        buildinformationCustomer(),
+                        Divider(
+                          thickness: 3,
+                          endIndent: 16,
+                          indent: 16,
+                        ),
+                        buildReservationTable(index),
+                        buildBottomConfirm(context)
+                      ],
+                    )));
   }
 
 //ปุ่มกด confirm
@@ -261,7 +255,10 @@ class _BookingTailTableState extends State<BookingTailTable> {
                       Icons.access_time_filled_outlined,
                       size: 35,
                     ),
-                    Text(timeof!)
+                    Text(reservationModels[index]
+                        .reservationTime
+                        .toString()
+                        .substring(0, 5))
                   ],
                 ),
                 SizedBox(
@@ -299,7 +296,7 @@ class _BookingTailTableState extends State<BookingTailTable> {
                       width: 300,
                       height: 150,
                       child: Image.network(
-                        '${Myconstant().domain}${reservationModels[index].tablePicture!}',
+                        '${Myconstant().domain_tablePic}${reservationModels[index].tablePicture!}',
                         fit: BoxFit.cover,
                       ),
                     )

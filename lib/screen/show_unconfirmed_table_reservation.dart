@@ -34,11 +34,11 @@ class _ShowUnconfirmedTableReservationState
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? customerId = preferences.getString("customerId");
     String url =
-        '${Myconstant().domain}/getReservationWherecustomerIdAndReservationStatusUnconfirmed.php?isAdd=true&customerId=$customerId';
+        '${Myconstant().domain_00webhost}/getReservationWherecustomerIdAndReservationStatusUnconfirmed.php?isAdd=true&customerId=$customerId';
     Response response = await Dio().get(url);
     // print('res==> $response');
     var result = json.decode(response.data);
-    // print('result= $result');
+    print('result is= $result');
     for (var map in result) {
       ReservationModel reservationModel = ReservationModel.fromJson(map);
       setState(() {
@@ -49,7 +49,17 @@ class _ShowUnconfirmedTableReservationState
 
   Widget build(BuildContext context) {
     return reservationModels.length == 0
-        ? Center(child: MyStyle().showheadText('not have reservation'))
+        ? Center(
+            child: Container(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset('assets/images/unconfirm.png'),
+                  MyStyle().showheadText('not have reservation'),
+                ],
+              ),
+            ),
+          )
         : ListView.builder(
             itemCount: reservationModels.length,
             itemBuilder: (context, index) => GestureDetector(
@@ -157,7 +167,7 @@ class _ShowUnconfirmedTableReservationState
                       reservationModels[index]
                           .reservationTime
                           .toString()
-                          .substring(10, 15),
+                          .substring(0, 5),
                       style: GoogleFonts.lato())
                 ],
               ),
@@ -200,7 +210,7 @@ class _ShowUnconfirmedTableReservationState
             children: [
               Row(
                 children: [
-                  reservationModels[index].orderfoodId! == 'Null'
+                  reservationModels[index].orderfoodId! == 'null'
                       ? Text("")
                       : Row(
                           children: [

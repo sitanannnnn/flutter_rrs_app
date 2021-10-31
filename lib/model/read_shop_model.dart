@@ -13,6 +13,7 @@ class ReadshopModel {
   String? restaurantBranch;
   String? restaurantAddress;
   String? typeOfFood;
+  String? vat;
   String? id;
   String? latitude;
   String? longitude;
@@ -34,6 +35,21 @@ class ReadshopModel {
   String? foodmenuPrice;
   String? foodmenuPicture;
   String? foodmenuDescrip;
+  String? openingHoursId;
+  String? mondayOpen;
+  String? mondayClosed;
+  String? tuesdayOpen;
+  String? tuesdayClosed;
+  String? wednesdayOpen;
+  String? wednesdayClosed;
+  String? thursdayOpen;
+  String? thursdayClosed;
+  String? fridayOpen;
+  String? fridayClosed;
+  String? saturdayOpen;
+  String? saturdayClosed;
+  String? sundayOpen;
+  String? sundayClosed;
 
   ReadshopModel(
       {this.restaurantId,
@@ -50,6 +66,7 @@ class ReadshopModel {
       this.restaurantBranch,
       this.restaurantAddress,
       this.typeOfFood,
+      this.vat,
       this.id,
       this.latitude,
       this.longitude,
@@ -70,7 +87,22 @@ class ReadshopModel {
       this.foodmenuName,
       this.foodmenuPrice,
       this.foodmenuPicture,
-      this.foodmenuDescrip});
+      this.foodmenuDescrip,
+      this.openingHoursId,
+      this.mondayOpen,
+      this.mondayClosed,
+      this.tuesdayOpen,
+      this.tuesdayClosed,
+      this.wednesdayOpen,
+      this.wednesdayClosed,
+      this.thursdayOpen,
+      this.thursdayClosed,
+      this.fridayOpen,
+      this.fridayClosed,
+      this.saturdayOpen,
+      this.saturdayClosed,
+      this.sundayOpen,
+      this.sundayClosed});
 
   ReadshopModel.fromJson(Map<String, dynamic> json) {
     restaurantId = json['restaurantId'];
@@ -87,6 +119,7 @@ class ReadshopModel {
     restaurantBranch = json['restaurantBranch'];
     restaurantAddress = json['restaurantAddress'];
     typeOfFood = json['typeOfFood'];
+    vat = json['vat'];
     id = json['id'];
     latitude = json['latitude'];
     longitude = json['longitude'];
@@ -108,7 +141,24 @@ class ReadshopModel {
     foodmenuPrice = json['foodmenuPrice'];
     foodmenuPicture = json['foodmenuPicture'];
     foodmenuDescrip = json['foodmenuDescrip'];
+    openingHoursId = json['opening_hours_id'];
+    mondayOpen = json['monday_open'];
+    mondayClosed = json['monday_closed'];
+    tuesdayOpen = json['tuesday_open'];
+    tuesdayClosed = json['tuesday_closed'];
+    wednesdayOpen = json['wednesday_open'];
+    wednesdayClosed = json['wednesday_closed'];
+    thursdayOpen = json['thursday_open'];
+    thursdayClosed = json['thursday_closed'];
+    fridayOpen = json['friday_open'];
+    fridayClosed = json['friday_closed'];
+    saturdayOpen = json['saturday_open'];
+    saturdayClosed = json['saturday_closed'];
+    sundayOpen = json['sunday_open'];
+    sundayClosed = json['sunday_closed'];
   }
+
+  get length => null;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
@@ -126,6 +176,7 @@ class ReadshopModel {
     data['restaurantBranch'] = this.restaurantBranch;
     data['restaurantAddress'] = this.restaurantAddress;
     data['typeOfFood'] = this.typeOfFood;
+    data['vat'] = this.vat;
     data['id'] = this.id;
     data['latitude'] = this.latitude;
     data['longitude'] = this.longitude;
@@ -147,6 +198,23 @@ class ReadshopModel {
     data['foodmenuPrice'] = this.foodmenuPrice;
     data['foodmenuPicture'] = this.foodmenuPicture;
     data['foodmenuDescrip'] = this.foodmenuDescrip;
+    data['opening_hours_id'] = this.openingHoursId;
+    data['monday_open'] = this.mondayOpen;
+    data['monday_closed'] = this.mondayClosed;
+    data['tuesday_open'] = this.tuesdayOpen;
+    data['tuesday_closed'] = this.tuesdayClosed;
+    data['wednesday_open'] = this.wednesdayOpen;
+    data['wednesday_closed'] = this.wednesdayClosed;
+    data['thursday_open'] = this.thursdayOpen;
+    data['thursday_closed'] = this.thursdayClosed;
+    data['friday_open'] = this.fridayOpen;
+    data['friday_closed'] = this.fridayClosed;
+    data['saturday_open'] = this.saturdayOpen;
+    data['saturday_closed'] = this.saturdayClosed;
+    data['sunday_open'] = this.sundayOpen;
+    data['sunday_closed'] = this.sundayClosed;
     return data;
   }
+
+  contains(String lowerCase) {}
 }

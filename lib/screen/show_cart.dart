@@ -18,14 +18,14 @@ class ShowCart extends StatefulWidget {
   final ReadshopModel readshopModel;
   final TableModel tableModel;
   final String choosevalue;
-  final String date;
-  final String timeFormt;
+  final String reservationDate;
+  final String reservationTime;
   const ShowCart({
     Key? key,
     required this.readshopModel,
-    required this.date,
+    required this.reservationDate,
     required this.choosevalue,
-    required this.timeFormt,
+    required this.reservationTime,
     required this.tableModel,
   }) : super(key: key);
   @override
@@ -51,27 +51,21 @@ class _ShowCartState extends State<ShowCart> {
       timeof,
       table,
       orderfoodDateTime;
+
   int index = 0;
   @override
   void initState() {
     super.initState();
+    DateTime dateTime = DateTime.now();
+    orderfoodDateTime = DateFormat('yyyy-MM-dd HH:mm:ss').format(dateTime);
     readshopModel = widget.readshopModel;
     tableModel = widget.tableModel;
-    reservationDate = widget.date;
-    reservationTime = widget.timeFormt;
+    reservationDate = widget.reservationDate;
+    reservationTime = widget.reservationTime;
     numberOfGueste = widget.choosevalue;
+    //print('Gun ==>$orderfoodDateTime');
     readSQLite();
     findUser();
-    orderfoodDateTime = widget.date;
-    // print('Gun ==>$orderfoodDateTime');
-    setState(() {
-      dateof = reservationDate.toString().substring(0, 10);
-      // print('dateof ==> $dateof');
-    });
-    setState(() {
-      timeof = reservationTime.toString().substring(10, 15);
-      // print('timeof ==> $timeof');
-    });
   }
 
 //หาข้อมูล cusstomer ที่ทำการ login
@@ -126,7 +120,7 @@ class _ShowCartState extends State<ShowCart> {
           //ข้อมูลลูกค้า
           buildHeadTitle(),
           buildListFood(),
-          buildTotal(),
+
           SizedBox(
             height: 60,
           ),
@@ -153,15 +147,17 @@ class _ShowCartState extends State<ShowCart> {
               child: Text('Order food'),
               onPressed: () {
                 orderrecord();
+
                 clearAllSQLite();
+
                 Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => BookingTailTableOrderfood(
                               readshopModel: readshopModel!,
-                              date: '$reservationDate',
+                              reservationDate: '$reservationDate',
                               choosevalue: '$numberOfGueste',
-                              timeFormt: '$reservationTime',
+                              reservationTime: '$reservationTime',
                               tableModel: tableModel!,
                               orderfoodDateTime: '$orderfoodDateTime',
                             )));
@@ -171,22 +167,6 @@ class _ShowCartState extends State<ShowCart> {
     );
   }
 
-  Widget buildTotal() => Row(
-        children: [
-          Expanded(
-              flex: 5,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text(
-                    " ",
-                    style: TextStyle(fontSize: 25),
-                  ),
-                ],
-              )),
-          // Expanded(flex: 1, child: Text(total.toString()))
-        ],
-      );
   Widget buildHeadTitle() {
     return Container(
       margin: EdgeInsets.all(5),
@@ -206,8 +186,8 @@ class _ShowCartState extends State<ShowCart> {
                         builder: (context) => PreOrderFood(
                             readshopModel: readshopModel!,
                             choosevalue: '$numberOfGueste',
-                            date: '$reservationDate',
-                            pickertime: '$reservationTime',
+                            reservationDate: '$reservationDate',
+                            reservationTime: '$reservationTime',
                             tableModel: tableModel!)));
               },
               child: Text(
@@ -268,8 +248,6 @@ class _ShowCartState extends State<ShowCart> {
       );
 //บันทึกข้อมูลการสั่งอาหารไปที่ฐานข้อมูล
   Future<Null> orderrecord() async {
-    DateTime dateTime = DateTime.now();
-    String? orderfoodDateTime = DateFormat('yyyy-MM-dd HH:mm').format(dateTime);
     String? restaurantId = cartModels[0].restaurantId;
     String? restaurantNameshop = cartModels[0].restaurantNameshop;
     List<String> foodmenuIds = [];
@@ -289,8 +267,8 @@ class _ShowCartState extends State<ShowCart> {
     String foodmenuPrice = foodmenuPrices.toString();
     String amount = amounts.toString();
     String netPrice = netPrices.toString();
-    orderfoodDateTime = widget.date;
-    // print('date ==>$orderfoodDateTime');
+
+    //print('date ==>$orderfoodDateTime');
     // print(
     //     'orderDateTime = $orderfoodDateTime,restaurantId= $restaurantId,restaurantNameshop=$restaurantNameshop');
     // print(
@@ -300,10 +278,10 @@ class _ShowCartState extends State<ShowCart> {
     restaurantNameshop = readshopModel!.restaurantNameshop!;
     print('name shop ==> $restaurantNameshop');
     String? url =
-        '${Myconstant().domain}/addOrderfood.php?isAdd=true&customerId=$customerId&restaurantId=$restaurantId&restaurantNameshop=$restaurantNameshop&foodmenuId=$foodmenuId&foodmenuName=$foodmenuName&foodmenuPrice=$foodmenuPrice&amount=$amount&netPrice=$netPrice&orderfoodDateTime=$orderfoodDateTime';
+        '${Myconstant().domain_00webhost}/addOrderfood.php?isAdd=true&customerId=$customerId&restaurantId=$restaurantId&restaurantNameshop=$restaurantNameshop&foodmenuId=$foodmenuId&foodmenuName=$foodmenuName&foodmenuPrice=$foodmenuPrice&amount=$amount&netPrice=$netPrice&orderfoodDateTime=$orderfoodDateTime';
     await Dio().get(url).then((value) {
-      // print('value is ===> $value');
-      if (value.toString() == 'true') {
+      if (value.statusCode == 200) {
+        print('value is ===> $value');
         clearAllSQLite();
       } else {
         normalDialog(context, 'Please try again');

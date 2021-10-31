@@ -8,21 +8,22 @@ import 'package:flutter_rrs_app/utility/my_constant.dart';
 import 'package:flutter_rrs_app/utility/my_style.dart';
 import 'package:flutter_rrs_app/screen/order_food.dart';
 
-class CategoryFood extends StatefulWidget {
-  final String category_name;
-  const CategoryFood({Key? key, required this.category_name}) : super(key: key);
+class CategoryTypefood extends StatefulWidget {
+  final String caption_location;
+  const CategoryTypefood({Key? key, required this.caption_location})
+      : super(key: key);
 
   @override
-  _CategoryFoodState createState() => _CategoryFoodState();
+  _CategoryTypefoodState createState() => _CategoryTypefoodState();
 }
 
-class _CategoryFoodState extends State<CategoryFood> {
+class _CategoryTypefoodState extends State<CategoryTypefood> {
   List<ReadshopModel> readshopModels = [];
   String? typeOfFood;
   @override
   void initState() {
     super.initState();
-    typeOfFood = widget.category_name;
+    typeOfFood = widget.caption_location;
     readcategoryrestaurant();
   }
 
@@ -63,7 +64,7 @@ class _CategoryFoodState extends State<CategoryFood> {
                         print('You click index $index');
 
                         MaterialPageRoute route = MaterialPageRoute(
-                            builder: (context) => OrderFood(
+                            builder: (context) => ShowRestaurant(
                                 readshopModel: readshopModels[index]));
                         Navigator.push(context, route);
                       },

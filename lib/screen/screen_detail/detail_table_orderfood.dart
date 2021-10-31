@@ -67,7 +67,7 @@ class _DetailTableOrderfoodState extends State<DetailTableOrderfood> {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? customerId = preferences.getString("customerId");
     String? url =
-        '${Myconstant().domain}/getOrderfoodWherecustomerIdandOrderfoodId.php?isAdd=true&id=$orderfoodId&customerId=$customerId';
+        '${Myconstant().domain_00webhost}/getOrderfoodWherecustomerIdandOrderfoodId.php?isAdd=true&id=$orderfoodId&customerId=$customerId';
     Response response = await Dio().get(url);
     // print('res==> $response');
     if (response.toString() != 'null') {
@@ -120,16 +120,15 @@ class _DetailTableOrderfoodState extends State<DetailTableOrderfood> {
     String? customerId = preferences.getString("customerId");
     print('reservationId ==> $reservationId');
     var url =
-        '${Myconstant().domain}/getReservationWherecustomerId.php?isAdd=true&customerId=$customerId&reservationId=$reservationId';
+        '${Myconstant().domain_00webhost}/getReservationWherecustomerId.php?isAdd=true&customerId=$customerId&reservationId=$reservationId';
     Response response = await Dio().get(url);
     // print('res = $response');
-    if (response.toString() != 'null') {
+    if (response.statusCode == 200) {
       var result = json.decode(response.data);
       print('result= $result');
       for (var map in result) {
         DetailReservationModel detailreservationModel =
             DetailReservationModel.fromJson(map);
-        print("reservation==> $reservationModel ");
         setState(() {
           detailreservationModels.add(detailreservationModel);
         });
@@ -143,16 +142,33 @@ class _DetailTableOrderfoodState extends State<DetailTableOrderfood> {
           backgroundColor: kprimary,
           title: Text('table and order food detail'),
         ),
-        body: buildcontext());
+        body: detailreservationModels.length == 0
+            ? MyStyle().showProgrsee()
+            : buildcontext());
   }
 
   Widget buildcontext() => ListView.builder(
       padding: EdgeInsets.all(16),
       shrinkWrap: true,
       physics: ScrollPhysics(),
-      itemCount: detailreservationModels.length,
+      itemCount: 1,
       itemBuilder: (context, index) => Container(
-            color: ksecondary,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(10),
+                  topRight: Radius.circular(10),
+                  bottomLeft: Radius.circular(10),
+                  bottomRight: Radius.circular(10)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 5,
+                  blurRadius: 7,
+                  offset: Offset(0, 3), // changes position of shadow
+                ),
+              ],
+            ),
             child: Column(
               children: [
                 SizedBox(
@@ -179,12 +195,12 @@ class _DetailTableOrderfoodState extends State<DetailTableOrderfood> {
                 ),
                 Divider(
                   thickness: 3,
-                  color: Colors.white,
+                  color: Colors.grey[200],
                 ),
                 buildinformationCustomer(),
                 Divider(
                   thickness: 3,
-                  color: Colors.white,
+                  color: Colors.grey[200],
                 ),
                 buildReservationTable(index),
                 SizedBox(
@@ -193,7 +209,7 @@ class _DetailTableOrderfoodState extends State<DetailTableOrderfood> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    detailreservationModels[index].orderfoodId == 'Null'
+                    detailreservationModels[index].orderfoodId == 'null'
                         ? Text('')
                         : buildfoodorder(index),
                   ],
@@ -205,7 +221,7 @@ class _DetailTableOrderfoodState extends State<DetailTableOrderfood> {
     return Container(
       width: 350,
       decoration: ShapeDecoration(
-          color: Colors.white,
+          // color: Colors.white,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
       child: Column(
@@ -253,7 +269,7 @@ class _DetailTableOrderfoodState extends State<DetailTableOrderfood> {
       width: 350,
       height: 120,
       decoration: ShapeDecoration(
-          color: Colors.white,
+          // color: Colors.white,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
       child: Column(
@@ -261,15 +277,24 @@ class _DetailTableOrderfoodState extends State<DetailTableOrderfood> {
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: MyStyle().showheadText('Customer information'),
+            child: Row(
+              children: [
+                Icon(Icons.account_box),
+                MyStyle().showheadText('Customer information'),
+              ],
+            ),
           ),
           Padding(
             padding: const EdgeInsets.all(5.0),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   'name-last name : ',
-                  style: GoogleFonts.lato(fontSize: 18),
+                  style: GoogleFonts.lato(
+                    fontSize: 18,
+                    color: Colors.grey[600],
+                  ),
                 ),
                 Text('$name')
               ],
@@ -278,8 +303,13 @@ class _DetailTableOrderfoodState extends State<DetailTableOrderfood> {
           Padding(
             padding: const EdgeInsets.all(5.0),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('phonenumber : ', style: GoogleFonts.lato(fontSize: 18)),
+                Text('phonenumber : ',
+                    style: GoogleFonts.lato(
+                      fontSize: 18,
+                      color: Colors.grey[600],
+                    )),
                 Text('$phonenumber')
               ],
             ),
@@ -294,7 +324,7 @@ class _DetailTableOrderfoodState extends State<DetailTableOrderfood> {
     return Container(
       width: 350,
       decoration: ShapeDecoration(
-          color: Colors.white,
+          // color: Colors.white,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
       child: Column(
@@ -306,6 +336,7 @@ class _DetailTableOrderfoodState extends State<DetailTableOrderfood> {
               children: [
                 Row(
                   children: [
+                    Icon(Icons.chair),
                     Text(
                       'Table reservation information',
                       style: GoogleFonts.lato(fontSize: 20),
@@ -316,10 +347,12 @@ class _DetailTableOrderfoodState extends State<DetailTableOrderfood> {
                   height: 10,
                 ),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Icon(
                       Icons.today_rounded,
                       size: 35,
+                      color: Colors.grey[600],
                     ),
                     Text(detailreservationModels[index].reservationDate!,
                         style: GoogleFonts.lato(fontSize: 15))
@@ -329,21 +362,28 @@ class _DetailTableOrderfoodState extends State<DetailTableOrderfood> {
                   height: 5,
                 ),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Icon(
                       Icons.access_time_filled_outlined,
+                      color: Colors.grey[600],
                       size: 35,
                     ),
-                    Text(detailreservationModels[index].reservationTime!)
+                    Text(detailreservationModels[index]
+                        .reservationTime
+                        .toString()
+                        .substring(0, 5))
                   ],
                 ),
                 SizedBox(
                   height: 5,
                 ),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Icon(
                       Icons.people_alt_sharp,
+                      color: Colors.grey[600],
                       size: 35,
                     ),
                     Text(detailreservationModels[index].numberOfGueste!,
@@ -354,9 +394,11 @@ class _DetailTableOrderfoodState extends State<DetailTableOrderfood> {
                   height: 5,
                 ),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Icon(
                       Icons.event_seat_rounded,
+                      color: Colors.grey[600],
                       size: 35,
                     ),
                     Text(
@@ -372,7 +414,7 @@ class _DetailTableOrderfoodState extends State<DetailTableOrderfood> {
                       width: 300,
                       height: 150,
                       child: Image.network(
-                        '${Myconstant().domain}${detailreservationModels[index].tablePicture!}',
+                        '${Myconstant().domain_tablePic}${detailreservationModels[index].tablePicture!}',
                         fit: BoxFit.cover,
                       ),
                     )

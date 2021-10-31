@@ -18,7 +18,7 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   GlobalKey<FormState> formkey = GlobalKey<FormState>();
-  String? user, password;
+  String? user, password, confirmpassword;
   void validate() {
     if (formkey.currentState!.validate()) {
       print("Ok");
@@ -48,10 +48,21 @@ class _LoginState extends State<Login> {
                   MyStyle().mySizebox(),
                   MyStyle().showLogotable(),
                   MyStyle().mySizebox(),
-                  MyStyle().mySizebox(),
+                  // MyStyle().mySizebox(),
                   userForm(),
                   MyStyle().mySizebox(),
                   passwordForm(),
+
+                  // Padding(
+                  //   padding: const EdgeInsets.fromLTRB(150, 0, 0, 0),
+                  //   child: TextButton(
+                  //       onPressed: () {},
+                  //       child: Text(
+                  //         'Login for restaurant',
+                  //         style: GoogleFonts.lato(
+                  //             fontSize: 18, color: Colors.black),
+                  //       )),
+                  // ),
                   MyStyle().mySizebox(),
                   MyStyle().mySizebox(),
                   loginButtom(context),
@@ -96,26 +107,28 @@ class _LoginState extends State<Login> {
 
 //function check type user
   Future<Null> checkAuthen() async {
-    var url = '${Myconstant().domain}/getUser.php?isAdd=true&user=$user';
+    var url =
+        '${Myconstant().domain_00webhost}/getUser.php?isAdd=true&user=$user';
     try {
       Response response = await Dio().get(url);
-      // print('res = $response');
-
-      var result = json.decode(response.data);
-      // print('result = $result');
-      for (var map in result) {
-        UserModel userModel = UserModel.fromJson(map);
-        if (password == userModel.password) {
-          String? chooseType = userModel.chooseType;
-          if (chooseType == 'User') {
-            routeTuService(MyHomePage(), userModel);
-          } else if (chooseType == 'Shop') {
-            routeTuService(ShopOwner(), userModel);
+      //print('res = $response');
+      if (response.statusCode == 200) {
+        var result = json.decode(response.data);
+        //print('result = $result');
+        for (var map in result) {
+          UserModel userModel = UserModel.fromJson(map);
+          if (password == userModel.password) {
+            String? chooseType = userModel.chooseType;
+            if (chooseType == 'User') {
+              routeTuService(MyHomePage(), userModel);
+            } else if (chooseType == 'Shop') {
+              routeTuService(ShopOwner(), userModel);
+            } else {
+              normalDialog(context, 'Error');
+            }
           } else {
-            normalDialog(context, 'Error');
+            normalDialog(context, 'Password ผิด กรุณาลองใหม่อีกครั้ง');
           }
-        } else {
-          normalDialog(context, 'Password ผิด กรุณาลองใหม่อีกครั้ง');
         }
       }
     } catch (e) {}
@@ -132,6 +145,7 @@ class _LoginState extends State<Login> {
     preferences.setString('password', userModel.password.toString());
     preferences.setString(
         'confirmpassword', userModel.confirmpassword.toString());
+
     preferences.setString('urlPicture', userModel.urlPicture.toString());
 
     MaterialPageRoute route = MaterialPageRoute(builder: (context) => myWidget);

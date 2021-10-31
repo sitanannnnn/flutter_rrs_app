@@ -31,7 +31,13 @@ class _ShowCompletedTableReservationState
   List<ReservationModel> reservationModels = [];
   List<ReadshopModel> readshopModels = [];
   List<ReviewModel> reviewModels = [];
-  String? customerId, restaurantId, reservationId, reviewId;
+  String? customerId,
+      restaurantId,
+      reservationId,
+      reviewId,
+      tableId,
+      tableResId,
+      tableStatus;
   @override
   void initState() {
     super.initState();
@@ -42,18 +48,21 @@ class _ShowCompletedTableReservationState
   Future<Null> readReservation() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? customerId = preferences.getString("customerId");
+    print('id=>$customerId');
     String url =
-        '${Myconstant().domain}/getReservationWherecustomerIdAndReservationStatusCompleted.php?isAdd=true&customerId=$customerId&reservationStatus=completed';
+        '${Myconstant().domain_00webhost}/getReservationWherecustomerIdAndReservationStatusCompleted.php?isAdd=true&customerId=$customerId&reservationStatus=completed';
     Response response = await Dio().get(url);
     //print('res==> $response');
-    var result = json.decode(response.data);
-    //print('result= $result');
-    for (var map in result) {
-      ReservationModel reservationModel = ReservationModel.fromJson(map);
-      setState(() {
-        reservationModels.add(reservationModel);
-        // print('lenght===>${reservationModels.length}');
-      });
+    if (response.statusCode == 200) {
+      var result = json.decode(response.data);
+      print('result completed= $result');
+      for (var map in result) {
+        ReservationModel reservationModel = ReservationModel.fromJson(map);
+        setState(() {
+          reservationModels.add(reservationModel);
+          // print('lenght===>${reservationModels.length}');
+        });
+      }
     }
   }
 
@@ -61,22 +70,25 @@ class _ShowCompletedTableReservationState
   Future<Null> readShop() async {
     for (var index = 0; index < reservationModels.length; index++) {
       restaurantId = reservationModels[index].restaurantId;
+      print('restaurantId$restaurantId');
       String url =
-          '${Myconstant().domain}/getRestaurantCom.php?isAdd=true&chooseType=Shop&restaurantId=$restaurantId';
+          '${Myconstant().domain_00webhost}/getRestaurantCom.php?isAdd=true&chooseType=Shop&restaurantId=$restaurantId';
       await Dio().get(url).then((value) {
         //print('value=$value');
-        var result = json.decode(value.data);
+        if (value.statusCode == 200) {
+          var result = json.decode(value.data);
 
-        for (var map in result) {
-          ReadshopModel model = ReadshopModel.fromJson(map);
+          for (var map in result) {
+            ReadshopModel model = ReadshopModel.fromJson(map);
 
-          String? NameShop = model.restaurantNameshop;
-          if (NameShop!.isNotEmpty) {
-            print('NameShop =${model.restaurantNameshop}');
+            String? NameShop = model.restaurantNameshop;
+            if (NameShop!.isNotEmpty) {
+              print('NameShop =${model.restaurantNameshop}');
 
-            setState(() {
-              readshopModels.add(model);
-            });
+              setState(() {
+                readshopModels.add(model);
+              });
+            }
           }
         }
       });
@@ -85,25 +97,105 @@ class _ShowCompletedTableReservationState
 
   Widget build(BuildContext context) {
     return reservationModels.length == 0
-        ? Center(child: MyStyle().showheadText('not have reservation'))
+        ? Center(
+            child: Container(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset('assets/images/unconfirm.png'),
+                  MyStyle().showheadText('not have reservation'),
+                ],
+              ),
+            ),
+          )
         : ListView.builder(
             itemCount: reservationModels.length,
             itemBuilder: (context, index) => GestureDetector(
                   onTap: () {
                     print(
                         'onclick ==> ${reservationModels[index].reservationId}');
-                    reservationModels[index].reviewId == null
-                        ? Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => RateTheRestaurantReserve(
-                                    reservationModel:
-                                        reservationModels[index])))
-                        : Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ShowRestaurant(
-                                    readshopModel: readshopModels[index])));
+                    // showDialog(
+                    //     context: context,
+                    //     builder: (context) => SimpleDialog(
+                    //           children: [
+                    //             Padding(
+                    //               padding: const EdgeInsets.all(8.0),
+                    //               child: Column(
+                    //                 children: [
+                    //                   Padding(
+                    //                     padding: const EdgeInsets.all(8.0),
+                    //                     child: Text(
+                    //                         'Would you like to rate or reserve again?'),
+                    //                   ),
+                    //                   Row(
+                    //                     mainAxisAlignment:
+                    //                         MainAxisAlignment.spaceBetween,
+                    //                     children: [
+                    //                       Container(
+                    //                         width: 120,
+                    //                         child: ElevatedButton(
+                    //                             style: ElevatedButton.styleFrom(
+                    //                                 primary: kprimary,
+                    //                                 onPrimary: Colors.white,
+                    //                                 shape: RoundedRectangleBorder(
+                    //                                     borderRadius:
+                    //                                         BorderRadius.all(
+                    //                                             Radius.circular(
+                    //                                                 15)))),
+                    //                             onPressed: () {
+                    //                               Navigator.push(
+                    //                                   context,
+                    //                                   MaterialPageRoute(
+                    //                                       builder: (context) =>
+                    //                                           RateTheRestaurantReserve(
+                    //                                               reservationModel:
+                    //                                                   reservationModels[
+                    //                                                       index])));
+                    //                             },
+                    //                             child: Text('Rate')),
+                    //                       ),
+                    //                       Container(
+                    //                         width: 120,
+                    //                         child: ElevatedButton(
+                    //                             style: ElevatedButton.styleFrom(
+                    //                                 primary: kprimary,
+                    //                                 onPrimary: Colors.white,
+                    //                                 shape: RoundedRectangleBorder(
+                    //                                     borderRadius:
+                    //                                         BorderRadius.all(
+                    //                                             Radius.circular(
+                    //                                                 15)))),
+                    //                             onPressed: () {
+                    //                               Navigator.push(
+                    //                                   context,
+                    //                                   MaterialPageRoute(
+                    //                                       builder: (context) =>
+                    //                                           ShowRestaurant(
+                    //                                               readshopModel:
+                    //                                                   readshopModels[
+                    //                                                       index])));
+                    //                             },
+                    //                             child: Text('reserve again')),
+                    //                       )
+                    //                     ],
+                    //                   ),
+                    //                 ],
+                    //               ),
+                    //             )
+                    //           ],
+                    //         ));
+                    // reservationModels[index].reviewId == null
+                    //     ? Navigator.push(
+                    //         context,
+                    //         MaterialPageRoute(
+                    //             builder: (context) => RateTheRestaurantReserve(
+                    //                 reservationModel:
+                    //                     reservationModels[index])))
+                    //     : Navigator.push(
+                    //         context,
+                    //         MaterialPageRoute(
+                    //             builder: (context) => ShowRestaurant(
+                    //                 readshopModel: readshopModels[index])));
                   },
                   child: Column(
                     children: [
@@ -114,7 +206,7 @@ class _ShowCompletedTableReservationState
                             padding: const EdgeInsets.all(8.0),
                             child: Container(
                               width: MediaQuery.of(context).size.width * 0.90,
-                              height: MediaQuery.of(context).size.width * 0.42,
+                              height: MediaQuery.of(context).size.width * 0.40,
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.only(
@@ -203,7 +295,7 @@ class _ShowCompletedTableReservationState
                                                     reservationModels[index]
                                                         .reservationTime
                                                         .toString()
-                                                        .substring(10, 15),
+                                                        .substring(0, 5),
                                                     style: GoogleFonts.lato())
                                               ],
                                             ),
@@ -252,7 +344,7 @@ class _ShowCompletedTableReservationState
                                               children: [
                                                 reservationModels[index]
                                                             .orderfoodId ==
-                                                        'Null'
+                                                        'null'
                                                     ? Text("")
                                                     : Row(
                                                         children: [
@@ -273,69 +365,155 @@ class _ShowCompletedTableReservationState
                                             )
                                           ],
                                         ),
-                                        reservationModels[index].reviewId ==
-                                                null
-                                            ? Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.end,
-                                                children: [
-                                                  Container(
-                                                    height: 20,
-                                                    child: ElevatedButton(
-                                                        style: ElevatedButton.styleFrom(
-                                                            primary:
-                                                                Colors.orange,
-                                                            onPrimary:
-                                                                Colors.white,
-                                                            shape: RoundedRectangleBorder(
-                                                                borderRadius: BorderRadius
-                                                                    .all(Radius
-                                                                        .circular(
-                                                                            5)))),
-                                                        onPressed: () {
-                                                          Navigator.push(
+
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Row(
+                                            children: [
+                                              Container(
+                                                width: 70,
+                                                height: 20,
+                                                child: ElevatedButton(
+                                                    style: ElevatedButton.styleFrom(
+                                                        primary: Colors.red,
+                                                        onPrimary: Colors.white,
+                                                        shape: RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius.all(
+                                                                    Radius.circular(
+                                                                        15)))),
+                                                    onPressed: () {
+                                                      reservationModels[index]
+                                                                  .reviewId ==
+                                                              null
+                                                          ? Navigator.push(
                                                               context,
                                                               MaterialPageRoute(
-                                                                  builder: (context) =>
-                                                                      RateTheRestaurantReserve(
-                                                                          reservationModel:
-                                                                              reservationModels[index])));
-                                                        },
-                                                        child: Text('Rate')),
-                                                  )
-                                                ],
+                                                                  builder: (context) => RateTheRestaurantReserve(
+                                                                      reservationModel:
+                                                                          reservationModels[
+                                                                              index])))
+                                                          : showDialog(
+                                                              context: context,
+                                                              builder:
+                                                                  (context) =>
+                                                                      SimpleDialog(
+                                                                        children: [
+                                                                          Column(
+                                                                            children: [
+                                                                              Row(
+                                                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                                                children: [
+                                                                                  Text('you have successfully rate', style: GoogleFonts.lato(fontSize: 20, color: Colors.black))
+                                                                                ],
+                                                                              ),
+                                                                              ElevatedButton(
+                                                                                  style: ElevatedButton.styleFrom(primary: Colors.green, onPrimary: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15)))),
+                                                                                  onPressed: () {
+                                                                                    Navigator.pop(context);
+                                                                                  },
+                                                                                  child: Text('OK'))
+                                                                            ],
+                                                                          )
+                                                                        ],
+                                                                      ));
+                                                    },
+                                                    child: Text('Rate')),
+                                              ),
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                              Container(
+                                                width: 120,
+                                                height: 20,
+                                                child: ElevatedButton(
+                                                    style: ElevatedButton.styleFrom(
+                                                        primary: Colors.red,
+                                                        onPrimary: Colors.white,
+                                                        shape: RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius.all(
+                                                                    Radius.circular(
+                                                                        15)))),
+                                                    onPressed: () {
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  ShowRestaurant(
+                                                                      readshopModel:
+                                                                          readshopModels[
+                                                                              index])));
+                                                    },
+                                                    child:
+                                                        Text('reserve again')),
                                               )
-                                            : Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.end,
-                                                children: [
-                                                  Container(
-                                                    height: 20,
-                                                    child: ElevatedButton(
-                                                        style: ElevatedButton.styleFrom(
-                                                            primary:
-                                                                Colors.orange,
-                                                            onPrimary:
-                                                                Colors.white,
-                                                            shape: RoundedRectangleBorder(
-                                                                borderRadius: BorderRadius
-                                                                    .all(Radius
-                                                                        .circular(
-                                                                            5)))),
-                                                        onPressed: () {
-                                                          Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                  builder: (context) =>
-                                                                      ShowRestaurant(
-                                                                          readshopModel:
-                                                                              readshopModels[index])));
-                                                        },
-                                                        child: Text(
-                                                            'Reserve again')),
-                                                  )
-                                                ],
-                                              )
+                                            ],
+                                          ),
+                                        )
+                                        // reservationModels[index].reviewId ==
+                                        //         null
+                                        //     ? Row(
+                                        //         mainAxisAlignment:
+                                        //             MainAxisAlignment.end,
+                                        //         children: [
+                                        //           Container(
+                                        //             height: 20,
+                                        //             child: ElevatedButton(
+                                        //                 style: ElevatedButton.styleFrom(
+                                        //                     primary:
+                                        //                         Colors.orange,
+                                        //                     onPrimary:
+                                        //                         Colors.white,
+                                        //                     shape: RoundedRectangleBorder(
+                                        //                         borderRadius: BorderRadius
+                                        //                             .all(Radius
+                                        //                                 .circular(
+                                        //                                     5)))),
+                                        //                 onPressed: () {
+                                        //                   Navigator.push(
+                                        //                       context,
+                                        //                       MaterialPageRoute(
+                                        //                           builder: (context) =>
+                                        //                               RateTheRestaurantReserve(
+                                        //                                   reservationModel:
+                                        //                                       reservationModels[index])));
+                                        //                 },
+                                        //                 child: Text('Rate')),
+                                        //           )
+                                        //         ],
+                                        //       )
+                                        //     : Row(
+                                        //         mainAxisAlignment:
+                                        //             MainAxisAlignment.end,
+                                        //         children: [
+                                        //           Container(
+                                        //             height: 20,
+                                        //             child: ElevatedButton(
+                                        //                 style: ElevatedButton.styleFrom(
+                                        //                     primary:
+                                        //                         Colors.orange,
+                                        //                     onPrimary:
+                                        //                         Colors.white,
+                                        //                     shape: RoundedRectangleBorder(
+                                        //                         borderRadius: BorderRadius
+                                        //                             .all(Radius
+                                        //                                 .circular(
+                                        //                                     5)))),
+                                        //                 onPressed: () {
+                                        //                   Navigator.push(
+                                        //                       context,
+                                        //                       MaterialPageRoute(
+                                        //                           builder: (context) =>
+                                        //                               ShowRestaurant(
+                                        //                                   readshopModel:
+                                        //                                       readshopModels[index])));
+                                        //                 },
+                                        //                 child: Text(
+                                        //                     'Reserve again')),
+                                        //           )
+                                        //         ],
+                                        //       )
                                       ],
                                     ),
                                   )
@@ -351,6 +529,7 @@ class _ShowCompletedTableReservationState
                 ));
   }
 
+//showimage
   Padding showImage(BuildContext context, int index) {
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -361,4 +540,28 @@ class _ShowCompletedTableReservationState
       ),
     );
   }
+
+  // //function บันทึกสถานะของโต๊ะเป็น false เมื่อมีสถานะเป็น completed
+  // Future<Null> recordStatusTable() async {
+  //   SharedPreferences preferences = await SharedPreferences.getInstance();
+  //   String? customerId = preferences.getString("customerId");
+  //   for (var index = 0; index < reservationModels.length; index++) {
+  //     setState(() {
+  //       tableId = reservationModels[index].tableId;
+  //       print('tableId=>$tableId');
+  //     });
+  //   }
+
+  //   var url =
+  //       '${Myconstant().domain}/editTable_res_false.php?isAdd=true&tableId=$tableId&tableStatus=$tableStatus';
+  //   try {
+  //     Response response = await Dio().get(url);
+  //     print('res = $response');
+  //     if (response.toString() == 'true') {
+  //       // Navigator.pop(context);
+  //     } else {
+  //       normalDialog(context, 'Please try again');
+  //     }
+  //   } catch (e) {}
+  // }
 }

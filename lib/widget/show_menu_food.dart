@@ -6,6 +6,7 @@ import 'package:flutter_rrs_app/model/food_menu_model.dart';
 import 'package:flutter_rrs_app/model/read_shop_model.dart';
 import 'package:flutter_rrs_app/utility/my_constant.dart';
 import 'package:flutter_rrs_app/utility/my_style.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ShowMenuFood extends StatefulWidget {
   final ReadshopModel? readshopModel;
@@ -29,7 +30,7 @@ class _ShowMenuFoodState extends State<ShowMenuFood> {
   Future<Null> readFoodMenu() async {
     restaurantId = readshopModel!.restaurantId;
     String url =
-        '${Myconstant().domain}/getFoodWhererestaurantId.php?isAdd=true&restaurantId=$restaurantId';
+        '${Myconstant().domain_00webhost}/getFoodmenuWhererestaurantId.php?isAdd=true&restaurantId=$restaurantId';
     Response response = await Dio().get(url);
     print('res==> $response');
 
@@ -46,44 +47,210 @@ class _ShowMenuFoodState extends State<ShowMenuFood> {
   Widget build(BuildContext context) {
     return foodmenuModels.length == 0
         ? MyStyle().showProgrsee()
-        : ListView.builder(
-            itemCount: foodmenuModels.length,
-            itemBuilder: (context, index) => Row(
-                  children: [
-                    showFoodmenuImage(context, index),
-                    Container(
-                        width: MediaQuery.of(context).size.width * 0.4,
-                        height: MediaQuery.of(context).size.width * 0.3,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        : SingleChildScrollView(
+            child: Column(
+              children: [
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: ScrollPhysics(),
+                  itemCount: foodmenuModels.length,
+                  itemBuilder: (context, index) => GestureDetector(
+                    child: Column(
+                      children: [
+                        Row(
                           children: [
-                            Row(
-                              children: [
-                                Text(foodmenuModels[index].foodmenuName!),
-                              ],
+                            showFoodmenuImage(context, index),
+                            Flexible(
+                              child: Container(
+                                width: double.infinity,
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Container(
+                                          width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.5 -
+                                              8.0,
+                                          child: foodmenuModels[index]
+                                                      .foodMenuIdBuyOne ==
+                                                  null
+                                              ? Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: Text(
+                                                        foodmenuModels[index]
+                                                            .foodmenuName!,
+                                                        style: GoogleFonts.lato(
+                                                            fontSize: 16,
+                                                            color: Colors
+                                                                .blue[800]),
+                                                        maxLines: 2,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )
+                                              : Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: Text(
+                                                        '${foodmenuModels[index].foodmenunameBuyOne} + ${foodmenuModels[index].foodmenunameGetOne}',
+                                                        style: GoogleFonts.lato(
+                                                            fontSize: 16,
+                                                            color: Colors
+                                                                .blue[800]),
+                                                        maxLines: 2,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                        )
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    //show price food
+                                    Row(
+                                      children: [
+                                        foodmenuModels[index].promotion_id ==
+                                                null
+                                            ? Container(
+                                                width: MediaQuery.of(context)
+                                                            .size
+                                                            .width *
+                                                        0.4 -
+                                                    8.0,
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.end,
+                                                  children: [
+                                                    Text(
+                                                      foodmenuModels[index]
+                                                          .foodmenuPrice!,
+                                                      style: GoogleFonts.lato(
+                                                          fontSize: 16,
+                                                          color: Colors
+                                                              .green[800]),
+                                                    ),
+                                                    Text("K",
+                                                        style: GoogleFonts.lato(
+                                                            fontSize: 16,
+                                                            color: Colors
+                                                                .grey[800],
+                                                            decoration:
+                                                                TextDecoration
+                                                                    .lineThrough))
+                                                  ],
+                                                ))
+                                            : Container(
+                                                width: MediaQuery.of(context)
+                                                            .size
+                                                            .width *
+                                                        0.4 -
+                                                    8.0,
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.end,
+                                                  children: [
+                                                    Text(
+                                                      foodmenuModels[index]
+                                                          .promotionOldPrice!,
+                                                      style: GoogleFonts.lato(
+                                                          fontSize: 14,
+                                                          color:
+                                                              Colors.grey[800],
+                                                          decoration:
+                                                              TextDecoration
+                                                                  .lineThrough,
+                                                          decorationColor:
+                                                              Colors.red,
+                                                          decorationThickness:
+                                                              3),
+                                                    ),
+                                                    Text("K",
+                                                        style: GoogleFonts.lato(
+                                                            fontSize: 16,
+                                                            color: Colors
+                                                                .grey[800],
+                                                            decoration:
+                                                                TextDecoration
+                                                                    .lineThrough))
+                                                  ],
+                                                ))
+                                      ],
+                                    ),
+                                    Column(
+                                      children: [
+                                        foodmenuModels[index].promotion_id ==
+                                                null
+                                            ? Text("")
+                                            : Row(
+                                                children: [
+                                                  Container(
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                                      .size
+                                                                      .width *
+                                                                  0.4 -
+                                                              8.0,
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .end,
+                                                        children: [
+                                                          Text(
+                                                            foodmenuModels[
+                                                                    index]
+                                                                .promotionNewPrice!,
+                                                            style: GoogleFonts.lato(
+                                                                fontSize: 16,
+                                                                color: Colors
+                                                                        .green[
+                                                                    800]),
+                                                          ),
+                                                          Text("K",
+                                                              style: GoogleFonts.lato(
+                                                                  fontSize: 16,
+                                                                  color: Colors
+                                                                          .grey[
+                                                                      800],
+                                                                  decoration:
+                                                                      TextDecoration
+                                                                          .lineThrough))
+                                                        ],
+                                                      ))
+                                                ],
+                                              ),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 15,
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
-                            Row(
-                              children: [
-                                Container(
-                                    width: MediaQuery.of(context).size.width *
-                                            0.4 -
-                                        8.0,
-                                    child: Text(foodmenuModels[index]
-                                        .foodmenuDescrip!)),
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text(
-                                    'Price : ${foodmenuModels[index].foodmenuPrice!} LAK'),
-                              ],
-                            )
                           ],
-                        )),
-                  ],
-                ));
+                        ),
+                        Divider(
+                          color: Colors.grey[200],
+                          thickness: 10,
+                          indent: 0,
+                          endIndent: 0,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
   }
 
   Padding showFoodmenuImage(BuildContext context, int index) {
@@ -96,7 +263,7 @@ class _ShowMenuFoodState extends State<ShowMenuFood> {
             borderRadius: BorderRadius.circular(5),
             image: DecorationImage(
               image: NetworkImage(
-                '${Myconstant().domain}${foodmenuModels[index].foodmenuPicture!}',
+                '${Myconstant().domain_foodPic}${foodmenuModels[index].foodmenuPicture!}',
               ),
               fit: BoxFit.cover,
             )),

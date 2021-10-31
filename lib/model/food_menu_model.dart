@@ -5,8 +5,8 @@ class FoodMenuModel {
   String? foodmenuPrice;
   String? foodmenuPicture;
   String? foodmenuDescrip;
-  String? promotionId;
-
+  String? foodmenuStatus;
+  String? promotion_id;
   String? restaurantNameshop;
   String? promotionType;
   String? promotionStartDate;
@@ -30,7 +30,8 @@ class FoodMenuModel {
       this.foodmenuPrice,
       this.foodmenuPicture,
       this.foodmenuDescrip,
-      this.promotionId,
+      this.foodmenuStatus,
+      this.promotion_id,
       this.restaurantNameshop,
       this.promotionType,
       this.promotionStartDate,
@@ -54,7 +55,8 @@ class FoodMenuModel {
     foodmenuPrice = json['foodmenuPrice'];
     foodmenuPicture = json['foodmenuPicture'];
     foodmenuDescrip = json['foodmenuDescrip'];
-    promotionId = json['promotionId'];
+    foodmenuStatus = json['foodmenuStatus'];
+    promotion_id = json['promotion_id'];
     restaurantNameshop = json['restaurantNameshop'];
     promotionType = json['promotion_type'];
     promotionStartDate = json['promotion_start_date'];
@@ -80,7 +82,8 @@ class FoodMenuModel {
     data['foodmenuPrice'] = this.foodmenuPrice;
     data['foodmenuPicture'] = this.foodmenuPicture;
     data['foodmenuDescrip'] = this.foodmenuDescrip;
-    data['promotionId'] = this.promotionId;
+    data['foodmenuStatus'] = this.foodmenuStatus;
+    data['promotion_id'] = this.promotion_id;
     data['restaurantNameshop'] = this.restaurantNameshop;
     data['promotion_type'] = this.promotionType;
     data['promotion_start_date'] = this.promotionStartDate;

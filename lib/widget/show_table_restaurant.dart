@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rrs_app/model/read_shop_model.dart';
+import 'package:flutter_rrs_app/model/reservation_model.dart';
 import 'package:flutter_rrs_app/model/table_model.dart';
 import 'package:flutter_rrs_app/screen/booking_detail_table.dart';
 import 'package:flutter_rrs_app/screen/pre_order_food.dart';
@@ -16,14 +17,14 @@ class ShowTable extends StatefulWidget {
   final ReadshopModel readshopModel;
   final String choosevalue;
   final String date;
-  final String pickertime;
+  final String chooseTime;
 
   ShowTable({
     Key? key,
     required this.readshopModel,
     required this.choosevalue,
     required this.date,
-    required this.pickertime,
+    required this.chooseTime,
   }) : super(key: key);
   @override
   _ShowTableState createState() => _ShowTableState();
@@ -44,8 +45,12 @@ class _ShowTableState extends State<ShowTable> {
       reservationStatus,
       tableStatus,
       promotionId,
-      promotionType;
+      promotionType,
+      time,
+      date,
+      reservationReasonCancelStatus;
   List<TableModel> tableModels = [];
+  List<ReservationModel> cheackreservations = [];
 
   @override
   //initstate จะทำงานก่อน build
@@ -58,11 +63,15 @@ class _ShowTableState extends State<ShowTable> {
     print('promotion Type ==>$promotionType');
     restaurantNameshop = readshopModel!.restaurantNameshop;
     numberOfGueste = widget.choosevalue;
-    reservationDate = widget.date;
-    reservationTime = widget.pickertime;
+    date = widget.date;
+    time = widget.chooseTime;
     // print('people = $numberOfGueste');
-    // print('date = $reservationDate');
-    // print('time = $reservationTime');
+    //print('date = $date');
+    //print('time = $time');
+    reservationDate = date.toString().substring(0, 10);
+    reservationTime = time.toString().substring(0, 5);
+    print('time for = $reservationTime');
+    print('date for = $reservationDate');
     readTable();
   }
 
@@ -78,7 +87,7 @@ class _ShowTableState extends State<ShowTable> {
     print('table of ==>$numberpeople');
 
     String url =
-        '${Myconstant().domain}/getTableWhererestaurantId.php?isAdd=true&restaurantId=$restaurantId&tableNumseat=$numpeople&tableStatus=$tableStatus';
+        '${Myconstant().domain_00webhost}/getTableWhererestaurantId.php?isAdd=true&restaurantId=$restaurantId&tableNumseat=$numpeople';
     Response response = await Dio().get(url);
     // print('res==> $response');
     var result = json.decode(response.data);
@@ -88,30 +97,77 @@ class _ShowTableState extends State<ShowTable> {
       print('number++ ====> $numpeople');
       for (var map in result) {
         TableModel tableModel = TableModel.fromJson(map);
-
         setState(() {
           tableModels.add(tableModel);
-          print('lenht table==>${tableModels.length}');
+          //print('lenht table==>${tableModels.length}');
         });
       }
     }
     //อ่านค่าข้อมูลโต๊ะมาเเสดง เมื่อโต๊ะขนาดโต๊ะที่ระบบตั้งไว้ให้เต็มให้มีการบวกขนาดโต๊ะเพิ่มขึ้น
     else if (result == null) {
       numpeople = numpeople + 1;
-      print('null');
+      //print('null');
       String url =
-          '${Myconstant().domain}/getTableWhererestaurantId.php?isAdd=true&restaurantId=$restaurantId&tableNumseat=$numpeople&tableStatus=$tableStatus';
+          '${Myconstant().domain_00webhost}/getTableWhererestaurantId.php?isAdd=true&restaurantId=$restaurantId&tableNumseat=$numpeople';
       Response response = await Dio().get(url);
-      var result = json.decode(response.data);
-      for (var map in result) {
-        TableModel tableModel = TableModel.fromJson(map);
+      if (response.statusCode == 200) {
+        var result = json.decode(response.data);
+        for (var map in result) {
+          TableModel tableModel = TableModel.fromJson(map);
 
-        setState(() {
-          tableModels.add(tableModel);
-          print('lenht table==>${tableModels.length}');
-        });
+          setState(() {
+            tableModels.add(tableModel);
+            //print('lenht table==>${tableModels.length}');
+          });
+        }
       }
     }
+  }
+
+  Future<Null> cheackDateTime(int index) async {
+    restaurantId = readshopModel!.restaurantId;
+
+    String url =
+        '${Myconstant().domain_00webhost}/getReservationWhererestaurantId.php?isAdd=true&restaurantId=$restaurantId&reservationDate=$reservationDate&reservationTime=$reservationTime&tableResId=$tableResId';
+    try {
+      await Dio().get(url).then((value) {
+        if (value.statusCode == 200) {
+          var result = json.decode(value.data);
+          print('res = $result');
+          setState(() {
+            confirmTable(index);
+          });
+        } else {
+          showDialog(
+              context: context,
+              builder: (context) => SimpleDialog(
+                    title: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Column(
+                          children: [
+                            Text('Please select '),
+                            Text(' another table number. '),
+                            ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    primary: kprimary,
+                                    onPrimary: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(15)))),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Text('OK'))
+                          ],
+                        ),
+                      ],
+                    ),
+                  ));
+          // normalDialog(context, 'Please select another table number.');
+        }
+      });
+    } catch (e) {}
   }
 
   @override
@@ -127,58 +183,82 @@ class _ShowTableState extends State<ShowTable> {
               itemCount: tableModels.length,
               itemBuilder: (context, index) => GestureDetector(
                 onTap: () {
-                  print('You Click  index = $index');
-                  confirmTable(index);
+                  print('You Click  index = ${tableModels[index].tableResId}');
+                  tableResId = tableModels[index].tableResId;
+                  cheackDateTime(index);
                 },
-                child: Row(
+                child: Column(
                   children: [
-                    showTableImage(context, index),
-                    Container(
-                        width: MediaQuery.of(context).size.width * 0.4,
-                        height: MediaQuery.of(context).size.width * 0.3,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
+                    Row(
+                      children: [
+                        showTableImage(context, index),
+                        Flexible(
+                          child: Container(
+                            width: double.infinity,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                Container(
-                                  width: 20,
-                                  height: 20,
-                                  decoration: ShapeDecoration(
-                                      color: kprimary, shape: CircleBorder()),
-                                  child: Center(
-                                      child:
-                                          Text(tableModels[index].tableResId!)),
-                                ),
-                                Text(tableModels[index].tableName!),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Container(
-                                    width: MediaQuery.of(context).size.width *
-                                            0.4 -
-                                        8.0,
-                                    child: Row(
-                                      children: [
-                                        Icon(Icons.chair_alt_rounded),
-                                        Text(
-                                            '${tableModels[index].tableNumseat} seat')
-                                      ],
+                                Row(
+                                  children: [
+                                    Container(
+                                      width: 20,
+                                      height: 20,
+                                      decoration: ShapeDecoration(
+                                          color: kprimary,
+                                          shape: CircleBorder()),
+                                      child: Center(
+                                          child: Text(
+                                              tableModels[index].tableResId!)),
+                                    ),
+                                    Expanded(
+                                        child: Text(
+                                      tableModels[index].tableName!,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
                                     )),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Container(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                    0.4 -
+                                                8.0,
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons.chair_alt_rounded),
+                                            Text(
+                                                '${tableModels[index].tableNumseat} seat')
+                                          ],
+                                        )),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    tableModels[index].tableDescrip! == "null"
+                                        ? Text("")
+                                        : Expanded(
+                                            child: Text(
+                                              tableModels[index].tableDescrip!,
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                  ],
+                                ),
                               ],
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                tableModels[index].tableDescrip! == "null"
-                                    ? Text("")
-                                    : Text(tableModels[index].tableDescrip!),
-                              ],
-                            )
-                          ],
-                        )),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Divider(
+                      color: Colors.grey[200],
+                      thickness: 10,
+                      indent: 0,
+                      endIndent: 0,
+                    ),
                   ],
                 ),
               ),
@@ -197,7 +277,7 @@ class _ShowTableState extends State<ShowTable> {
             borderRadius: BorderRadius.circular(5),
             image: DecorationImage(
                 image: NetworkImage(
-                  '${Myconstant().domain}${tableModels[index].tablePicture!}',
+                  '${Myconstant().domain_tablePic}${tableModels[index].tablePicture!}',
                 ),
                 fit: BoxFit.cover)),
       ),
@@ -226,8 +306,8 @@ class _ShowTableState extends State<ShowTable> {
             width: 150,
             height: 130,
             child: Image.network(
-              '${Myconstant().domain}${tableModels[index].tablePicture!}',
-              fit: BoxFit.contain,
+              '${Myconstant().domain_tablePic}${tableModels[index].tablePicture!}',
+              fit: BoxFit.cover,
             ),
           ),
           Padding(
@@ -283,8 +363,7 @@ class _ShowTableState extends State<ShowTable> {
                                           IconButton(
                                             onPressed: () {
                                               recordReservation(index);
-                                              recordStatusTable(index);
-                                              // editStatusTable(index);
+
                                               Navigator.pop(context);
                                               showDialog(
                                                   context: context,
@@ -330,9 +409,9 @@ class _ShowTableState extends State<ShowTable> {
                                                                             MaterialPageRoute(
                                                                                 builder: (context) => BookingTailTable(
                                                                                       readshopModel: readshopModel!,
-                                                                                      date: '$reservationDate',
+                                                                                      reservationDate: '$reservationDate',
                                                                                       choosevalue: '$numberOfGueste',
-                                                                                      timeFormt: '$reservationTime',
+                                                                                      reservationTime: '$reservationTime',
                                                                                       tableModel: tableModels[index],
                                                                                     )));
                                                                       },
@@ -346,9 +425,9 @@ class _ShowTableState extends State<ShowTable> {
                                                                             context,
                                                                             MaterialPageRoute(
                                                                                 builder: (context) => PreOrderFood(
-                                                                                      date: '$reservationDate',
+                                                                                      reservationDate: '$reservationDate',
                                                                                       choosevalue: '$numberOfGueste',
-                                                                                      pickertime: '$reservationTime',
+                                                                                      reservationTime: '$reservationTime',
                                                                                       tableModel: tableModels[index],
                                                                                       readshopModel: readshopModel!,
                                                                                     )));
@@ -389,14 +468,15 @@ class _ShowTableState extends State<ShowTable> {
     tableResId = tableModels[index].tableResId;
     tableId = tableModels[index].tableId;
     DateTime dateTime = DateTime.now();
+
     String? reservationDateTime =
         DateFormat('yyyy-MM-dd HH:mm').format(dateTime);
     var url =
-        '${Myconstant().domain}/addReservation.php?isAdd=true&customerId=$customerId&restaurantId=$restaurantId&tableResId=$tableResId&restaurantNameshop=$restaurantNameshop&numberOfGueste=$numberOfGueste&reservationDate=$reservationDate&reservationTime=$reservationTime&orderfoodId=$orderfoodId&reservationStatus=$reservationStatus&promotionId=$promotionId&promotionType=$promotionType&reservationDateTime=$reservationDateTime';
+        '${Myconstant().domain_00webhost}/addReservation.php?isAdd=true&customerId=$customerId&restaurantId=$restaurantId&tableId=$tableId&tableResId=$tableResId&restaurantNameshop=$restaurantNameshop&numberOfGueste=$numberOfGueste&reservationDate=$reservationDate&reservationTime=$reservationTime&orderfoodId=$orderfoodId&reservationStatus=$reservationStatus&reservationReasonCancelStatus=$reservationReasonCancelStatus&promotionId=$promotionId&promotionType=$promotionType&reservationDateTime=$reservationDateTime';
     try {
       Response response = await Dio().get(url);
       // print('res = $response');
-      if (response.toString() == 'true') {
+      if (response.statusCode == 200) {
         // Navigator.pop(context);x
       } else {
         normalDialog(context, 'Please try again');
@@ -404,22 +484,22 @@ class _ShowTableState extends State<ShowTable> {
     } catch (e) {}
   }
 
-//function บันทึกสถานะของโต๊ะ
-  Future<Null> recordStatusTable(int index) async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    String? customerId = preferences.getString("customerId");
-    tableResId = tableModels[index].tableResId;
-    tableId = tableModels[index].tableId;
-    var url =
-        '${Myconstant().domain}/editTable_res.php?isAdd=true&tableId=$tableId&tableStatus=$tableStatus';
-    try {
-      Response response = await Dio().get(url);
-      // print('res = $response');
-      if (response.toString() == 'true') {
-        // Navigator.pop(context);
-      } else {
-        normalDialog(context, 'Please try again');
-      }
-    } catch (e) {}
-  }
+// //function บันทึกสถานะของโต๊ะ
+//   Future<Null> recordStatusTable(int index) async {
+//     SharedPreferences preferences = await SharedPreferences.getInstance();
+//     String? customerId = preferences.getString("customerId");
+//     tableResId = tableModels[index].tableResId;
+//     tableId = tableModels[index].tableId;
+//     var url =
+//         '${Myconstant().domain}/editTable_res.php?isAdd=true&tableId=$tableId&tableStatus=$tableStatus';
+//     try {
+//       Response response = await Dio().get(url);
+//       // print('res = $response');
+//       if (response.toString() == 'true') {
+//         // Navigator.pop(context);
+//       } else {
+//         normalDialog(context, 'Please try again');
+//       }
+//     } catch (e) {}
+//   }
 }

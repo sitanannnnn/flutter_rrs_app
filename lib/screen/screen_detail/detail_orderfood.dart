@@ -38,6 +38,12 @@ class _DetailOrderfoodState extends State<DetailOrderfood> {
   List<double> discountAmount = [];
   List<double> totalPrice = [];
   double totaldiscount = 0;
+  double netTotal = 0;
+  double vatTotal = 0;
+  double netprice = 0;
+  double netpricethb = 0;
+  double netpriceusd = 0;
+  double netpriceeur = 0;
 
   @override
   void initState() {
@@ -63,11 +69,12 @@ class _DetailOrderfoodState extends State<DetailOrderfood> {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? customerId = preferences.getString("customerId");
     String? url =
-        '${Myconstant().domain}/getOrderfoodWherecustomerIdandId.php?isAdd=true&customerId=$customerId&id=$orderfoodId';
+        '${Myconstant().domain_00webhost}/getOrderfoodWherecustomerIdandId.php?isAdd=true&customerId=$customerId&id=$orderfoodId';
     Response response = await Dio().get(url);
-    print('res==> $response');
-    if (response.toString() != 'null') {
+
+    if (response.statusCode == 200) {
       var result = json.decode(response.data);
+      print('res reservation==> $result');
 
       for (var map in result) {
         //print('result= $result');
@@ -79,17 +86,40 @@ class _DetailOrderfoodState extends State<DetailOrderfood> {
         List<String> netPrices = changeArray(detailorderfoodModel.netPrice!);
         String? caldiscount = detailorderfoodModel.promotionDiscount;
         int discount;
+        //แปลงค่าให้เป็น int
         caldiscount == null ? discount = 0 : discount = int.parse(caldiscount);
         int total = 0;
         double netTotal = 0;
+        String? ratethb = detailorderfoodModel.rate_thb;
+        String? rateusd = detailorderfoodModel.rate_usd;
+        String? rateeur = detailorderfoodModel.rate_eur;
+        double rate_thb = double.parse(ratethb!);
+        double rate_usd = double.parse(rateusd!);
+        double rate_eur = double.parse(rateeur!);
+        print('rate thb=>$rate_thb');
+        //ใส่ค่า  % vat  ไว้ใน vat
+        String? vat = detailorderfoodModel.vat;
+        //แปลงค่าให้เป็น int
+        int vatdiscount = int.parse(vat!);
 
         for (var string in netPrices) {
-          //หาราคารวมไม่มีส่วนลด
           total = total + int.parse(string.trim());
           //หาราคาส่วนลด
           totaldiscount = (total * (discount / 100));
-          print('total ==> $totaldiscount');
+          print('total discount ==> $totaldiscount');
+          //ราคาหักส่วนลด
           netTotal = (total - totaldiscount);
+          print('nettotal$netTotal');
+          //ราคาvat
+          vatTotal = (netTotal * (vatdiscount / 100));
+          print('vat==> $vatTotal');
+          //ราคาสุทธ์
+          netprice = (netTotal + vatTotal);
+          print('total==> $netprice');
+          netpricethb = (netprice * rate_thb);
+          netpriceusd = (netprice * rate_usd);
+          netpriceeur = (netprice * rate_eur);
+          print('thai baht =>$netpricethb');
         }
 
         print(detailorderfoodModel.promotionDiscount);
@@ -126,7 +156,9 @@ class _DetailOrderfoodState extends State<DetailOrderfood> {
           backgroundColor: kprimary,
           title: Text('order food detail'),
         ),
-        body: SingleChildScrollView(child: buildContent()));
+        body: detailorderfoodModels.length == 0
+            ? MyStyle().showProgrsee()
+            : buildContent());
   }
 
   //เเสดงชื่อร้านอาหาร ข้อมูลลูกค้า
@@ -136,7 +168,22 @@ class _DetailOrderfoodState extends State<DetailOrderfood> {
         physics: ScrollPhysics(),
         itemCount: detailorderfoodModels.length,
         itemBuilder: (context, index) => Container(
-          color: ksecondary,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(10),
+                topRight: Radius.circular(10),
+                bottomLeft: Radius.circular(10),
+                bottomRight: Radius.circular(10)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 5,
+                blurRadius: 7,
+                offset: Offset(0, 3), // changes position of shadow
+              ),
+            ],
+          ),
           child: Column(
             children: [
               SizedBox(
@@ -158,22 +205,19 @@ class _DetailOrderfoodState extends State<DetailOrderfood> {
                   detailorderfoodModels[index].restaurantNameshop!),
               Divider(
                 thickness: 3,
-                color: Colors.white,
+                color: Colors.grey[200],
               ),
               buildinformationCustomer(),
               Divider(
                 thickness: 3,
-                color: Colors.white,
+                color: Colors.grey[200],
               ),
               buildfoodorder(index),
               Divider(
                 thickness: 3,
-                color: Colors.white,
+                color: Colors.grey[200],
               ),
               buildtotal(index),
-              SizedBox(
-                height: 80,
-              ),
             ],
           ),
         ),
@@ -184,7 +228,7 @@ class _DetailOrderfoodState extends State<DetailOrderfood> {
           Container(
             width: 350,
             decoration: ShapeDecoration(
-                color: Colors.white,
+                // color: Colors.white,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10))),
             child: Padding(
@@ -194,52 +238,44 @@ class _DetailOrderfoodState extends State<DetailOrderfood> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Total food price ', style: GoogleFonts.lato()),
-                      Row(
-                        children: [
-                          Text(
-                            '${myFormat.format((totalInt[index]))}',
-                            style: GoogleFonts.lato(),
-                          ),
-                          Text('K',
-                              style: GoogleFonts.lato(
-                                  decoration: TextDecoration.lineThrough))
-                        ],
-                      )
+                      Text('Total money  ', style: GoogleFonts.lato()),
+                      Text(
+                        '${myFormat.format(int.parse(totalInt[index].toString()))} ',
+                      ),
+                    ],
+                  ),
+                  detailorderfoodModels[index].promotionDiscount == null
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('Discount ', style: GoogleFonts.lato()),
+                            Text('0 %'),
+                            Text('0.00')
+                          ],
+                        )
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('Discount ', style: GoogleFonts.lato()),
+                            Text(
+                                '${detailorderfoodModels[index].promotionDiscount} %'),
+                            Text('${myFormat.format((totaldiscount))}'),
+                          ],
+                        ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Amount after discount'),
+                      Text('${myFormat.format((totalPrice[index]))}'),
                     ],
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Discount ', style: GoogleFonts.lato()),
-                      detailorderfoodModels[index].promotionDiscount == null
-                          ? Text('0%')
-                          : Text(
-                              '${detailorderfoodModels[index].promotionDiscount} %')
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Discount amount', style: GoogleFonts.lato()),
-                      detailorderfoodModels[index].promotionDiscount == null
-                          ? Row(
-                              children: [
-                                Text(' 0 '),
-                                Text('K',
-                                    style: GoogleFonts.lato(
-                                        decoration: TextDecoration.lineThrough))
-                              ],
-                            )
-                          : Row(
-                              children: [
-                                Text(
-                                    '${myFormat.format((discountAmount[index]))}'),
-                                Text('K',
-                                    style: GoogleFonts.lato(
-                                        decoration: TextDecoration.lineThrough))
-                              ],
-                            )
+                      Text('Vat'),
+                      Text('${detailorderfoodModels[index].vat} %',
+                          style: GoogleFonts.lato()),
+                      Text('${myFormat.format((vatTotal))}'),
                     ],
                   ),
                   Divider(
@@ -249,23 +285,48 @@ class _DetailOrderfoodState extends State<DetailOrderfood> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('Total ', style: GoogleFonts.lato(fontSize: 18)),
-                      detailorderfoodModels[index].promotionDiscount == null
-                          ? Row(
-                              children: [
-                                Text('${myFormat.format((totalInt[index]))}'),
-                                Text('K',
-                                    style: GoogleFonts.lato(
-                                        decoration: TextDecoration.lineThrough))
-                              ],
-                            )
-                          : Row(
-                              children: [
-                                Text('${myFormat.format((totalPrice[index]))}'),
-                                Text('K',
-                                    style: GoogleFonts.lato(
-                                        decoration: TextDecoration.lineThrough))
-                              ],
-                            )
+                      Row(
+                        children: [
+                          Text('${myFormat.format((netprice))}'),
+                          Text('KIP', style: GoogleFonts.lato())
+                        ],
+                      )
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(' ', style: GoogleFonts.lato(fontSize: 18)),
+                      Row(
+                        children: [
+                          Text('${myFormat.format((netpricethb))}'),
+                          Text('THB', style: GoogleFonts.lato())
+                        ],
+                      )
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(' ', style: GoogleFonts.lato(fontSize: 18)),
+                      Row(
+                        children: [
+                          Text('${myFormat.format((netpriceusd))}'),
+                          Text('USD', style: GoogleFonts.lato())
+                        ],
+                      )
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(' ', style: GoogleFonts.lato(fontSize: 18)),
+                      Row(
+                        children: [
+                          Text('${myFormat.format((netpriceeur))}'),
+                          Text('EUR', style: GoogleFonts.lato())
+                        ],
+                      )
                     ],
                   ),
                 ],
@@ -280,7 +341,7 @@ class _DetailOrderfoodState extends State<DetailOrderfood> {
     return Container(
       width: 350,
       decoration: ShapeDecoration(
-          color: Colors.white,
+          // color: Colors.white,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
       child: Column(
@@ -289,9 +350,14 @@ class _DetailOrderfoodState extends State<DetailOrderfood> {
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  'food order',
-                  style: GoogleFonts.lato(fontSize: 20),
+                child: Row(
+                  children: [
+                    Icon(Icons.food_bank_outlined),
+                    Text(
+                      'food order',
+                      style: GoogleFonts.lato(fontSize: 20),
+                    ),
+                  ],
                 ),
               )
             ],
@@ -314,7 +380,7 @@ class _DetailOrderfoodState extends State<DetailOrderfood> {
       width: 350,
       height: 120,
       decoration: ShapeDecoration(
-          color: Colors.white,
+          // color: Colors.white,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
       child: Column(
@@ -322,15 +388,24 @@ class _DetailOrderfoodState extends State<DetailOrderfood> {
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: MyStyle().showheadText('Customer information'),
+            child: Row(
+              children: [
+                Icon(Icons.account_box_outlined),
+                MyStyle().showheadText('Customer information'),
+              ],
+            ),
           ),
           Padding(
             padding: const EdgeInsets.all(5.0),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   'name-last name : ',
-                  style: GoogleFonts.lato(fontSize: 18),
+                  style: GoogleFonts.lato(
+                    fontSize: 18,
+                    color: Colors.grey[600],
+                  ),
                 ),
                 Text('$name')
               ],
@@ -339,8 +414,13 @@ class _DetailOrderfoodState extends State<DetailOrderfood> {
           Padding(
             padding: const EdgeInsets.all(5.0),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('phonenumber : ', style: GoogleFonts.lato(fontSize: 18)),
+                Text('phonenumber : ',
+                    style: GoogleFonts.lato(
+                      fontSize: 18,
+                      color: Colors.grey[600],
+                    )),
                 Text('$phonenumber')
               ],
             ),

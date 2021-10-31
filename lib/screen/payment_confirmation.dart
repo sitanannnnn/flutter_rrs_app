@@ -1,13 +1,17 @@
 import 'dart:io';
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_rrs_app/dashboard/my_booking.dart';
 import 'package:flutter_rrs_app/model/orderfood_model.dart';
 
 import 'package:flutter_rrs_app/model/read_shop_model.dart';
 import 'package:flutter_rrs_app/page/home_page.dart';
+import 'package:flutter_rrs_app/screen/save_profile_img.dart';
+import 'package:flutter_rrs_app/screen/save_slip_img.dart';
 import 'package:flutter_rrs_app/screen/show_unconfirmed_order_food.dart';
 import 'package:flutter_rrs_app/utility/my_constant.dart';
 
@@ -34,10 +38,18 @@ class _PaymentConfirmationState extends State<PaymentConfirmation> {
   String? restaurantId, orderfoodId;
   DateTime? pickerDate;
   TimeOfDay? time;
-  File? file;
+  File? _image;
+  Uint8List? _imageBytes;
+  final picker = ImagePicker();
+  CloudApiSlipImg? api;
+  String? _imageName;
+  String? picture;
   @override
   void initState() {
     super.initState();
+    rootBundle.loadString('assets/credentials.json').then((json) {
+      api = CloudApiSlipImg(json);
+    });
     pickerDate = DateTime.now();
     time = TimeOfDay.now();
     readshopModel = widget.readshopModel;
@@ -46,15 +58,32 @@ class _PaymentConfirmationState extends State<PaymentConfirmation> {
     print('orderfood id======>$orderfoodId');
   }
 
-  //เลือกรูปภาพที่ต้องการ
-  Future<Null> chooseImage(ImageSource source) async {
-    try {
-      var result = await ImagePicker()
-          .getImage(source: source, maxHeight: 100.0, maxWidth: 100.0);
-      setState(() {
-        file = File(result!.path);
-      });
-    } catch (e) {}
+  // void _saveImage() async {
+  //   // upload image to google cloud
+  //   print('save image here');
+  //   final response = await api!.save(_imageName!, _imageBytes!);
+  //   print(response!.downloadLink);
+  //   uploadImage();
+  // }
+
+  Future<Null> chooseImage(ImageSource imageSource) async {
+    final pickedFile = await picker.pickImage(
+      source: imageSource,
+      maxHeight: 800.0,
+      maxWidth: 800.0,
+    );
+    setState(() {
+      if (pickedFile != null) {
+        print(pickedFile.path);
+        _image = File(pickedFile.path);
+        _imageBytes = _image!.readAsBytesSync();
+        _imageName = _image!.path.split('/').last;
+        picture = _imageName;
+        print('patg image = $_imageName');
+      } else {
+        print('No image selectd');
+      }
+    });
   }
 
   _pickDate() async {
@@ -88,32 +117,35 @@ class _PaymentConfirmationState extends State<PaymentConfirmation> {
 
 // upload รูปภาพที่เราเลือกจะupload
   Future<Null> uploadImage() async {
-    Random random = Random();
-    int image = random.nextInt(1000000);
-    String? nameImage = 'slip$image.jpg';
-    // print('nameImage =$nameImage,pathImage =${file!.path}');
-    String? url = '${Myconstant().domain}/saveSlip.php';
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    String? customerId = preferences.getString('customerId');
+    var url =
+        '${Myconstant().domain_00webhost}/addSlipPayment.php?isAdd=true&customerId=$customerId&id=$orderfoodId&paymentDate=$pickerDate&paymentTime=$time&picture=$_imageName';
+    await Dio().get(url).then((value) {
+      if (value.statusCode == 200) {
+        print(('completed slip'));
+        Navigator.pop(context);
+      }
+    });
+  }
 
-    try {
-      Map<String, dynamic> map = Map();
-      map['file'] =
-          await MultipartFile.fromFile(file!.path, filename: nameImage);
-      FormData formData = FormData.fromMap(map);
-      await Dio().post(url, data: formData).then((value) async {
-        String picture = '/Slip/$nameImage';
-        print('urlImage =${Myconstant().domain}$picture');
-        SharedPreferences preferences = await SharedPreferences.getInstance();
-        String? customerId = preferences.getString('customerId');
-        var url =
-            '${Myconstant().domain}/addSlipPayment.php?isAdd=true&customerId=$customerId&id=$orderfoodId&paymentDate=$pickerDate&paymentTime=$time&picture=$picture';
-        await Dio().get(url).then((value) => Fluttertoast.showToast(
-            msg: 'Up load complete',
-            toastLength: Toast.LENGTH_SHORT,
-            backgroundColor: kprimary,
-            textColor: Colors.white,
-            fontSize: 16.0));
-      });
-    } catch (e) {}
+  uploadFile() async {
+    String uploadurl =
+        "${Myconstant().domain_00webhostpic}/uploadslippayment.php"; //Edit path file upload_foodmenu_picture.php
+    FormData formdata = FormData.fromMap({
+      "file": await MultipartFile.fromFile(_image!.path, filename: _imageName),
+    });
+    Response response = await Dio().post(
+      uploadurl,
+      data: formdata,
+    );
+    print('response upload iamge = ${response.statusCode}');
+    if (response.statusCode == 200) {
+      print(response.toString());
+      uploadImage();
+    } else {
+      print("Error during connection to server.");
+    }
   }
 
   Widget build(BuildContext context) {
@@ -185,14 +217,6 @@ class _PaymentConfirmationState extends State<PaymentConfirmation> {
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.stretch,
                                               children: <Widget>[
-                                                Text('Edit Profile Picture',
-                                                    textAlign: TextAlign.center,
-                                                    style: GoogleFonts.lato(
-                                                        fontSize: 20)),
-                                                Divider(
-                                                  height: 5,
-                                                  color: Colors.grey,
-                                                ),
                                                 TextButton(
                                                   onPressed: () => chooseImage(
                                                       ImageSource.camera),
@@ -219,13 +243,20 @@ class _PaymentConfirmationState extends State<PaymentConfirmation> {
                                         )),
                                       );
                                     },
-                                    child: file == null
+                                    child: _imageBytes == null
                                         ? Icon(
                                             Icons.add_photo_alternate_rounded,
                                             color: Colors.black,
                                             size: 60,
                                           )
-                                        : Image.file(file!)),
+                                        : Container(
+                                            width: 80,
+                                            height: 100,
+                                            child: Image.memory(
+                                              _imageBytes!,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          )),
                               ],
                             ),
                           ],
@@ -277,10 +308,10 @@ class _PaymentConfirmationState extends State<PaymentConfirmation> {
                             borderRadius:
                                 BorderRadius.all(Radius.circular(20)))),
                     onPressed: () {
-                      if (file == null) {
+                      if (_imageBytes == null) {
                         normalDialog(context, 'Please select a picture');
                       } else {
-                        uploadImage();
+                        uploadFile();
                         showDialog(
                             context: context,
                             builder: (context) => SimpleDialog(

@@ -398,7 +398,8 @@ class _SignupState extends State<Signup> {
       );
 //function checkUser จะตรวจสอบว่า user ที่กรอกเข้ามาซ้ำกับuserในฐานข้อมูลหรือไม่
   Future<Null> checkUser() async {
-    String url = '${Myconstant().domain}/getUser.php?isAdd=true&user=$user';
+    String url =
+        '${Myconstant().domain_00webhost}/getUser.php?isAdd=true&user=$user';
     try {
       Response response = await Dio().get(url);
       print('res = $response');
@@ -413,7 +414,7 @@ class _SignupState extends State<Signup> {
 //function checkshop จะตรวจสอบว่า user ที่กรอกเข้ามาซ้ำกับuserในฐานข้อมูลหรือไม่
   Future<Null> checkShop() async {
     String url =
-        '${Myconstant().domain}/getRestaurant.php?isAdd=true&user=$user';
+        '${Myconstant().domain_00webhost}/getRestaurant.php?isAdd=true&user=$user';
     try {
       Response response = await Dio().get(url);
       print('res = $response');
@@ -428,11 +429,11 @@ class _SignupState extends State<Signup> {
 //function บันทึกข้อมูลของ customerลงในฐานข้อมูล
   Future<Null> registerThreadUser() async {
     var url =
-        '${Myconstant().domain}/addUser.php?isAdd=true&chooseType=$chooseType&name=$name&user=$user&email=$email&phonenumber=$phonenumber&password=$password&confirmpassword=$confirmpassword';
+        '${Myconstant().domain_00webhost}/addUser.php?isAdd=true&chooseType=$chooseType&name=$name&user=$user&email=$email&phonenumber=$phonenumber&password=$password&confirmpassword=$confirmpassword';
     try {
       Response response = await Dio().get(url);
       print('res = $response');
-      if (response.toString() == 'true') {
+      if (response.statusCode == 200) {
         Fluttertoast.showToast(
             msg: 'Signup complect',
             toastLength: Toast.LENGTH_SHORT,
@@ -449,7 +450,7 @@ class _SignupState extends State<Signup> {
 //function บันทึกข้อมูลของ restaurant ลงในฐานข้อมูล
   Future<Null> registerThreadShop() async {
     var url =
-        '${Myconstant().domain}/addRestaurant.php?isAdd=true&chooseType=$chooseType&name=$name&user=$user&email=$email&phonenumber=$phonenumber&password=$password&confirmpassword=$confirmpassword';
+        '${Myconstant().domain_00webhost}/addRestaurant.php?isAdd=true&chooseType=$chooseType&name=$name&user=$user&email=$email&phonenumber=$phonenumber&password=$password&confirmpassword=$confirmpassword';
     try {
       Response response = await Dio().get(url);
       print('res = $response');

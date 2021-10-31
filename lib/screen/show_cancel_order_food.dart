@@ -53,7 +53,7 @@ class _ShowCancelOrderFoodState extends State<ShowCancelOrderFood> {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? customerId = preferences.getString("customerId");
     String url =
-        '${Myconstant().domain}/getOrderfoodWherecustomerIdAndCancelOrderfoodStatus.php?isAdd=true&customerId=$customerId&reservationId=$reservationId&orderfoodStatus=$orderfoodStatus';
+        '${Myconstant().domain_00webhost}/getOrderfoodWherecustomerIdAndCancelOrderfoodStatus.php?isAdd=true&customerId=$customerId&reservationId=$reservationId&orderfoodStatus=$orderfoodStatus';
     Response response = await Dio().get(url);
     // print('res==> $response');
     var result = json.decode(response.data);
@@ -69,7 +69,17 @@ class _ShowCancelOrderFoodState extends State<ShowCancelOrderFood> {
 
   Widget build(BuildContext context) {
     return orderfoodModels.length == 0
-        ? Center(child: MyStyle().showheadText('not have order food'))
+        ? Center(
+            child: Container(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset('assets/images/order-now.png'),
+                  MyStyle().showheadText('not have order food'),
+                ],
+              ),
+            ),
+          )
         : ListView.builder(
             itemCount: orderfoodModels.length,
             itemBuilder: (context, index) => GestureDetector(
@@ -190,13 +200,24 @@ class _ShowCancelOrderFoodState extends State<ShowCancelOrderFood> {
                                                             .width *
                                                         0.5 -
                                                     7.0,
-                                                child: Text(
-                                                    orderfoodModels[index]
-                                                        .orderfoodReasonCancelStatus!,
-                                                    style: GoogleFonts.lato(
-                                                        color: Colors.grey,
-                                                        fontWeight:
-                                                            FontWeight.bold))),
+                                                child: Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: Text(
+                                                        orderfoodModels[index]
+                                                            .orderfoodReasonCancelStatus!,
+                                                        style: GoogleFonts.lato(
+                                                            color: Colors.grey,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                        maxLines: 2,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )),
                                           ],
                                         ),
                                       ],

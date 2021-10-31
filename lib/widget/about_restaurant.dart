@@ -226,7 +226,9 @@ class _AboutRestaurantState extends State<AboutRestaurant> {
       child: Row(
         children: [
           MyStyle().showTitleH2('Name branch :'),
-          Text(' ${readshopModel!.restaurantBranch}'),
+          readshopModel!.restaurantBranch == 'null'
+              ? Text('  -')
+              : Text(' ${readshopModel!.restaurantBranch}'),
         ],
       ),
     );
@@ -264,7 +266,7 @@ class _AboutRestaurantState extends State<AboutRestaurant> {
         borderRadius: BorderRadius.circular(10),
         image: DecorationImage(
             image: NetworkImage(
-              '${Myconstant().domain}${readshopModel!.restaurantPicture}',
+              '${Myconstant().domain_restaurantPic}${readshopModel!.restaurantPicture}',
             ),
             fit: BoxFit.cover));
   }

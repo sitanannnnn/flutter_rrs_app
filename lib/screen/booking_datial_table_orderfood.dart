@@ -17,14 +17,14 @@ class BookingTailTableOrderfood extends StatefulWidget {
   final ReadshopModel readshopModel;
   final TableModel tableModel;
   final String choosevalue;
-  final String date;
-  final String timeFormt, orderfoodDateTime;
+  final String reservationDate;
+  final String reservationTime, orderfoodDateTime;
   const BookingTailTableOrderfood({
     Key? key,
     required this.readshopModel,
-    required this.date,
+    required this.reservationDate,
     required this.choosevalue,
-    required this.timeFormt,
+    required this.reservationTime,
     required this.tableModel,
     required this.orderfoodDateTime,
   }) : super(key: key);
@@ -68,19 +68,14 @@ class _BookingTailTableOrderfoodState extends State<BookingTailTableOrderfood> {
     super.initState();
     readshopModel = widget.readshopModel;
     tableModel = widget.tableModel;
-    reservationDate = widget.date;
-    reservationTime = widget.timeFormt;
+    reservationDate = widget.reservationDate;
+    reservationTime = widget.reservationTime;
     numberOfGueste = widget.choosevalue;
     orderfoodDateTime = widget.orderfoodDateTime;
+    print('orderdatetime=>$orderfoodDateTime');
     readOrderfood();
     readReservation();
     findUser();
-    setState(() {
-      dateof = reservationDate.toString().substring(0, 10);
-    });
-    setState(() {
-      timeof = reservationTime.toString().substring(10, 15);
-    });
   }
 
 //function ค้นหาuser
@@ -97,20 +92,16 @@ class _BookingTailTableOrderfoodState extends State<BookingTailTableOrderfood> {
   Future<Null> readOrderfood() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? customerId = preferences.getString("customerId");
-    String? orderTime = orderfoodDateTime.toString().substring(0, 19);
-    orderfoodDateTime = widget.orderfoodDateTime;
+
     String? url =
-        '${Myconstant().domain}/getOrderfoodWherecustomerIdandDateTime.php?isAdd=true&customerId=$customerId&orderfoodDateTime=$orderTime';
+        '${Myconstant().domain_00webhost}/getOrderfoodWherecustomerIdandDateTime.php?isAdd=true&customerId=$customerId&orderfoodDateTime=$orderfoodDateTime';
     Response response = await Dio().get(url);
-    print('res==> $response');
-    if (response.toString() != 'null') {
-      setState(() {
-        loadstatus = false;
-      });
+    //print('res==> $response');
+    if (response.statusCode == 200) {
       var result = json.decode(response.data);
 
       for (var map in result) {
-        print('result= $result');
+        print('result orderfood= $result');
         OrderfoodModel orderfoodModel = OrderfoodModel.fromJson(map);
         // print('orderfood ===> $orderfoodModel');
         // String orderfooddetail = jsonEncode(orderfoodModel.foodmenuName);
@@ -159,19 +150,18 @@ class _BookingTailTableOrderfoodState extends State<BookingTailTableOrderfood> {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? customerId = preferences.getString("customerId");
     var url =
-        '${Myconstant().domain}/getReservation.php?isAdd=true&customerId=$customerId&reservationDate=$dateof&reservationTime=$reservationTime';
+        '${Myconstant().domain_00webhost}/getReservation.php?isAdd=true&customerId=$customerId&reservationDate=$reservationDate&reservationTime=$reservationTime';
     Response response = await Dio().get(url);
     // print('res = $response');
-    if (response.toString() != 'null') {
+    if (response.statusCode == 200) {
       var result = json.decode(response.data);
-      print('result= $result');
+      print('result reservation= $result');
       for (var map in result) {
         ReservationModel reservationModel = ReservationModel.fromJson(map);
-        print("reservation==> $reservationModel ");
+
         setState(() {
           reservationModels.add(reservationModel);
           reservationId = reservationModel.reservationId;
-          print('reservationId ==> $reservationId');
         });
       }
     }
@@ -184,9 +174,9 @@ class _BookingTailTableOrderfoodState extends State<BookingTailTableOrderfood> {
     print('CustomerId is =$customerId');
 
     String? url =
-        '${Myconstant().domain}/addReservationIdWhereOrder_food.php?isAdd=true&id=$orderfoodId&reservationId=$reservationId';
+        '${Myconstant().domain_00webhost}/addReservationIdWhereOrder_food.php?isAdd=true&id=$orderfoodId&reservationId=$reservationId';
     await Dio().get(url).then((value) {
-      if (value.toString() == 'true') {
+      if (value.statusCode == 200) {
         Navigator.pop(context);
       } else {
         normalDialog(context, 'failed try again');
@@ -201,9 +191,9 @@ class _BookingTailTableOrderfoodState extends State<BookingTailTableOrderfood> {
     print('CustomerId is =$customerId');
 
     String? url =
-        '${Myconstant().domain}/addOrderfoodIdWhereTable_reservation.php?isAdd=true&reservationId=$reservationId&id=$orderfoodId';
+        '${Myconstant().domain_00webhost}/addOrderfoodIdWhereTable_reservation.php?isAdd=true&reservationId=$reservationId&id=$orderfoodId';
     await Dio().get(url).then((value) {
-      if (value.toString() == 'true') {
+      if (value.statusCode == 200) {
         Navigator.pop(context);
       } else {
         normalDialog(context, 'failed try again');
@@ -217,7 +207,9 @@ class _BookingTailTableOrderfoodState extends State<BookingTailTableOrderfood> {
           backgroundColor: kprimary,
           title: Text('Booking details'),
         ),
-        body: loadstatus == true ? MyStyle().showProgrsee() : buildContent());
+        body: reservationModels.length == 0
+            ? MyStyle().showProgrsee()
+            : buildContent());
   }
 
   Widget buildContent() => ListView.builder(
@@ -278,7 +270,7 @@ class _BookingTailTableOrderfoodState extends State<BookingTailTableOrderfood> {
                               size: 35,
                             ),
                             Text(
-                              dateof!,
+                              reservationModels[index].reservationDate!,
                               style: GoogleFonts.lato(fontSize: 15),
                             )
                           ],
@@ -290,7 +282,10 @@ class _BookingTailTableOrderfoodState extends State<BookingTailTableOrderfood> {
                               size: 35,
                             ),
                             Text(
-                              timeof!,
+                              reservationModels[index]
+                                  .reservationTime
+                                  .toString()
+                                  .substring(0, 5),
                               style: GoogleFonts.lato(fontSize: 15),
                             )
                           ],
@@ -338,7 +333,7 @@ class _BookingTailTableOrderfoodState extends State<BookingTailTableOrderfood> {
                               width: 300,
                               height: 150,
                               child: Image.network(
-                                '${Myconstant().domain}${reservationModels[index].tablePicture!}',
+                                '${Myconstant().domain_tablePic}${reservationModels[index].tablePicture!}',
                                 fit: BoxFit.cover,
                               ),
                             )
@@ -484,17 +479,16 @@ class _BookingTailTableOrderfoodState extends State<BookingTailTableOrderfood> {
       itemCount: menufoods.length,
       itemBuilder: (context, index2) => Row(
             children: [
-              Expanded(flex: 3, child: Text(listMenufoods[index][index2])),
+              Expanded(flex: 2, child: Text(listMenufoods[index][index2])),
               Expanded(flex: 1, child: Text(listAmounts[index][index2])),
               Expanded(
-                  flex: 1,
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Text(
-                          '${myFormat.format(int.parse(listnetPrices[index][index2]))}'),
-                    ],
-                  ))
+                // mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                      '${myFormat.format(int.parse(listnetPrices[index][index2]))}'),
+                ],
+              ))
             ],
           ));
 }

@@ -1,7 +1,7 @@
 import 'package:fancy_bottom_navigation/fancy_bottom_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rrs_app/dashboard/my_booking.dart';
-import 'package:flutter_rrs_app/model/read_shop_model.dart';
+
 import 'package:flutter_rrs_app/screen/profile.dart';
 import 'package:flutter_rrs_app/model/user_model.dart';
 import 'package:flutter_rrs_app/screen/homescreen.dart';

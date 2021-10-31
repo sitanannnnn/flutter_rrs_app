@@ -14,6 +14,7 @@ import 'package:flutter_rrs_app/utility/my_style.dart';
 import 'package:flutter_rrs_app/utility/normal_dialog.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RateTheRestaurantReserve extends StatefulWidget {
@@ -128,16 +129,15 @@ class _RateTheRestaurantReserveState extends State<RateTheRestaurantReserve> {
     String? customerId = preferences.getString("customerId");
     print('reservationId ==> $reservationId');
     var url =
-        '${Myconstant().domain}/getReservationWherecustomerId.php?isAdd=true&customerId=$customerId&reservationId=$reservationId';
+        '${Myconstant().domain_00webhost}/getReservationWherecustomerId.php?isAdd=true&customerId=$customerId&reservationId=$reservationId';
     Response response = await Dio().get(url);
     // print('res = $response');
-    if (response.toString() != 'null') {
+    if (response.statusCode == 200) {
       var result = json.decode(response.data);
       print('result= $result');
       for (var map in result) {
         DetailReservationModel detailreservationModel =
             DetailReservationModel.fromJson(map);
-        print("reservation==> $reservationModel ");
         setState(() {
           detailreservationModels.add(detailreservationModel);
         });
@@ -149,19 +149,14 @@ class _RateTheRestaurantReserveState extends State<RateTheRestaurantReserve> {
   Future<Null> recordReviewOrderfood() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? customerId = preferences.getString("customerId");
+    DateTime dateTime = DateTime.now();
+    String? review_date_time = DateFormat('yyyy-MM-dd HH:mm').format(dateTime);
     var url =
-        '${Myconstant().domain}/addReview_restaurant.php?isAdd=true&restaurantId=$restaurantId&restaurantNameshop=$restaurantNameshop&customerId=$customerId&reservationId=$reservationId&orderfoodId=$orderfoodId&rate=$rating&opinion=$opinion';
+        '${Myconstant().domain_00webhost}/addReview_restaurant.php?isAdd=true&restaurantId=$restaurantId&restaurantNameshop=$restaurantNameshop&customerId=$customerId&reservationId=$reservationId&orderfoodId=$orderfoodId&rate=$rating&opinion=$opinion';
     try {
       Response response = await Dio().get(url);
       // print('res = $response');
-      if (response.toString() == 'true') {
-        // Fluttertoast.showToast(
-        //     msg: 'Rated',
-        //     toastLength: Toast.LENGTH_SHORT,
-        //     backgroundColor: kprimary,
-        //     textColor: Colors.white,
-        //     fontSize: 16.0);
-        // Navigator.pop(context);x
+      if (response.statusCode == 200) {
       } else {
         normalDialog(context, 'Please try again');
       }
@@ -174,18 +169,37 @@ class _RateTheRestaurantReserveState extends State<RateTheRestaurantReserve> {
           backgroundColor: kprimary,
           title: Text('table and order food detail'),
         ),
-        body: buildcontext());
+        body: detailreservationModels.length == 0
+            ? MyStyle().showProgrsee()
+            : buildcontext());
   }
 
   Widget buildcontext() => ListView.builder(
       padding: EdgeInsets.all(16),
       shrinkWrap: true,
       physics: ScrollPhysics(),
-      itemCount: detailreservationModels.length,
+      itemCount: 1,
       itemBuilder: (context, index) => Column(
             children: [
               Container(
-                color: ksecondary,
+                // color: ksecondary,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      topRight: Radius.circular(10),
+                      bottomLeft: Radius.circular(10),
+                      bottomRight: Radius.circular(10)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 5,
+                      blurRadius: 7,
+                      offset: Offset(0, 3), // changes position of shadow
+                    ),
+                  ],
+                ),
+
                 child: Column(
                   children: [
                     SizedBox(
@@ -207,12 +221,14 @@ class _RateTheRestaurantReserveState extends State<RateTheRestaurantReserve> {
                       detailreservationModels[index].restaurantNameshop!,
                       style: GoogleFonts.lato(fontSize: 25),
                     ),
-                    SizedBox(
-                      height: 20,
+                    Divider(
+                      thickness: 3,
+                      color: Colors.grey[200],
                     ),
                     buildinformationCustomer(),
-                    SizedBox(
-                      height: 20,
+                    Divider(
+                      thickness: 3,
+                      color: Colors.grey[200],
                     ),
                     buildReservationTable(index),
                     SizedBox(
@@ -221,7 +237,7 @@ class _RateTheRestaurantReserveState extends State<RateTheRestaurantReserve> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        detailreservationModels[index].orderfoodId == 'Null'
+                        detailreservationModels[index].orderfoodId == 'null'
                             ? Text('')
                             : buildfoodorder(index),
                       ],
@@ -334,6 +350,7 @@ class _RateTheRestaurantReserveState extends State<RateTheRestaurantReserve> {
       width: 350,
       height: 280,
       decoration: BoxDecoration(
+          color: Colors.white,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(color: kprimary, width: 2)),
       child: Column(
@@ -464,8 +481,6 @@ class _RateTheRestaurantReserveState extends State<RateTheRestaurantReserve> {
 //เเสดงข้อมูลการจองโต๊ะ
   Container buildReservationTable(int index) {
     return Container(
-      width: 350,
-      height: 250,
       decoration: ShapeDecoration(
           color: Colors.white,
           shape:
@@ -507,7 +522,10 @@ class _RateTheRestaurantReserveState extends State<RateTheRestaurantReserve> {
                       Icons.access_time_filled_outlined,
                       size: 35,
                     ),
-                    Text(detailreservationModels[index].reservationTime!)
+                    Text(detailreservationModels[index]
+                        .reservationTime
+                        .toString()
+                        .substring(0, 5))
                   ],
                 ),
                 SizedBox(
@@ -535,6 +553,19 @@ class _RateTheRestaurantReserveState extends State<RateTheRestaurantReserve> {
                     Text(
                       'table No. ${detailreservationModels[index].tableResId} ',
                       style: GoogleFonts.lato(fontSize: 15),
+                    )
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 300,
+                      height: 150,
+                      child: Image.network(
+                        '${Myconstant().domain_tablePic}${detailreservationModels[index].tablePicture!}',
+                        fit: BoxFit.cover,
+                      ),
                     )
                   ],
                 ),

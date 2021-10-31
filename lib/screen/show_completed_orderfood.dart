@@ -54,43 +54,40 @@ class _ShowCompletedOrderFoodState extends State<ShowCompletedOrderFood> {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? customerId = preferences.getString("customerId");
     String url =
-        '${Myconstant().domain}/getOrderfoodWherecustomerIdAndCompletedOrderfoodStatus.php?isAdd=true&customerId=$customerId&reservationId=$reservationId&orderfoodStatus=$orderfoodStatus';
+        '${Myconstant().domain_00webhost}/getOrderfoodWherecustomerIdAndCompletedStatusOrderfoodStatus.php?isAdd=true&customerId=$customerId';
     Response response = await Dio().get(url);
-    // print('res==> $response');
-    var result = json.decode(response.data);
-    // print('result= $result');
-    for (var map in result) {
-      OrderfoodModel orderfoodModel = OrderfoodModel.fromJson(map);
-      setState(() {
-        orderfoodModels.add(orderfoodModel);
-        orderfoodid = orderfoodModel.id;
-      });
+    if (response.statusCode == 200) {
+      // print('res==> $response');
+      var result = json.decode(response.data);
+      print('resultcompleted= $result');
+      for (var map in result) {
+        OrderfoodModel orderfoodModel = OrderfoodModel.fromJson(map);
+        setState(() {
+          orderfoodModels.add(orderfoodModel);
+          orderfoodid = orderfoodModel.id;
+        });
+      }
     }
   }
 
   Widget build(BuildContext context) {
     return orderfoodModels.length == 0
-        ? Center(child: MyStyle().showheadText('not have order food'))
+        ? Center(
+            child: Container(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset('assets/images/order-now.png'),
+                  MyStyle().showheadText('not have order food'),
+                ],
+              ),
+            ),
+          )
         : ListView.builder(
             itemCount: orderfoodModels.length,
             itemBuilder: (context, index) => GestureDetector(
                   onTap: () {
                     print('onclick ==> ${orderfoodModels[index].id}');
-                    orderfoodModels[index].reviewId == null
-                        ? Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    RateTheRestaurantOrderfood(
-                                        orderfoodModel:
-                                            orderfoodModels[index])))
-                        : Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => OrderFood(
-                                    readshopModel: ReadshopModel(
-                                        restaurantId: orderfoodModels[index]
-                                            .restaurantId))));
                   },
                   child: Column(
                     children: [
@@ -187,68 +184,155 @@ class _ShowCompletedOrderFoodState extends State<ShowCompletedOrderFood> {
                                             )
                                           ],
                                         ),
-                                        orderfoodModels[index].reviewId == null
-                                            ? Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.end,
-                                                children: [
-                                                  Container(
-                                                    height: 20,
-                                                    child: ElevatedButton(
-                                                        style: ElevatedButton.styleFrom(
-                                                            primary:
-                                                                Colors.orange,
-                                                            onPrimary:
-                                                                Colors.white,
-                                                            shape: RoundedRectangleBorder(
-                                                                borderRadius: BorderRadius
-                                                                    .all(Radius
-                                                                        .circular(
-                                                                            5)))),
-                                                        onPressed: () {
-                                                          Navigator.push(
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Row(
+                                            children: [
+                                              Container(
+                                                width: 100,
+                                                height: 20,
+                                                child: ElevatedButton(
+                                                    style: ElevatedButton.styleFrom(
+                                                        primary: Colors.red,
+                                                        onPrimary: Colors.white,
+                                                        shape: RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius.all(
+                                                                    Radius.circular(
+                                                                        15)))),
+                                                    onPressed: () {
+                                                      orderfoodModels[index]
+                                                                  .reviewId ==
+                                                              null
+                                                          ? Navigator.push(
                                                               context,
                                                               MaterialPageRoute(
-                                                                  builder: (context) =>
-                                                                      RateTheRestaurantOrderfood(
-                                                                          orderfoodModel:
-                                                                              orderfoodModels[index])));
-                                                        },
-                                                        child: Text('Rate')),
-                                                  )
-                                                ],
-                                              )
-                                            : Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.end,
-                                                children: [
-                                                  Container(
-                                                    height: 20,
-                                                    child: ElevatedButton(
-                                                        style: ElevatedButton.styleFrom(
-                                                            primary:
-                                                                Colors.orange,
-                                                            onPrimary:
-                                                                Colors.white,
-                                                            shape: RoundedRectangleBorder(
-                                                                borderRadius: BorderRadius
-                                                                    .all(Radius
-                                                                        .circular(
-                                                                            5)))),
-                                                        onPressed: () {
-                                                          Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                  builder: (context) =>
-                                                                      OrderFood(
-                                                                          readshopModel:
-                                                                              ReadshopModel(restaurantId: orderfoodModels[index].restaurantId))));
-                                                        },
-                                                        child: Text(
-                                                            'Order again')),
-                                                  )
-                                                ],
+                                                                  builder: (context) => RateTheRestaurantOrderfood(
+                                                                      orderfoodModel:
+                                                                          orderfoodModels[
+                                                                              index])))
+                                                          : showDialog(
+                                                              context: context,
+                                                              builder:
+                                                                  (context) =>
+                                                                      SimpleDialog(
+                                                                        children: [
+                                                                          Column(
+                                                                            children: [
+                                                                              Row(
+                                                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                                                children: [
+                                                                                  Text('you have successfully rate', style: GoogleFonts.lato(fontSize: 20, color: Colors.black))
+                                                                                ],
+                                                                              ),
+                                                                              ElevatedButton(
+                                                                                  style: ElevatedButton.styleFrom(primary: Colors.green, onPrimary: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15)))),
+                                                                                  onPressed: () {
+                                                                                    Navigator.pop(context);
+                                                                                  },
+                                                                                  child: Text('OK'))
+                                                                            ],
+                                                                          )
+                                                                        ],
+                                                                      ));
+                                                    },
+                                                    child: Text('Rate')),
                                               ),
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                              Container(
+                                                width: 105,
+                                                height: 20,
+                                                child: ElevatedButton(
+                                                    style: ElevatedButton.styleFrom(
+                                                        primary: Colors.red,
+                                                        onPrimary: Colors.white,
+                                                        shape: RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius.all(
+                                                                    Radius.circular(
+                                                                        15)))),
+                                                    onPressed: () {
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder: (context) => OrderFood(
+                                                                  readshopModel:
+                                                                      ReadshopModel(
+                                                                          restaurantId:
+                                                                              orderfoodModels[index].restaurantId))));
+                                                    },
+                                                    child: Text('order again')),
+                                              )
+                                            ],
+                                          ),
+                                        )
+                                        // orderfoodModels[index].reviewId == null
+                                        //     ? Row(
+                                        //         mainAxisAlignment:
+                                        //             MainAxisAlignment.end,
+                                        //         children: [
+                                        //           Container(
+                                        //             height: 20,
+                                        //             child: ElevatedButton(
+                                        //                 style: ElevatedButton.styleFrom(
+                                        //                     primary:
+                                        //                         Colors.orange,
+                                        //                     onPrimary:
+                                        //                         Colors.white,
+                                        //                     shape: RoundedRectangleBorder(
+                                        //                         borderRadius: BorderRadius
+                                        //                             .all(Radius
+                                        //                                 .circular(
+                                        //                                     5)))),
+                                        //                 onPressed: () {
+                                        //                   Navigator.push(
+                                        //                       context,
+                                        //                       MaterialPageRoute(
+                                        //                           builder: (context) =>
+                                        //                               RateTheRestaurantOrderfood(
+                                        //                                   orderfoodModel:
+                                        //                                       orderfoodModels[index])));
+                                        //                 },
+                                        //                 child: Text('Rate')),
+                                        //           )
+                                        //         ],
+                                        //       )
+                                        //     : Row(
+                                        //         mainAxisAlignment:
+                                        //             MainAxisAlignment.end,
+                                        //         children: [
+                                        //           Container(
+                                        //             height: 20,
+                                        //             child: ElevatedButton(
+                                        //                 style: ElevatedButton.styleFrom(
+                                        //                     primary:
+                                        //                         Colors.orange,
+                                        //                     onPrimary:
+                                        //                         Colors.white,
+                                        //                     shape: RoundedRectangleBorder(
+                                        //                         borderRadius: BorderRadius
+                                        //                             .all(Radius
+                                        //                                 .circular(
+                                        //                                     5)))),
+                                        //                 onPressed: () {
+                                        //                   Navigator.push(
+                                        //                       context,
+                                        //                       MaterialPageRoute(
+                                        //                           builder: (context) =>
+                                        //                               OrderFood(
+                                        //                                   readshopModel:
+                                        //                                       ReadshopModel(restaurantId: orderfoodModels[index].restaurantId))));
+                                        //                 },
+                                        //                 child: Text(
+                                        //                     'Order again')),
+                                        //           )
+                                        //         ],
+                                        //       ),
                                       ],
                                     ),
                                   )

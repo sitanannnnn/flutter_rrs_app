@@ -1,18 +1,19 @@
 import 'dart:convert';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rrs_app/model/read_shop_model.dart';
-import 'package:flutter_rrs_app/screen/category_food.dart';
-import 'package:flutter_rrs_app/screen/show_cart.dart';
+import 'package:flutter_rrs_app/screen/horizontal_typefood.dart';
+import 'package:flutter_rrs_app/screen/search_page.dart';
 import 'package:flutter_rrs_app/screen/show_restaurant.dart';
 import 'package:flutter_rrs_app/utility/my_constant.dart';
 import 'package:flutter_rrs_app/utility/my_style.dart';
-import 'package:flutter_rrs_app/screen/hometilepopular.dart';
-import 'package:flutter_rrs_app/screen/hometilerestaurant.dart';
 import 'package:flutter_rrs_app/screen/nearby_restaurant.dart';
 import 'package:flutter_rrs_app/screen/type_of_food.dart';
 import 'package:flutter_rrs_app/screen/promotion.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'all_popular_restaurant.dart';
+import 'all_restaurant.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -24,14 +25,13 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<ReadshopModel> readshopModels = [];
-  List<Widget> restaurantCards = [];
+  List<ReadshopModel> readshop = [];
   List<Widget> categoryCards = [];
   String? reservatinDate,
       reservationTime,
       numberOfGueste,
       typeOfFood,
       restaurantId;
-
   @override
   void initState() {
     super.initState();
@@ -44,21 +44,18 @@ class _HomeScreenState extends State<HomeScreen> {
       readshopModels.clear();
     }
     String url =
-        '${Myconstant().domain}/getRestaurantFromchooseType.php?isAdd=true&&chooseType=Shop';
+        '${Myconstant().domain_00webhost}/getRestaurantFromchooseType.php?isAdd=true&&chooseType=Shop';
     await Dio().get(url).then((value) {
       // print('value=$value');
-
       var result = json.decode(value.data);
-      int index = 0;
       for (var map in result) {
-        ReadshopModel model = ReadshopModel.fromJson(map);
-        String? NameShop = model.restaurantNameshop;
+        ReadshopModel readshopModel = ReadshopModel.fromJson(map);
+        String? NameShop = readshopModel.restaurantNameshop;
         if (NameShop!.isNotEmpty) {
-          print('NameShop =${model.restaurantNameshop}');
+          print('NameShop =${readshopModel.restaurantNameshop}');
           setState(() {
-            readshopModels.add(model);
-            restaurantCards.add(createCard(model, index));
-            index++;
+            readshopModels.add(readshopModel);
+            readshop = readshopModels;
           });
         }
       }
@@ -70,13 +67,15 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: kprimary,
+        elevation: 1,
         actions: [
           IconButton(
-              onPressed: () {},
-              icon: Icon(
-                Icons.shopping_cart_rounded,
-                color: Colors.white,
-              ))
+              onPressed: () {
+                MaterialPageRoute route =
+                    MaterialPageRoute(builder: (context) => SearchPage());
+                Navigator.push(context, route);
+              },
+              icon: Icon(Icons.search))
         ],
       ),
       body: SingleChildScrollView(
@@ -84,10 +83,6 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             SizedBox(
               height: 10,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: searchRestaurant(),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -97,34 +92,45 @@ class _HomeScreenState extends State<HomeScreen> {
                 promotion(),
               ],
             ),
-
-            // Widget imageCarousel = new Container(
-            //   height: 225.0,
-            //   child: Carousel(
-            //     boxFit: BoxFit.cover,
-            //     images: [
-            //       AssetImage('assets/images/c1.jpg'),
-            //       AssetImage('assets/images/c2.jpg'),
-            //       AssetImage('assets/images/c3.jpg'),
-            //       AssetImage('assets/images/c4.jpg'),
-            //     ],
-            //     autoplay: true,
-            //     dotSize: 5.0,
-            //     indicatorBgPadding: 9.0,
-            //     overlayShadow: false,
-            //     borderRadius: true,
-            //     animationCurve: Curves.fastOutSlowIn,
-            //     animationDuration: Duration(microseconds: 1500),
-            //   ),
-            // );
-            Container(
-              width: 350,
-              height: 250,
-              child: Image.asset('assets/images/2.jpg'),
+            Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text('categories'),
+                )
+              ],
             ),
-            HomeTilePopular(),
+            HorizontalTypefood(),
+            SizedBox(
+              height: 10,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                height: 225.0,
+                child: CarouselSlider(
+                  options: CarouselOptions(
+                      enlargeCenterPage: true,
+                      enableInfiniteScroll: true,
+                      autoPlay: true,
+                      autoPlayCurve: Curves.fastOutSlowIn,
+                      disableCenter: true,
+                      autoPlayAnimationDuration: Duration(microseconds: 1500)),
+                  items: [
+                    Image.asset(
+                      'assets/images/c1.jpg',
+                      fit: BoxFit.cover,
+                    ),
+                    Image.asset('assets/images/c2.jpg', fit: BoxFit.cover),
+                    Image.asset('assets/images/c3.jpg', fit: BoxFit.cover),
+                    Image.asset('assets/images/c4.jpg', fit: BoxFit.cover),
+                  ],
+                ),
+              ),
+            ),
+            hometitlePopular(context),
             popularReataurant(),
-            HomeTileRestaurant(),
+            hometitleRestaurant(context),
             resReataurant(),
           ],
         ),
@@ -132,67 +138,199 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Column hometitleRestaurant(BuildContext context) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(3.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.restaurant),
+                  Text('restaurant'),
+                ],
+              ),
+              TextButton(
+                onPressed: () {
+                  MaterialPageRoute route =
+                      MaterialPageRoute(builder: (context) => AllReataurant());
+                  Navigator.push(context, route);
+                },
+                child: Row(
+                  children: [
+                    Text('view all', style: TextStyle(color: Colors.black)),
+                    Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      color: Colors.black,
+                      size: 14,
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Column hometitlePopular(BuildContext context) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(3.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.store_mall_directory_rounded),
+                  Text('the restaurant is popular'),
+                ],
+              ),
+              TextButton(
+                onPressed: () {
+                  MaterialPageRoute route = MaterialPageRoute(
+                      builder: (context) => AllPopularReataurant());
+                  Navigator.push(context, route);
+                },
+                child: Row(
+                  children: [
+                    Text('view all', style: TextStyle(color: Colors.black)),
+                    Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      color: Colors.black,
+                      size: 14,
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
 //function เเสดงร้านอาหารเป็นที่นิยม
   Container popularReataurant() {
     return Container(
-      height: 150,
-      child: restaurantCards.length == 0
+      height: 130,
+      child: readshopModels.length == 0
           ? MyStyle().showProgrsee()
           : ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: readshopModels.length,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: EdgeInsets.all(5),
-                  child: Container(
-                    child: Row(children: restaurantCards),
-                  ),
-                );
-              }),
+              itemBuilder: (context, index) => GestureDetector(
+                    onTap: () {
+                      print('You click index $index');
+
+                      MaterialPageRoute route = MaterialPageRoute(
+                        builder: (context) => ShowRestaurant(
+                          readshopModel: readshopModels[index],
+                        ),
+                      );
+                      Navigator.push(context, route);
+                    },
+                    child: Card(
+                      child: Column(
+                        children: [
+                          Container(
+                            width: 150,
+                            height: 80,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(0),
+                                image: DecorationImage(
+                                    image: NetworkImage(
+                                      '${Myconstant().domain_restaurantPic}${readshopModels[index].restaurantPicture}',
+                                    ),
+                                    fit: BoxFit.cover)),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              '${readshopModels[index].restaurantNameshop}',
+                              style: GoogleFonts.lato(fontSize: 15),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )),
     );
   }
 
 //function เเสดงร้านอาหาร
   Container resReataurant() {
     return Container(
-      height: 150,
-      child: restaurantCards.length == 0
+      height: 130,
+      child: readshopModels.length == 0
           ? MyStyle().showProgrsee()
           : ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: readshopModels.length,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: EdgeInsets.all(5),
-                  child: Container(
-                    child: Row(children: restaurantCards),
-                  ),
-                );
-              }),
+              itemBuilder: (context, index) => GestureDetector(
+                    onTap: () {
+                      print('You click index $index');
+
+                      MaterialPageRoute route = MaterialPageRoute(
+                        builder: (context) => ShowRestaurant(
+                          readshopModel: readshopModels[index],
+                        ),
+                      );
+                      Navigator.push(context, route);
+                    },
+                    child: Card(
+                      child: Column(
+                        children: [
+                          Container(
+                            width: 150,
+                            height: 80,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(0),
+                                image: DecorationImage(
+                                    image: NetworkImage(
+                                      '${Myconstant().domain_restaurantPic}${readshopModels[index].restaurantPicture}',
+                                    ),
+                                    fit: BoxFit.cover)),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              '${readshopModels[index].restaurantNameshop}',
+                              style: GoogleFonts.lato(fontSize: 15),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )),
     );
   }
 
-//ค้นหาร้านอาหาร
-  TextField searchRestaurant() {
-    return TextField(
-      decoration: new InputDecoration(
-        prefixIcon: Icon(Icons.search),
-        hintText: "ที่ตั้ง ประเภทร้านอาหาร ชื่อร้านอาหาร ร้านอาหารที่ใกล้เคียง",
-        enabledBorder: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(10.0)),
-          borderSide: const BorderSide(
-            color: kprimary,
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(10.0)),
-          borderSide: BorderSide(
-            color: kprimary,
-          ),
-        ),
-      ),
-    );
-  }
+// //ค้นหาร้านอาหาร
+//   TextField searchRestaurant() {
+//     return TextField(
+//       decoration: new InputDecoration(
+//         prefixIcon: Icon(Icons.search),
+//         hintText: "ที่ตั้ง ประเภทร้านอาหาร ชื่อร้านอาหาร ร้านอาหารที่ใกล้เคียง",
+//         enabledBorder: const OutlineInputBorder(
+//           borderRadius: BorderRadius.all(Radius.circular(10.0)),
+//           borderSide: const BorderSide(
+//             color: kprimary,
+//           ),
+//         ),
+//         focusedBorder: OutlineInputBorder(
+//           borderRadius: BorderRadius.all(Radius.circular(10.0)),
+//           borderSide: BorderSide(
+//             color: kprimary,
+//           ),
+//         ),
+//       ),
+//     );
+//   }
 
 //ไปหน้าร้านอาหารที่ใกล้เคียง
   ElevatedButton nearfood() {
@@ -244,44 +382,6 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Text(
         'promotion',
         style: GoogleFonts.lato(),
-      ),
-    );
-  }
-
-  Widget createCard(ReadshopModel readshopModel, int index) {
-    return GestureDetector(
-      onTap: () {
-        print('You click index $index');
-        MaterialPageRoute route = MaterialPageRoute(
-          builder: (context) => ShowRestaurant(
-            readshopModel: readshopModels[index],
-          ),
-        );
-        Navigator.push(context, route);
-      },
-      child: Card(
-        child: Column(
-          children: [
-            Container(
-              width: 150,
-              height: 80,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(0),
-                  image: DecorationImage(
-                      image: NetworkImage(
-                        '${Myconstant().domain}${readshopModel.restaurantPicture}',
-                      ),
-                      fit: BoxFit.cover)),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                '${readshopModel.restaurantNameshop}',
-                style: GoogleFonts.lato(fontSize: 15),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

@@ -53,23 +53,35 @@ class _ShowUnconfirmedOrderFoodState extends State<ShowUnconfirmedOrderFood> {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? customerId = preferences.getString("customerId");
     String url =
-        '${Myconstant().domain}/getOrderfoodWherecustomerIdAndUnconfirmedOrderfoodStatus.php?isAdd=true&customerId=$customerId&reservationId=$reservationId&orderfoodStatus=$orderfoodStatus';
+        '${Myconstant().domain_00webhost}/getOrderfoodWherecustomerIdAndUnconfirmedOrderfoodStatus.php?isAdd=true&customerId=$customerId';
     Response response = await Dio().get(url);
-    // print('res==> $response');
-    var result = json.decode(response.data);
-    // print('result= $result');
-    for (var map in result) {
-      OrderfoodModel orderfoodModel = OrderfoodModel.fromJson(map);
-      setState(() {
-        orderfoodModels.add(orderfoodModel);
-        orderfoodid = orderfoodModel.id;
-      });
+    if (response.statusCode == 200) {
+      // print('res==> $response');
+      var result = json.decode(response.data);
+      print('result= $result');
+      for (var map in result) {
+        OrderfoodModel orderfoodModel = OrderfoodModel.fromJson(map);
+        setState(() {
+          orderfoodModels.add(orderfoodModel);
+          orderfoodid = orderfoodModel.id;
+        });
+      }
     }
   }
 
   Widget build(BuildContext context) {
     return orderfoodModels.length == 0
-        ? Center(child: MyStyle().showheadText('not have order food'))
+        ? Center(
+            child: Container(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset('assets/images/order-now.png'),
+                  MyStyle().showheadText('not have order food'),
+                ],
+              ),
+            ),
+          )
         : ListView.builder(
             itemCount: orderfoodModels.length,
             itemBuilder: (context, index) => GestureDetector(

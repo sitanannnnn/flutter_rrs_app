@@ -44,7 +44,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
     restaurantId = readshopModel!.restaurantId;
     print('restautant id ==> $restaurantId');
     String url =
-        '${Myconstant().domain}/getPaymentWhererestaurantId.php?isAdd=true&restaurantId=$restaurantId';
+        '${Myconstant().domain_00webhost}/getPaymentWhererestaurantId.php?isAdd=true&restaurantId=$restaurantId';
     Response response = await Dio().get(url);
     // print('res==> $response');
     var result = json.decode(response.data);
@@ -159,7 +159,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
             borderRadius: BorderRadius.circular(5),
             image: DecorationImage(
               image: NetworkImage(
-                '${Myconstant().domain}${paymentModels[index].accountPicture}',
+                '${Myconstant().domain_logobankPic}${paymentModels[index].accountPicture}',
               ),
               fit: BoxFit.cover,
             )),

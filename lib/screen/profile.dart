@@ -1,13 +1,17 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_rrs_app/model/user_model.dart';
+import 'package:flutter_rrs_app/screen/save_profile_img.dart';
 import 'package:flutter_rrs_app/utility/my_constant.dart';
 import 'package:flutter_rrs_app/utility/my_style.dart';
 import 'package:flutter_rrs_app/utility/normal_dialog.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,15 +29,20 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   UserModel? userModel;
-  File? file;
+  File? _image;
+  Uint8List? _imageBytes;
+  final picker = ImagePicker();
+  List<UserModel> userModels = [];
+  CloudApiProfileImg? api;
+  String? _imageName;
   String? name,
       email,
       phonenumber,
       user,
       password,
       confirmpassword,
+      newpassword,
       oldpassword,
-      urlImage,
       urlPicture;
   final _formkey = GlobalKey<FormState>();
 
@@ -41,10 +50,22 @@ class _ProfileState extends State<Profile> {
   //initstate จะทำงานก่อน build
   void initState() {
     super.initState();
+    rootBundle.loadString('assets/credentials.json').then((json) {
+      api = CloudApiProfileImg(json);
+    });
     userModel = widget.userModel;
     urlPicture = userModel?.urlPicture;
     findUser();
+    readcustomer();
     // readPicture();
+  }
+
+  void _saveImage() async {
+    // upload image to google cloud
+    print('save image here');
+    final response = await api!.save(_imageName!, _imageBytes!);
+    print(response!.downloadLink);
+    editImageProfile();
   }
 
   Future<Null> editNameMySQL() async {
@@ -53,26 +74,9 @@ class _ProfileState extends State<Profile> {
     print('CustomerId is =$customerId');
 
     String? url =
-        '${Myconstant().domain}/editCustomerWhereName.php?isAdd=true&customerId=$customerId&name=$name';
+        '${Myconstant().domain_00webhost}/editCustomerWhereName.php?isAdd=true&customerId=$customerId&name=$name';
     await Dio().get(url).then((value) {
-      if (value.toString() == 'true') {
-        Navigator.pop(context);
-      } else {
-        normalDialog(context, 'failed try again');
-      }
-    });
-  }
-
-//edit email ที่ฐานข้อมูล
-  Future<Null> editEmailMySQL() async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    String? customerId = preferences.getString("customerId");
-    print('CustomerId is =$customerId');
-
-    String? url =
-        '${Myconstant().domain}/editCustomerWhereEmail.php?isAdd=true&customerId=$customerId&email=$email';
-    await Dio().get(url).then((value) {
-      if (value.toString() == 'true') {
+      if (value.statusCode == 200) {
         Navigator.pop(context);
       } else {
         normalDialog(context, 'failed try again');
@@ -87,9 +91,9 @@ class _ProfileState extends State<Profile> {
     print('CustomerId is =$customerId');
 
     String? url =
-        '${Myconstant().domain}/editCustomerWherePhonenumber.php?isAdd=true&customerId=$customerId&phonenumber=$phonenumber';
+        '${Myconstant().domain_00webhost}/editCustomerWherePhonenumber.php?isAdd=true&customerId=$customerId&phonenumber=$phonenumber';
     await Dio().get(url).then((value) {
-      if (value.toString() == 'true') {
+      if (value.statusCode == 200) {
         Navigator.pop(context);
       } else {
         normalDialog(context, 'failed try again');
@@ -104,10 +108,16 @@ class _ProfileState extends State<Profile> {
     print('CustomerId is =$customerId');
 
     String? url =
-        '${Myconstant().domain}/editCustomerWherePassword.php?isAdd=true&customerId=$customerId&password=$password&confirmpassword=$confirmpassword';
+        '${Myconstant().domain_00webhost}/editCustomerWherePassword.php?isAdd=true&customerId=$customerId&password=$confirmpassword&confirmpassword=$confirmpassword';
     await Dio().get(url).then((value) {
-      if (value.toString() == 'true') {
+      if (value.statusCode == 200) {
         Navigator.pop(context);
+        Fluttertoast.showToast(
+            msg: 'changs password successfully',
+            toastLength: Toast.LENGTH_SHORT,
+            backgroundColor: Colors.red[100],
+            textColor: Colors.white,
+            fontSize: 16.0);
       } else {
         normalDialog(context, 'failed try again');
       }
@@ -125,22 +135,69 @@ class _ProfileState extends State<Profile> {
       name = preferences.getString('name');
       email = preferences.getString('email');
       phonenumber = preferences.getString('phonenumber');
-      password = preferences.getString('password');
-      confirmpassword = preferences.getString('confirmpassword');
       urlPicture = preferences.getString('urlPicture');
       print('image===>$urlPicture');
     });
   }
 
-//เลือกรูปภาพที่ต้องการจะตั้งเป็นรูปprofile
-  Future<Null> chooseImage(ImageSource source) async {
-    try {
-      var result = await ImagePicker()
-          .getImage(source: source, maxHeight: 100.0, maxWidth: 100.0);
+  Future<Null> chooseImage(ImageSource imageSource) async {
+    final pickedFile = await picker.pickImage(
+      source: imageSource,
+      maxHeight: 800.0,
+      maxWidth: 800.0,
+    );
+    setState(() {
+      if (pickedFile != null) {
+        print(pickedFile.path);
+        _image = File(pickedFile.path);
+        _imageBytes = _image!.readAsBytesSync();
+        _imageName = _image!.path.split('/').last;
+        urlPicture = _imageName;
+        print('patg image = $_imageName');
+      } else {
+        print('No image selectd');
+      }
+    });
+  }
+
+//อ่านข้อมูลลูกค้ามาเเสดง ผ่าน customerId
+  Future<Null> readcustomer() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    String? customerId = preferences.getString('customerId');
+    String url =
+        '${Myconstant().domain_00webhost}/getcustomerWherecustomerId.php?isAdd=true&customerId=$customerId';
+    Response response = await Dio().get(url);
+    // print('res==> $response');
+    var result = json.decode(response.data);
+    print('result= $result');
+    for (var map in result) {
+      UserModel userModel = UserModel.fromJson(map);
+      password = userModel.password;
+      print('password aomam = $password');
       setState(() {
-        file = File(result!.path);
+        userModels.add(userModel);
       });
-    } catch (e) {}
+    }
+  }
+
+  uploadFile() async {
+    String uploadurl =
+        "${Myconstant().domain_00webhostpic}/uploadprofilecustomer.php"; //Edit path file upload_foodmenu_picture.php
+    FormData formdata = FormData.fromMap({
+      "file": await MultipartFile.fromFile(_image!.path, filename: _imageName),
+    });
+    Response response = await Dio().post(
+      uploadurl,
+      data: formdata,
+    );
+    print('response upload iamge = ${response.statusCode}');
+    if (response.statusCode == 200) {
+      print(response.toString());
+      editImageProfile();
+      // addFoodMenuThread();
+    } else {
+      print("Error during connection to server.");
+    }
   }
 
 //edit รูปภาพของ profile
@@ -148,36 +205,15 @@ class _ProfileState extends State<Profile> {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? customerId = preferences.getString('customerId');
     String url =
-        '${Myconstant().domain}/editCustomerWhereImage.php?isAdd=true&customerId=$customerId&urlPicture=$urlImage';
+        '${Myconstant().domain_00webhost}/editCustomerWhereImage.php?isAdd=true&customerId=$customerId&urlPicture=$urlPicture';
     await Dio().get(url).then((value) {
-      print('value ==>$value');
-      if (value.toString() == 'true') {
+      if (value.statusCode == 200) {
+        Navigator.pop(context);
+        print('completed');
       } else {
         normalDialog(context, 'Please try again');
       }
     });
-  }
-
-// upload รูปภาพที่เราเลือกจะตั้งเป็นรูป profile
-  Future<Null> uploadImage() async {
-    Random random = Random();
-    int image = random.nextInt(1000000);
-    String? nameImage = 'profile$image.jpg';
-    print('nameImage =$nameImage,pathImage =${file!.path}');
-    String? url = '${Myconstant().domain}/saveImageProfile.php';
-
-    try {
-      Map<String, dynamic> map = Map();
-      map['file'] =
-          await MultipartFile.fromFile(file!.path, filename: nameImage);
-      FormData formData = FormData.fromMap(map);
-      await Dio().post(url, data: formData).then((value) {
-        print('Response ===> $value');
-        urlImage = '/Profile/$nameImage';
-        print('urlImage =$urlImage');
-        editImageProfile();
-      });
-    } catch (e) {}
   }
 
   @override
@@ -264,110 +300,114 @@ class _ProfileState extends State<Profile> {
                           children: [
                             TextButton(
                               onPressed: () {
-                                showModalBottomSheet(
-                                  context: context,
-                                  isScrollControlled: true,
-                                  builder: (context) => Form(
-                                    key: _formkey,
-                                    child: SingleChildScrollView(
-                                        child: Container(
-                                      padding: EdgeInsets.only(
-                                          bottom: MediaQuery.of(context)
-                                              .viewInsets
-                                              .bottom),
-                                      color: Color(0xff757575),
-                                      child: Container(
-                                        padding: EdgeInsets.all(20.0),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.only(
-                                            topLeft: Radius.circular(20.0),
-                                            topRight: Radius.circular(20.0),
-                                          ),
-                                        ),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.stretch,
-                                          children: <Widget>[
-                                            Text('Old password',
-                                                textAlign: TextAlign.center,
-                                                style: GoogleFonts.lato(
-                                                    fontSize: 20)),
-                                            TextFormField(
-                                              validator: (value) {
-                                                if (value !=
-                                                        userModel!.password ||
-                                                    value!.isEmpty)
-                                                  return 'The old password is incorrect.';
-                                                return null;
-                                              },
-                                              autofocus: true,
-                                              textAlign: TextAlign.center,
-                                            ),
-                                            Text('New password',
-                                                textAlign: TextAlign.center,
-                                                style: GoogleFonts.lato(
-                                                    fontSize: 20)),
-                                            TextFormField(
-                                              validator: (val) {
-                                                if (val!.isEmpty) {
-                                                  return "please input Password";
-                                                } else if (val.length < 8) {
-                                                  return "At Least 8 chars required";
-                                                } else {
-                                                  return null;
-                                                }
-                                              },
-                                              onChanged: (val) =>
-                                                  password = val,
-                                              obscureText: true,
-                                            ),
-                                            Text('Confirm password',
-                                                textAlign: TextAlign.center,
-                                                style: GoogleFonts.lato(
-                                                    fontSize: 20)),
-                                            TextFormField(
-                                              validator: (val) {
-                                                if (val!.isEmpty) {
-                                                  return "please input ConfirmPassword";
-                                                } else if (val.length < 8) {
-                                                  return "At Least 8 chars required";
-                                                } else if (password !=
-                                                    confirmpassword) {
-                                                  return "password do not match";
-                                                } else {
-                                                  return null;
-                                                }
-                                              },
-                                              onChanged: (value) =>
-                                                  confirmpassword = value,
-                                              obscureText: true,
-                                            ),
-                                            ElevatedButton(
-                                              style: ElevatedButton.styleFrom(
-                                                  primary: kprimary,
-                                                  onPrimary: Colors.white,
-                                                  shape: RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.all(
-                                                              Radius.circular(
-                                                                  15)))),
-                                              child: Text('Save',
-                                                  style: GoogleFonts.lato(
-                                                      fontSize: 20)),
-                                              onPressed: () {
-                                                if (_formkey.currentState!
-                                                    .validate()) {
-                                                  editPasswordMySQL();
-                                                }
-                                              },
-                                            ),
+                                showDialog(
+                                    context: context,
+                                    builder: (context) => SimpleDialog(
+                                          children: [
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Form(
+                                                key: _formkey,
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment
+                                                          .stretch,
+                                                  children: <Widget>[
+                                                    Text('Old password',
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        style: GoogleFonts.lato(
+                                                            fontSize: 20)),
+                                                    TextFormField(
+                                                      validator: (value) {
+                                                        if (value != password ||
+                                                            value!.isEmpty)
+                                                          return 'The old password is incorrect.';
+                                                        return null;
+                                                      },
+                                                      autofocus: true,
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      obscureText: true,
+                                                    ),
+                                                    Text('New password',
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        style: GoogleFonts.lato(
+                                                            fontSize: 20)),
+                                                    TextFormField(
+                                                      validator: (val) {
+                                                        if (val!.isEmpty) {
+                                                          return "please input Password";
+                                                        } else if (val.length <
+                                                            8) {
+                                                          return "At Least 8 chars required";
+                                                        } else {
+                                                          return null;
+                                                        }
+                                                      },
+                                                      onChanged: (val) =>
+                                                          newpassword = val,
+                                                      obscureText: true,
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                    ),
+                                                    Text(' Confirmpassword',
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        style: GoogleFonts.lato(
+                                                            fontSize: 20)),
+                                                    TextFormField(
+                                                      validator: (val) {
+                                                        if (val!.isEmpty) {
+                                                          return "please input ConfirmPassword";
+                                                        } else if (val.length <
+                                                            8) {
+                                                          return "At Least 8 chars required";
+                                                        } else if (val !=
+                                                            newpassword) {
+                                                          return "password do not match";
+                                                        } else {
+                                                          return null;
+                                                        }
+                                                      },
+                                                      onChanged: (value) =>
+                                                          confirmpassword =
+                                                              value,
+                                                      obscureText: true,
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                    ),
+                                                    ElevatedButton(
+                                                      style: ElevatedButton.styleFrom(
+                                                          primary: kprimary,
+                                                          onPrimary:
+                                                              Colors.white,
+                                                          shape: RoundedRectangleBorder(
+                                                              borderRadius: BorderRadius
+                                                                  .all(Radius
+                                                                      .circular(
+                                                                          15)))),
+                                                      child: Text('Save',
+                                                          style:
+                                                              GoogleFonts.lato(
+                                                                  fontSize:
+                                                                      20)),
+                                                      onPressed: () {
+                                                        if (_formkey
+                                                            .currentState!
+                                                            .validate()) {
+                                                          editPasswordMySQL();
+                                                        }
+                                                      },
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            )
                                           ],
-                                        ),
-                                      ),
-                                    )),
-                                  ),
-                                );
+                                        ));
                               },
                               child: Text('Change Pasword',
                                   style: GoogleFonts.lato(
@@ -393,12 +433,16 @@ class _ProfileState extends State<Profile> {
           width: 100,
           height: 100,
           decoration: ShapeDecoration(shape: CircleBorder()),
-          child: urlPicture == null
+          child: _imageBytes == null
               ? Image.asset(
                   'assets/images/user.png',
                   fit: BoxFit.cover,
                 )
-              : Image.network('${Myconstant().domain}$urlPicture')),
+              : Stack(
+                  children: [
+                    Image.memory(_imageBytes!),
+                  ],
+                )),
       onTap: () {
         showModalBottomSheet(
           context: context,
@@ -444,11 +488,12 @@ class _ProfileState extends State<Profile> {
                   ),
                   ElevatedButton(
                       onPressed: () {
-                        uploadImage();
-                        editImageProfile();
-                        // readPicture();
-                        // checkAuthen();
-                        // Navigator.pop(context);
+                        if (_imageBytes == null) {
+                          normalDialog(context, 'Please select a picture');
+                        } else {
+                          uploadFile();
+                          Navigator.pop(context);
+                        }
                       },
                       child:
                           Text('Save', style: GoogleFonts.lato(fontSize: 20))),

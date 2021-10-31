@@ -19,6 +19,10 @@ class OrderfoodModel {
   String? rate;
   String? opinion;
   String? promotionDiscount;
+  String? vat;
+  String? rate_thb;
+  String? rate_usd;
+  String? rate_eur;
 
   OrderfoodModel({
     this.id,
@@ -41,6 +45,10 @@ class OrderfoodModel {
     this.rate,
     this.opinion,
     this.promotionDiscount,
+    this.vat,
+    this.rate_thb,
+    this.rate_usd,
+    this.rate_eur,
   });
 
   OrderfoodModel.fromJson(Map<String, dynamic> json) {
@@ -64,6 +72,10 @@ class OrderfoodModel {
     rate = json['rate'];
     opinion = json['opinion'];
     promotionDiscount = json['promotion_discount'];
+    vat = json['vat'];
+    rate_thb = json['rate_thb'];
+    rate_usd = json['rate_usd'];
+    rate_eur = json['rate_eur'];
   }
 
   Map<String, dynamic> toJson() {
@@ -88,6 +100,10 @@ class OrderfoodModel {
     data['rate'] = this.rate;
     data['opinion'] = this.opinion;
     data['promotion_discount'] = this.promotionDiscount;
+    data['vat'] = this.vat;
+    data['rate_thb'] = this.rate_thb;
+    data['rate_usd'] = this.rate_usd;
+    data['rate_eur'] = this.rate_eur;
     return data;
   }
 }

@@ -34,11 +34,11 @@ class _ShowCancelTableReservationState
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? customerId = preferences.getString("customerId");
     String url =
-        '${Myconstant().domain}/getReservationWherecustomerIdAndReservationStatusCancel.php?isAdd=true&customerId=$customerId&reservationStatus=cancel';
+        '${Myconstant().domain_00webhost}/getReservationWherecustomerIdAndReservationStatusCancel.php?isAdd=true&customerId=$customerId&reservationStatus=cancel';
     Response response = await Dio().get(url);
     // print('res==> $response');
     var result = json.decode(response.data);
-    // print('result= $result');
+    print('result cancel= $result');
     for (var map in result) {
       ReservationModel reservationModel = ReservationModel.fromJson(map);
       setState(() {
@@ -49,7 +49,17 @@ class _ShowCancelTableReservationState
 
   Widget build(BuildContext context) {
     return reservationModels.length == 0
-        ? Center(child: MyStyle().showheadText('not have reservation'))
+        ? Center(
+            child: Container(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset('assets/images/unconfirm.png'),
+                  MyStyle().showheadText('not have reservation'),
+                ],
+              ),
+            ),
+          )
         : ListView.builder(
             itemCount: reservationModels.length,
             itemBuilder: (context, index) => GestureDetector(
@@ -149,7 +159,7 @@ class _ShowCancelTableReservationState
                                                     reservationModels[index]
                                                         .reservationTime
                                                         .toString()
-                                                        .substring(10, 15),
+                                                        .substring(0, 5),
                                                     style: GoogleFonts.lato())
                                               ],
                                             ),
@@ -198,7 +208,7 @@ class _ShowCancelTableReservationState
                                               children: [
                                                 reservationModels[index]
                                                             .orderfoodId! ==
-                                                        "0"
+                                                        'null'
                                                     ? Text("")
                                                     : Row(
                                                         children: [
@@ -244,25 +254,42 @@ class _ShowCancelTableReservationState
                                           mainAxisAlignment:
                                               MainAxisAlignment.end,
                                           children: [
-                                            Row(
-                                              children: [
-                                                Container(
-                                                    width:
-                                                        MediaQuery.of(context)
-                                                                    .size
-                                                                    .width *
-                                                                0.5 -
-                                                            7.0,
-                                                    child: Text(
-                                                        reservationModels[index]
-                                                            .reservationReasonCancelStatus!,
-                                                        style: GoogleFonts.lato(
-                                                            color: Colors.grey,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold))),
-                                              ],
-                                            ),
+                                            reservationModels[index]
+                                                        .reservationReasonCancelStatus ==
+                                                    "null"
+                                                ? Text("")
+                                                : Row(
+                                                    children: [
+                                                      Container(
+                                                          width: MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width *
+                                                                  0.5 -
+                                                              7.0,
+                                                          child: Row(
+                                                            children: [
+                                                              Expanded(
+                                                                child: Text(
+                                                                  reservationModels[
+                                                                          index]
+                                                                      .reservationReasonCancelStatus!,
+                                                                  style: GoogleFonts.lato(
+                                                                      color: Colors
+                                                                          .grey,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold),
+                                                                  maxLines: 2,
+                                                                  overflow:
+                                                                      TextOverflow
+                                                                          .ellipsis,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          )),
+                                                    ],
+                                                  ),
                                             SizedBox(
                                               width: 10,
                                             ),

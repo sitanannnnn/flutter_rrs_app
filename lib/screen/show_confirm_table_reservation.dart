@@ -34,22 +34,34 @@ class _ShowConfirmTableReservationState
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? customerId = preferences.getString("customerId");
     String url =
-        '${Myconstant().domain}/getReservationWherecustomerIdAndReservationStatusConfirm.php?isAdd=true&customerId=$customerId&reservationStatus=confirm';
+        '${Myconstant().domain_00webhost}/getReservationWherecustomerIdAndReservationStatusConfirm.php?isAdd=true&customerId=$customerId&reservationStatus=confirm';
     Response response = await Dio().get(url);
     // print('res==> $response');
-    var result = json.decode(response.data);
-    // print('result= $result');
-    for (var map in result) {
-      ReservationModel reservationModel = ReservationModel.fromJson(map);
-      setState(() {
-        reservationModels.add(reservationModel);
-      });
+    if (response.statusCode == 200) {
+      var result = json.decode(response.data);
+      // print('result= $result');
+      for (var map in result) {
+        ReservationModel reservationModel = ReservationModel.fromJson(map);
+        setState(() {
+          reservationModels.add(reservationModel);
+        });
+      }
     }
   }
 
   Widget build(BuildContext context) {
     return reservationModels.length == 0
-        ? Center(child: MyStyle().showheadText('not have reservation'))
+        ? Center(
+            child: Container(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset('assets/images/unconfirm.png'),
+                  MyStyle().showheadText('not have reservation'),
+                ],
+              ),
+            ),
+          )
         : ListView.builder(
             itemCount: reservationModels.length,
             itemBuilder: (context, index) => GestureDetector(
@@ -149,7 +161,7 @@ class _ShowConfirmTableReservationState
                                                     reservationModels[index]
                                                         .reservationTime
                                                         .toString()
-                                                        .substring(10, 15),
+                                                        .substring(0, 5),
                                                     style: GoogleFonts.lato())
                                               ],
                                             ),
@@ -198,7 +210,7 @@ class _ShowConfirmTableReservationState
                                               children: [
                                                 reservationModels[index]
                                                             .orderfoodId! ==
-                                                        'Null'
+                                                        'null'
                                                     ? Text("")
                                                     : Row(
                                                         children: [
