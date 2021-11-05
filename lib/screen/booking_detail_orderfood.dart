@@ -64,7 +64,7 @@ class _BookingTailOrderfoodState extends State<BookingTailOrderfood> {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? customerId = preferences.getString("customerId");
     String? url =
-        '${Myconstant().domain_00webhost}/getOrderfoodWherecustomerIdandDateTime.php?isAdd=true&customerId=$customerId&orderfoodDateTime=$orderfoodDateTime';
+        '${Myconstant().domain_00webhost}/getOrderfoodWherecustomerIdandDateTime.php?customerId=$customerId&orderfoodDateTime=$orderfoodDateTime';
     Response response = await Dio().get(url);
 
     if (response.statusCode == 200) {
@@ -434,7 +434,7 @@ class _BookingTailOrderfoodState extends State<BookingTailOrderfood> {
             children: [
               Row(
                 children: [
-                  Expanded(flex: 1, child: Text(listMenufoods[index][index2])),
+                  Expanded(flex: 2, child: Text(listMenufoods[index][index2])),
                   Expanded(flex: 1, child: Text(listAmounts[index][index2])),
                   Expanded(
                       child: Row(

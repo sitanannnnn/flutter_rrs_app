@@ -32,10 +32,10 @@ class _ShowMenuFoodState extends State<ShowMenuFood> {
     String url =
         '${Myconstant().domain_00webhost}/getFoodmenuWhererestaurantId.php?isAdd=true&restaurantId=$restaurantId';
     Response response = await Dio().get(url);
-    print('res==> $response');
+    //print('res==> $response');
 
     var result = json.decode(response.data);
-    print('result= $result');
+    //print('result= $result');
     for (var map in result) {
       FoodMenuModel foodMenuModel = FoodMenuModel.fromJson(map);
       setState(() {

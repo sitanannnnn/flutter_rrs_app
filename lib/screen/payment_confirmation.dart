@@ -116,7 +116,7 @@ class _PaymentConfirmationState extends State<PaymentConfirmation> {
   }
 
 // upload รูปภาพที่เราเลือกจะupload
-  Future<Null> uploadImage() async {
+  Future<Null> uploadSlip() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? customerId = preferences.getString('customerId');
     var url =
@@ -124,12 +124,12 @@ class _PaymentConfirmationState extends State<PaymentConfirmation> {
     await Dio().get(url).then((value) {
       if (value.statusCode == 200) {
         print(('completed slip'));
-        Navigator.pop(context);
+        //Navigator.pop(context);
       }
     });
   }
 
-  uploadFile() async {
+  uploadFileSlip() async {
     String uploadurl =
         "${Myconstant().domain_00webhostpic}/uploadslippayment.php"; //Edit path file upload_foodmenu_picture.php
     FormData formdata = FormData.fromMap({
@@ -142,7 +142,7 @@ class _PaymentConfirmationState extends State<PaymentConfirmation> {
     print('response upload iamge = ${response.statusCode}');
     if (response.statusCode == 200) {
       print(response.toString());
-      uploadImage();
+      uploadSlip();
     } else {
       print("Error during connection to server.");
     }
@@ -311,7 +311,7 @@ class _PaymentConfirmationState extends State<PaymentConfirmation> {
                       if (_imageBytes == null) {
                         normalDialog(context, 'Please select a picture');
                       } else {
-                        uploadFile();
+                        uploadFileSlip();
                         showDialog(
                             context: context,
                             builder: (context) => SimpleDialog(
@@ -340,12 +340,11 @@ class _PaymentConfirmationState extends State<PaymentConfirmation> {
                                                 MainAxisAlignment.center,
                                             children: [
                                               TextButton(
-                                                onPressed: () =>
-                                                    Navigator.pushReplacement(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                            builder: (context) =>
-                                                                MyBooking())),
+                                                onPressed: () => Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            MyBooking())),
                                                 child: Icon(
                                                   Icons.check_circle,
                                                   color: Colors.green,

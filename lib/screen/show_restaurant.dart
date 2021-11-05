@@ -3,6 +3,7 @@ import 'package:flutter_rrs_app/model/read_shop_model.dart';
 import 'package:flutter_rrs_app/utility/my_style.dart';
 import 'package:flutter_rrs_app/widget/about_restaurant.dart';
 import 'package:flutter_rrs_app/widget/show_menu_food.dart';
+import 'package:flutter_rrs_app/widget/show_review.dart';
 
 class ShowRestaurant extends StatefulWidget {
   final ReadshopModel readshopModel;
@@ -27,44 +28,46 @@ class _ShowRestaurantState extends State<ShowRestaurant> {
     ));
   }
 
-//ตั้งค่า BottomNavigationBar
-  BottomNavigationBarItem aboutRestaurantNav() {
-    return BottomNavigationBarItem(
-        icon: Icon(Icons.fastfood), title: Text("about the restaurant"));
-  }
-
-//ตั้งค่า BottomNavigationBar
-  BottomNavigationBarItem showMenuFoodNav() {
-    return BottomNavigationBarItem(
-        icon: Icon(Icons.restaurant_menu), title: Text("food menu"));
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: kprimary,
-        title: Text(' ${readshopModel!.restaurantNameshop}'),
+    double wid = MediaQuery.of(context).size.width;
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: kprimary,
+          toolbarHeight: wid / 4,
+          title: Text(
+            readshopModel!.restaurantNameshop!,
+            style: TextStyle(color: Colors.white),
+          ),
+          bottom: TabBar(
+            isScrollable: true,
+            labelColor: Colors.black,
+            unselectedLabelColor: Colors.white,
+            tabs: [
+              Tab(
+                text: 'abount the restaurant',
+              ),
+              Tab(
+                text: 'food menu ',
+              ),
+              Tab(
+                text: 'review',
+              ),
+            ],
+          ),
+        ),
+        body: TabBarView(
+          children: [
+            AboutRestaurant(readshopModel: readshopModel!),
+            ShowMenuFood(
+              readshopModel: readshopModel,
+            ),
+            ShowReview(readshopModel: readshopModel!)
+          ],
+        ),
       ),
-      body: listWidgets!.length == 0
-          ? MyStyle().showLogotable()
-          : listWidgets![indexPage],
-      bottomNavigationBar: showBottomNavigationBar(),
-    );
-  }
-
-//เเสดง BottomNavigationBar ที่เรากำหนด
-  BottomNavigationBar showBottomNavigationBar() {
-    return BottomNavigationBar(
-      selectedItemColor: Colors.white,
-      backgroundColor: kprimary,
-      currentIndex: indexPage,
-      onTap: (value) {
-        setState(() {
-          indexPage = value;
-        });
-      },
-      items: <BottomNavigationBarItem>[aboutRestaurantNav(), showMenuFoodNav()],
     );
   }
 }

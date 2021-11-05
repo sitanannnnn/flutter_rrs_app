@@ -239,7 +239,12 @@ class _ShowCompletedOrderFoodState extends State<ShowCompletedOrderFood> {
                                                                         ],
                                                                       ));
                                                     },
-                                                    child: Text('Rate')),
+                                                    child:
+                                                        orderfoodModels[index]
+                                                                    .reviewId ==
+                                                                null
+                                                            ? Text('Rate')
+                                                            : Text('Rated')),
                                               ),
                                               SizedBox(
                                                 width: 10,

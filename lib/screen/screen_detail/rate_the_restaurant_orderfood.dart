@@ -110,7 +110,7 @@ class _RateTheRestaurantOrderfoodState
         double rate_thb = double.parse(ratethb!);
         double rate_usd = double.parse(rateusd!);
         double rate_eur = double.parse(rateeur!);
-        print('rate thb=>$rate_thb');
+        //print('rate thb=>$rate_thb');
         //ใส่ค่า  % vat  ไว้ใน vat
         String? vat = detailorderfoodModel.vat;
         //แปลงค่าให้เป็น int
@@ -120,23 +120,23 @@ class _RateTheRestaurantOrderfoodState
           total = total + int.parse(string.trim());
           //หาราคาส่วนลด
           totaldiscount = (total * (discount / 100));
-          print('total discount ==> $totaldiscount');
+          //print('total discount ==> $totaldiscount');
           //ราคาหักส่วนลด
           netTotal = (total - totaldiscount);
-          print('nettotal$netTotal');
+          //print('nettotal$netTotal');
           //ราคาvat
           vatTotal = (netTotal * (vatdiscount / 100));
-          print('vat==> $vatTotal');
+          //print('vat==> $vatTotal');
           //ราคาสุทธ์
           netprice = (netTotal + vatTotal);
-          print('total==> $netprice');
+          //print('total==> $netprice');
           netpricethb = (netprice * rate_thb);
           netpriceusd = (netprice * rate_usd);
           netpriceeur = (netprice * rate_eur);
-          print('thai baht =>$netpricethb');
+          //print('thai baht =>$netpricethb');
         }
-        print('total==> $total');
-        print(' lenght menu ==>${menufoods.length}');
+        //print('total==> $total');
+        //print(' lenght menu ==>${menufoods.length}');
         setState(() {
           detailorderfoodModels.add(detailorderfoodModel);
           listMenufoods.add(menufoods);
@@ -154,7 +154,7 @@ class _RateTheRestaurantOrderfoodState
   List<String> changeArray(String string) {
     List<String> list = [];
     String myString = string.substring(1, string.length - 1);
-    print('myString =$myString');
+    //print('myString =$myString');
     list = myString.split(',');
     int index = 0;
     for (String string in list) {
@@ -257,6 +257,7 @@ class _RateTheRestaurantOrderfoodState
                             borderRadius:
                                 BorderRadius.all(Radius.circular(15)))),
                     onPressed: () {
+                      recordReviewOrderfood();
                       Navigator.pop(context);
                       showDialog(
                           context: context,
@@ -597,10 +598,10 @@ class _RateTheRestaurantOrderfoodState
     String? reservationId;
     String? review_date_time = DateFormat('yyyy-MM-dd HH:mm').format(dateTime);
     var url =
-        '${Myconstant().domain_00webhost}/addReview_restaurant.php?isAdd=true&restaurantId=$restaurantId&restaurantNameshop=$restaurantNameshop&customerId=$customerId&reservationId=$reservationId&orderfoodId=$orderfoodId&rate=$rating&opinion=$opinion';
+        '${Myconstant().domain_00webhost}/addReview_restaurant.php?isAdd=true&restaurantId=$restaurantId&restaurantNameshop=$restaurantNameshop&customerId=$customerId&reservationId=$reservationId&orderfoodId=$orderfoodId&rate=$rating&opinion=$opinion&review_date_time=$review_date_time';
     try {
       Response response = await Dio().get(url);
-      // print('res = $response');
+      print('res = $response');
       if (response.statusCode == 200) {
       } else {
         normalDialog(context, 'Please try again');

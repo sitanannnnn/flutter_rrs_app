@@ -96,9 +96,124 @@ class _AboutRestaurantState extends State<AboutRestaurant> {
           showPromotionRestaurant(),
           showdistanceRestaurant(),
           showMap(),
-          // SizedBox(
-          //   height: 70,
-          // ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Text('opening-closing time',
+                        style: GoogleFonts.lato(
+                            fontSize: 20, fontWeight: FontWeight.w700)),
+                  ],
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Monday', style: GoogleFonts.lato(fontSize: 18)),
+                    readshopModel!.mondayOpen == "00:00:00"
+                        ? Text('closed',
+                            style: GoogleFonts.lato(
+                                fontSize: 16, color: Colors.red))
+                        : Text(
+                            '${readshopModel!.mondayOpen} - ${readshopModel!.mondayClosed}',
+                            style: GoogleFonts.lato(
+                                fontSize: 16, color: Colors.green))
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Tuesday', style: GoogleFonts.lato(fontSize: 18)),
+                    readshopModel!.tuesdayOpen == "00:00:00"
+                        ? Text('closed',
+                            style: GoogleFonts.lato(
+                                fontSize: 16, color: Colors.red))
+                        : Text(
+                            '${readshopModel!.tuesdayOpen} - ${readshopModel!.tuesdayClosed}',
+                            style: GoogleFonts.lato(
+                                fontSize: 16, color: Colors.green))
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Wednesday', style: GoogleFonts.lato(fontSize: 18)),
+                    readshopModel!.wednesdayOpen == "00:00:00"
+                        ? Text('closed',
+                            style: GoogleFonts.lato(
+                                fontSize: 16, color: Colors.red))
+                        : Text(
+                            '${readshopModel!.wednesdayOpen} - ${readshopModel!.wednesdayClosed}',
+                            style: GoogleFonts.lato(
+                                fontSize: 16, color: Colors.green))
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Thursday', style: GoogleFonts.lato(fontSize: 18)),
+                    readshopModel!.thursdayOpen == "00:00:00"
+                        ? Text('closed',
+                            style: GoogleFonts.lato(
+                                fontSize: 16, color: Colors.red))
+                        : Text(
+                            '${readshopModel!.thursdayOpen} - ${readshopModel!.thursdayClosed}',
+                            style: GoogleFonts.lato(
+                                fontSize: 16, color: Colors.green))
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Friday', style: GoogleFonts.lato(fontSize: 18)),
+                    readshopModel!.fridayOpen == "00:00:00"
+                        ? Text('closed',
+                            style: GoogleFonts.lato(
+                                fontSize: 16, color: Colors.red))
+                        : Text(
+                            '${readshopModel!.fridayOpen} - ${readshopModel!.fridayClosed}',
+                            style: GoogleFonts.lato(
+                                fontSize: 16, color: Colors.green))
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Saturday', style: GoogleFonts.lato(fontSize: 18)),
+                    readshopModel!.saturdayOpen == "00:00:00"
+                        ? Text('closed',
+                            style: GoogleFonts.lato(
+                                fontSize: 16, color: Colors.red))
+                        : Text(
+                            '${readshopModel!.saturdayOpen} - ${readshopModel!.saturdayClosed}',
+                            style: GoogleFonts.lato(
+                                fontSize: 16, color: Colors.green))
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Sunday', style: GoogleFonts.lato(fontSize: 18)),
+                    readshopModel!.saturdayOpen == "00:00:00"
+                        ? Text("closed",
+                            style: GoogleFonts.lato(
+                                fontSize: 16, color: Colors.red))
+                        : Text(
+                            '${readshopModel!.sundayOpen} - ${readshopModel!.sundayClosed}',
+                            style: GoogleFonts.lato(
+                                fontSize: 16, color: Colors.green))
+                  ],
+                )
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 20,
+          ),
           Column(
             children: [
               Container(

@@ -371,55 +371,61 @@ class _ShowCompletedTableReservationState
                                           child: Row(
                                             children: [
                                               Container(
-                                                width: 70,
-                                                height: 20,
-                                                child: ElevatedButton(
-                                                    style: ElevatedButton.styleFrom(
-                                                        primary: Colors.red,
-                                                        onPrimary: Colors.white,
-                                                        shape: RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius.all(
-                                                                    Radius.circular(
-                                                                        15)))),
-                                                    onPressed: () {
-                                                      reservationModels[index]
+                                                  width: 70,
+                                                  height: 20,
+                                                  child: ElevatedButton(
+                                                      style: ElevatedButton.styleFrom(
+                                                          primary: Colors.red,
+                                                          onPrimary:
+                                                              Colors.white,
+                                                          shape: RoundedRectangleBorder(
+                                                              borderRadius: BorderRadius
+                                                                  .all(Radius
+                                                                      .circular(
+                                                                          15)))),
+                                                      onPressed: () {
+                                                        reservationModels[index]
+                                                                    .reviewId ==
+                                                                null
+                                                            ? Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                    builder: (context) => RateTheRestaurantReserve(
+                                                                        reservationModel:
+                                                                            reservationModels[
+                                                                                index])))
+                                                            : showDialog(
+                                                                context:
+                                                                    context,
+                                                                builder:
+                                                                    (context) =>
+                                                                        SimpleDialog(
+                                                                          children: [
+                                                                            Column(
+                                                                              children: [
+                                                                                Row(
+                                                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                                                  children: [
+                                                                                    Text('you have successfully rate', style: GoogleFonts.lato(fontSize: 20, color: Colors.black))
+                                                                                  ],
+                                                                                ),
+                                                                                ElevatedButton(
+                                                                                    style: ElevatedButton.styleFrom(primary: Colors.green, onPrimary: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15)))),
+                                                                                    onPressed: () {
+                                                                                      Navigator.pop(context);
+                                                                                    },
+                                                                                    child: Text('OK'))
+                                                                              ],
+                                                                            )
+                                                                          ],
+                                                                        ));
+                                                      },
+                                                      child: reservationModels[
+                                                                      index]
                                                                   .reviewId ==
                                                               null
-                                                          ? Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                  builder: (context) => RateTheRestaurantReserve(
-                                                                      reservationModel:
-                                                                          reservationModels[
-                                                                              index])))
-                                                          : showDialog(
-                                                              context: context,
-                                                              builder:
-                                                                  (context) =>
-                                                                      SimpleDialog(
-                                                                        children: [
-                                                                          Column(
-                                                                            children: [
-                                                                              Row(
-                                                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                                                children: [
-                                                                                  Text('you have successfully rate', style: GoogleFonts.lato(fontSize: 20, color: Colors.black))
-                                                                                ],
-                                                                              ),
-                                                                              ElevatedButton(
-                                                                                  style: ElevatedButton.styleFrom(primary: Colors.green, onPrimary: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15)))),
-                                                                                  onPressed: () {
-                                                                                    Navigator.pop(context);
-                                                                                  },
-                                                                                  child: Text('OK'))
-                                                                            ],
-                                                                          )
-                                                                        ],
-                                                                      ));
-                                                    },
-                                                    child: Text('Rate')),
-                                              ),
+                                                          ? Text('Rate')
+                                                          : Text('Rated'))),
                                               SizedBox(
                                                 width: 10,
                                               ),

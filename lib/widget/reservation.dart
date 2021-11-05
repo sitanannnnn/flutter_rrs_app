@@ -199,10 +199,8 @@ class _ReservationState extends State<Reservation> {
                                       activeBorderColor: dark,
                                       backgroundColor: Colors.transparent,
                                       activeBackgroundColor: dark,
-                                      initialTime:
-                                          TimeOfDay(hour: 08, minute: 00),
                                       firstTime:
-                                          TimeOfDay(hour: 08, minute: 00),
+                                          TimeOfDay(hour: 14, minute: 00),
                                       lastTime: TimeOfDay(hour: 21, minute: 00),
                                       onHourSelected: (TimeOfDay choosetime) {
                                         setState(() {
